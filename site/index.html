@@ -1336,6 +1336,8 @@ function initQuiz() {
       const qi = parseInt(btn.dataset.qi);
       const oi = parseInt(btn.dataset.oi);
       answers[qi] = oi;
+      // Autosave progress to server
+      saveQuizProgress();
       // Update UI
       const slide = btn.closest('.quiz-slide');
       slide.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
@@ -1616,8 +1618,89 @@ document.querySelectorAll('.form-input').forEach(input => {
   });
 });
 
+/* ── Quiz Session Persistence ── */
+function getSessionId() {
+  var sid = localStorage.getItem('anvil_session_id');
+  if (!sid) {
+    sid = Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem('anvil_session_id', sid);
+  }
+  return sid;
+}
+
+function saveQuizProgress() {
+  var sid = getSessionId();
+  var payload = {
+    sessionId: sid,
+    currentQuestion: currentQ,
+    answers: answers.map(function(a) { return a !== undefined ? String(a) : ''; })
+  };
+  fetch('/api/quiz-progress', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).catch(function() { /* silent fail — local state is primary */ });
+}
+
+function restoreQuizProgress(callback) {
+  var sid = localStorage.getItem('anvil_session_id');
+  if (!sid) { callback(null); return; }
+  fetch('/api/quiz-progress/' + encodeURIComponent(sid))
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(data) {
+      if (data && data.success && data.progress) {
+        callback(data.progress);
+      } else {
+        callback(null);
+      }
+    })
+    .catch(function() { callback(null); });
+}
+
 /* ── Init ── */
 initQuiz();
+
+// Attempt to restore saved progress
+restoreQuizProgress(function(saved) {
+  if (!saved || !saved.answers || saved.answers.length === 0) return;
+  // Filter out empty strings to find actual answers
+  var hasAnswers = saved.answers.some(function(a) { return a !== ''; });
+  if (!hasAnswers) return;
+
+  // Restore answers array
+  saved.answers.forEach(function(a, i) {
+    if (a !== '') {
+      answers[i] = parseInt(a, 10);
+      // Mark the option as selected in the DOM
+      var opt = document.querySelector('.quiz-option[data-qi="' + i + '"][data-oi="' + a + '"]');
+      if (opt) {
+        opt.closest('.quiz-slide').querySelectorAll('.quiz-option').forEach(function(o) { o.classList.remove('selected'); });
+        opt.classList.add('selected');
+        opt.closest('.quiz-slide').querySelector('.quiz-btn-next').disabled = false;
+      }
+    }
+  });
+
+  // Restore current question position
+  var resumeQ = Math.min(saved.currentQuestion || 0, QUESTIONS.length - 1);
+  currentQ = resumeQ;
+  showSlide(currentQ);
+
+  // Show "Welcome back" message
+  var card = document.getElementById('quizCard');
+  if (card) {
+    var wb = document.createElement('div');
+    wb.style.cssText = 'background:rgba(232,122,46,0.12);border:1px solid var(--orange);border-radius:8px;padding:12px 16px;margin-bottom:16px;color:var(--orange);font-weight:600;font-size:0.95rem;text-align:center;';
+    wb.textContent = 'Welcome back! Resuming from question ' + (resumeQ + 1) + ' of ' + QUESTIONS.length + '.';
+    card.insertBefore(wb, card.firstChild);
+    // Auto-dismiss after 5 seconds
+    setTimeout(function() {
+      wb.style.transition = 'opacity 0.5s';
+      wb.style.opacity = '0';
+      setTimeout(function() { if (wb.parentNode) wb.parentNode.removeChild(wb); }, 500);
+    }, 5000);
+  }
+});
 
 /* ── Referral & UTM Capture ── */
 (function() {

@@ -1055,6 +1055,32 @@ function loadState() {
 
 function saveState() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+  // Sync to server
+  syncCurriculumToServer();
+}
+
+function getSessionId() {
+  var sid = localStorage.getItem('anvil_session_id');
+  if (!sid) {
+    sid = Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem('anvil_session_id', sid);
+  }
+  return sid;
+}
+
+function syncCurriculumToServer() {
+  var sid = getSessionId();
+  var payload = {
+    sessionId: sid,
+    currentDay: state.currentDay,
+    completedDays: state.completed || [],
+    quizScores: state.quizScores || {}
+  };
+  fetch('/api/curriculum/progress', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).catch(function() { /* silent fail */ });
 }
 
 function isDayUnlocked(day) {
@@ -1473,6 +1499,53 @@ document.getElementById('directoryForm').addEventListener('submit', function(e) 
 /* ── Initialize ── */
 buildContent();
 render();
+
+// Restore curriculum progress from server (merge with localStorage)
+(function() {
+  var sid = localStorage.getItem('anvil_session_id');
+  if (!sid) return;
+  fetch('/api/curriculum/progress/' + encodeURIComponent(sid))
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(data) {
+      if (!data || !data.success || !data.progress) return;
+      var server = data.progress;
+      var changed = false;
+
+      // Merge completedDays — union of local and server
+      if (Array.isArray(server.completedDays)) {
+        server.completedDays.forEach(function(d) {
+          if (state.completed.indexOf(d) === -1) {
+            state.completed.push(d);
+            changed = true;
+          }
+        });
+      }
+
+      // Merge quizScores — keep higher score
+      if (server.quizScores && typeof server.quizScores === 'object') {
+        for (var key in server.quizScores) {
+          var serverScore = parseInt(server.quizScores[key], 10);
+          var localScore = parseInt(state.quizScores[key], 10);
+          if (!isNaN(serverScore) && (isNaN(localScore) || serverScore > localScore)) {
+            state.quizScores[key] = serverScore;
+            changed = true;
+          }
+        }
+      }
+
+      // Use server currentDay if further along
+      if (server.currentDay && server.currentDay > state.currentDay && isDayUnlocked(server.currentDay)) {
+        state.currentDay = server.currentDay;
+        changed = true;
+      }
+
+      if (changed) {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+        render();
+      }
+    })
+    .catch(function() { /* silent fail */ });
+})();
 </script>
 
 <!-- No-JS fallback: basic content visible without JavaScript -->

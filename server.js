@@ -7,12 +7,20 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const API_KEY = process.env.API_KEY || 'dev-key-change-in-production';
+
+// Production safety: require real API_KEY
+if (NODE_ENV === 'production' && API_KEY === 'dev-key-change-in-production') {
+  console.error('[FATAL] API_KEY must be set in production. Exiting.');
+  process.exit(1);
+}
 const DATA_DIR = path.join(__dirname, 'data');
 const SUBMISSIONS_FILE = path.join(DATA_DIR, 'submissions.json');
 const ANALYTICS_FILE = path.join(DATA_DIR, 'analytics.json');
 const REFERRALS_FILE = path.join(DATA_DIR, 'referrals.json');
 const TESTIMONIALS_FILE = path.join(DATA_DIR, 'testimonials.json');
 const GRADUATES_FILE = path.join(DATA_DIR, 'graduates.json');
+const PROGRESS_FILE = path.join(DATA_DIR, 'progress.json');
+const CURRICULUM_FILE = path.join(DATA_DIR, 'curriculum-progress.json');
 
 // Community links
 const COMMUNITY_DISCORD = process.env.COMMUNITY_DISCORD || '';
@@ -39,6 +47,16 @@ function readJSON(filePath) {
     return Array.isArray(data) ? data : [];
   } catch { return []; }
 }
+
+// Safe JSON reader for object-keyed files
+function readJSONObject(filePath) {
+  try {
+    const raw = fs.readFileSync(filePath, 'utf8');
+    const data = JSON.parse(raw);
+    return (typeof data === 'object' && data !== null && !Array.isArray(data)) ? data : {};
+  } catch { return {}; }
+}
+
 
 // API key auth helper
 function requireApiKey(req, res) {
@@ -130,6 +148,11 @@ if (!fs.existsSync(SUBMISSIONS_FILE)) {
 [ANALYTICS_FILE, REFERRALS_FILE, TESTIMONIALS_FILE, GRADUATES_FILE].forEach(f => {
   if (!fs.existsSync(f)) {
     fs.writeFileSync(f, '[]', 'utf8');
+  }
+});
+[PROGRESS_FILE, CURRICULUM_FILE].forEach(f => {
+  if (!fs.existsSync(f)) {
+    fs.writeFileSync(f, '{}', 'utf8');
   }
 });
 
@@ -498,6 +521,152 @@ app.post('/api/graduates', (req, res) => {
     res.json({ success: true, id: graduate.id });
   } catch (err) {
     console.error('[ERROR] Graduate registration failed:', err.message);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// --- Quiz progress persistence (server-side session) ---
+app.post('/api/quiz-progress', (req, res) => {
+  if (!rateLimit(req)) {
+    return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
+  }
+
+  try {
+    const { sessionId, currentQuestion, answers } = req.body;
+    const cleanId = sanitize(sessionId || '');
+
+    if (!cleanId || cleanId.length < 1) {
+      return res.status(400).json({ success: false, error: 'sessionId is required' });
+    }
+
+    // Validate currentQuestion is a number 0-20
+    const qNum = parseInt(currentQuestion, 10);
+    if (isNaN(qNum) || qNum < 0 || qNum > 20) {
+      return res.status(400).json({ success: false, error: 'currentQuestion must be a number between 0 and 20' });
+    }
+
+    // Validate answers is an array, max 20 elements
+    if (!Array.isArray(answers) || answers.length > 20) {
+      return res.status(400).json({ success: false, error: 'answers must be an array with max 20 elements' });
+    }
+
+    const cleanAnswers = answers.map(a => sanitize(String(a)));
+
+    const progress = readJSONObject(PROGRESS_FILE);
+    progress[cleanId] = {
+      currentQuestion: qNum,
+      answers: cleanAnswers,
+      updatedAt: new Date().toISOString()
+    };
+    queueWrite(PROGRESS_FILE, progress);
+
+    console.log('[QUIZ-PROGRESS] Saved for session ' + cleanId + ' at question ' + qNum);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('[ERROR] Quiz progress save failed:', err.message);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+app.get('/api/quiz-progress/:sessionId', (req, res) => {
+  if (!rateLimit(req)) {
+    return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
+  }
+
+  try {
+    const cleanId = sanitize(req.params.sessionId || '');
+    if (!cleanId) {
+      return res.status(400).json({ success: false, error: 'sessionId is required' });
+    }
+
+    const progress = readJSONObject(PROGRESS_FILE);
+    if (!progress[cleanId]) {
+      return res.status(404).json({ success: false, error: 'No progress found for this session' });
+    }
+
+    res.json({ success: true, progress: progress[cleanId] });
+  } catch (err) {
+    console.error('[ERROR] Quiz progress read failed:', err.message);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// --- Curriculum progress persistence (server-side session) ---
+app.post('/api/curriculum/progress', (req, res) => {
+  if (!rateLimit(req)) {
+    return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
+  }
+
+  try {
+    const { sessionId, currentDay, completedDays, quizScores } = req.body;
+    const cleanId = sanitize(sessionId || '');
+
+    if (!cleanId || cleanId.length < 1) {
+      return res.status(400).json({ success: false, error: 'sessionId is required' });
+    }
+
+    // Validate currentDay is 1-7
+    const dayNum = parseInt(currentDay, 10);
+    if (isNaN(dayNum) || dayNum < 1 || dayNum > 7) {
+      return res.status(400).json({ success: false, error: 'currentDay must be a number between 1 and 7' });
+    }
+
+    // Validate completedDays is array of numbers 1-7
+    if (!Array.isArray(completedDays)) {
+      return res.status(400).json({ success: false, error: 'completedDays must be an array' });
+    }
+    const cleanCompleted = completedDays
+      .map(d => parseInt(d, 10))
+      .filter(d => !isNaN(d) && d >= 1 && d <= 7);
+
+    // Validate quizScores is an object with numeric values
+    const cleanScores = {};
+    if (typeof quizScores === 'object' && quizScores !== null && !Array.isArray(quizScores)) {
+      for (const key in quizScores) {
+        const dayKey = parseInt(key, 10);
+        const score = parseInt(quizScores[key], 10);
+        if (!isNaN(dayKey) && dayKey >= 1 && dayKey <= 7 && !isNaN(score) && score >= 0 && score <= 5) {
+          cleanScores[dayKey] = score;
+        }
+      }
+    }
+
+    const curriculum = readJSONObject(CURRICULUM_FILE);
+    curriculum[cleanId] = {
+      currentDay: dayNum,
+      completedDays: cleanCompleted,
+      quizScores: cleanScores,
+      updatedAt: new Date().toISOString()
+    };
+    queueWrite(CURRICULUM_FILE, curriculum);
+
+    console.log('[CURRICULUM] Saved for session ' + cleanId + ' — day ' + dayNum + ', ' + cleanCompleted.length + ' completed');
+    res.json({ success: true });
+  } catch (err) {
+    console.error('[ERROR] Curriculum progress save failed:', err.message);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+app.get('/api/curriculum/progress/:sessionId', (req, res) => {
+  if (!rateLimit(req)) {
+    return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
+  }
+
+  try {
+    const cleanId = sanitize(req.params.sessionId || '');
+    if (!cleanId) {
+      return res.status(400).json({ success: false, error: 'sessionId is required' });
+    }
+
+    const curriculum = readJSONObject(CURRICULUM_FILE);
+    if (!curriculum[cleanId]) {
+      return res.status(404).json({ success: false, error: 'No curriculum progress found for this session' });
+    }
+
+    res.json({ success: true, progress: curriculum[cleanId] });
+  } catch (err) {
+    console.error('[ERROR] Curriculum progress read failed:', err.message);
     res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
