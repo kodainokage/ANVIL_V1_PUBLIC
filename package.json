@@ -1,0 +1,16 @@
+{
+  "name": "anvil",
+  "version": "1.0.0",
+  "description": "ANVIL - AI Navigation & Vocational Integration Layer",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

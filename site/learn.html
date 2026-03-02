@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANVIL - 7-Day AI Skills Sprint</title>
+<meta name="description" content="Free self-paced 7-day curriculum. Transform from displaced worker to AI-powered specialist earning $3K-8K/month.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M14 2L3 26h6l5-12 5 12h6L14 2z' fill='%23e87a2e'/%3E%3C/svg%3E">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#e87a2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ANVIL">
+<style>
+/* ── Reset & Base ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: calc(16px * var(--font-scale, 1)); }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  background: #0a0a0a; color: #e0e0e0; line-height: 1.6; overflow-x: hidden;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: inherit; border: none; }
+img { max-width: 100%; display: block; }
+
+.skip-link {
+  position: absolute; left: -9999px; top: 10px; z-index: 9999;
+  background: var(--orange); color: #000; padding: 12px 20px;
+  border-radius: 4px; font-weight: 700; font-size: 0.95rem;
+}
+.skip-link:focus { left: 10px; outline: 3px solid #fff; outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important; scroll-behavior: auto !important;
+  }
+}
+
+/* ── Colors ── */
+:root {
+  --bg: #0a0a0a; --bg-card: #141414; --bg-elevated: #1a1a1a; --border: #2a2a2a;
+  --text: #e0e0e0; --text-dim: #888; --text-muted: #666;
+  --orange: #e87a2e; --orange-light: #f09040; --amber: #f5a623;
+  --amber-glow: rgba(245, 166, 35, 0.15); --ember: #c45e1a;
+  --forge-gradient: linear-gradient(135deg, #e87a2e, #f5a623);
+  --forge-glow: 0 0 30px rgba(232, 122, 46, 0.2);
+  --radius: 12px; --radius-sm: 8px; --max-w: 1140px;
+  --font-scale: 1; --green: #48bb78; --red: #e53e3e;
+}
+
+body.high-contrast {
+  --bg: #000; --bg-card: #111; --bg-elevated: #181818; --border: #444;
+  --text: #fff; --text-dim: #ccc; --text-muted: #aaa;
+  --orange: #ffcc00; --orange-light: #ffdd33; --amber: #ffcc00;
+  --amber-glow: rgba(255, 204, 0, 0.2); --ember: #cc9900;
+  --forge-gradient: linear-gradient(135deg, #ffcc00, #ffdd33);
+}
+
+.container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+
+/* ── Navigation ── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border); transition: box-shadow 0.3s;
+}
+.nav.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.5); }
+.nav-inner {
+  max-width: var(--max-w); margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between; height: 64px;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.25rem; font-weight: 900; color: #fff; letter-spacing: 1px;
+}
+.nav-logo svg { width: 28px; height: 28px; }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a {
+  font-size: 0.875rem; font-weight: 500; color: var(--text-dim);
+  transition: color 0.2s; position: relative; padding: 4px 0;
+}
+.nav-links a:hover { color: #fff; }
+.nav-links a.active { color: var(--orange); }
+.nav-links a:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; border-radius: 2px; color: #fff; }
+.nav-cta {
+  background: var(--forge-gradient); color: #000; font-weight: 700;
+  font-size: 0.8rem; padding: 10px 20px; border-radius: 100px;
+  transition: transform 0.2s, box-shadow 0.2s; letter-spacing: 0.5px;
+  min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
+}
+.nav-cta:hover { transform: translateY(-1px); box-shadow: var(--forge-glow); }
+.nav-cta:focus-visible { outline: 3px solid #fff; outline-offset: 2px; transform: translateY(-1px); }
+
+.hamburger {
+  display: none; background: none; border: none; padding: 12px;
+  flex-direction: column; gap: 5px; cursor: pointer;
+  min-width: 44px; min-height: 44px; align-items: center; justify-content: center;
+}
+.hamburger:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; border-radius: 4px; }
+.hamburger span { display: block; width: 22px; height: 2px; background: #fff; border-radius: 2px; transition: all 0.3s; }
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.mobile-menu {
+  display: none; position: fixed; top: 64px; left: 0; right: 0; bottom: 0;
+  background: rgba(10, 10, 10, 0.97); z-index: 99; backdrop-filter: blur(8px);
+  flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 24px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  font-size: 1.25rem; font-weight: 600; color: var(--text-dim); transition: color 0.2s;
+  min-height: 44px; display: flex; align-items: center; padding: 8px 16px; border-radius: 8px;
+}
+.mobile-menu a:hover { color: #fff; background: rgba(232, 122, 46, 0.08); }
+.mobile-menu a:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; color: #fff; }
+
+@media (max-width: 768px) {
+  .nav-links, .nav-cta { display: none; }
+  .hamburger { display: flex; }
+}
+
+/* ── Layout ── */
+.learn-layout {
+  display: flex; min-height: calc(100vh - 64px); padding-top: 64px;
+}
+
+/* ── Sidebar (Desktop) ── */
+.day-sidebar {
+  width: 260px; flex-shrink: 0; background: var(--bg-card);
+  border-right: 1px solid var(--border); padding: 24px 0;
+  position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;
+}
+.sidebar-title {
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 2px; color: var(--text-muted); padding: 0 20px; margin-bottom: 16px;
+}
+.day-nav-item {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  padding: 14px 20px; background: none; color: var(--text-dim);
+  font-size: 0.9rem; font-weight: 500; text-align: left;
+  transition: all 0.2s; border-left: 3px solid transparent;
+  min-height: 52px;
+}
+.day-nav-item:hover { background: rgba(232, 122, 46, 0.04); color: var(--text); }
+.day-nav-item:focus-visible { outline: 2px solid var(--orange); outline-offset: -2px; }
+.day-nav-item.active {
+  background: rgba(232, 122, 46, 0.08); color: #fff; font-weight: 700;
+  border-left-color: var(--orange);
+}
+.day-nav-item.completed { color: var(--green); }
+.day-nav-item.locked { color: var(--text-muted); cursor: not-allowed; opacity: 0.5; }
+.day-nav-icon {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 700; border: 2px solid var(--border);
+  background: var(--bg);
+}
+.day-nav-item.active .day-nav-icon { border-color: var(--orange); background: var(--orange); color: #000; }
+.day-nav-item.completed .day-nav-icon { border-color: var(--green); background: var(--green); color: #000; }
+.day-nav-item.locked .day-nav-icon { border-color: var(--border); }
+.day-nav-label { line-height: 1.3; }
+.day-nav-sub { display: block; font-size: 0.7rem; font-weight: 400; color: var(--text-muted); margin-top: 1px; }
+.day-nav-item.active .day-nav-sub { color: var(--text-dim); }
+
+/* ── Mobile Tab Bar ── */
+.day-tabbar {
+  display: none; background: var(--bg-card); border-bottom: 1px solid var(--border);
+  padding: 12px 16px; overflow-x: auto; white-space: nowrap;
+  -webkit-overflow-scrolling: touch; position: sticky; top: 64px; z-index: 50;
+}
+.day-tabbar::-webkit-scrollbar { display: none; }
+.day-tab {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 16px; border-radius: 100px; background: var(--bg);
+  border: 1px solid var(--border); color: var(--text-dim);
+  font-size: 0.8rem; font-weight: 600; margin-right: 8px;
+  min-height: 44px; min-width: 44px; justify-content: center;
+  transition: all 0.2s; white-space: nowrap;
+}
+.day-tab:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.day-tab.active { background: var(--orange); color: #000; border-color: var(--orange); }
+.day-tab.completed { border-color: var(--green); color: var(--green); }
+.day-tab.locked { opacity: 0.4; cursor: not-allowed; }
+
+@media (max-width: 900px) {
+  .day-sidebar { display: none; }
+  .day-tabbar { display: block; }
+  .learn-layout { flex-direction: column; }
+}
+
+/* ── Content Area ── */
+.learn-content {
+  flex: 1; min-width: 0; padding: 40px 48px 80px;
+}
+@media (max-width: 900px) {
+  .learn-content { padding: 24px 20px 80px; }
+}
+
+.day-panel { display: none; }
+.day-panel.active { display: block; }
+
+/* Day Header */
+.day-header { margin-bottom: 32px; }
+.day-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 2px; color: var(--orange); margin-bottom: 12px;
+}
+.day-label::before {
+  content: ''; display: block; width: 24px; height: 2px; background: var(--forge-gradient);
+}
+.day-title {
+  font-size: clamp(1.5rem, 3.5vw, 2rem); font-weight: 800; color: #fff;
+  line-height: 1.2; margin-bottom: 8px;
+}
+.day-meta {
+  display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.85rem; color: var(--text-dim);
+}
+.day-meta-item { display: flex; align-items: center; gap: 6px; }
+
+/* Read Aloud Controls */
+.read-aloud-bar {
+  display: none; /* shown by JS if supported */
+  align-items: center; gap: 8px; margin-bottom: 24px;
+  padding: 10px 16px; background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.read-aloud-bar.supported { display: flex; }
+.read-aloud-btn {
+  min-width: 44px; min-height: 44px; border-radius: 50%;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  color: var(--text-dim); display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; font-size: 1.1rem;
+}
+.read-aloud-btn:hover { border-color: var(--orange); color: var(--orange); }
+.read-aloud-btn:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.read-aloud-btn.speaking { background: rgba(232, 122, 46, 0.1); border-color: var(--orange); color: var(--orange); }
+.read-aloud-label { font-size: 0.8rem; color: var(--text-dim); }
+.speaking-indicator {
+  display: none; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--orange); animation: pulse 1.2s infinite;
+}
+.read-aloud-bar.is-speaking .speaking-indicator { display: block; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* Objectives */
+.objectives-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; margin-bottom: 32px;
+}
+.objectives-title {
+  font-size: 0.85rem; font-weight: 700; color: var(--orange);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;
+}
+.objectives-list { list-style: none; }
+.objectives-list li {
+  padding: 6px 0; padding-left: 24px; position: relative;
+  font-size: 0.9rem; color: var(--text); line-height: 1.5;
+}
+.objectives-list li::before {
+  content: ''; position: absolute; left: 0; top: 12px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--forge-gradient);
+}
+
+/* Session Accordion */
+.session-accordion { margin-bottom: 16px; }
+.session-trigger {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 20px; background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: #fff; font-size: 0.95rem; font-weight: 600;
+  text-align: left; transition: all 0.2s; gap: 12px; min-height: 56px;
+}
+.session-trigger:hover { border-color: rgba(232, 122, 46, 0.3); }
+.session-trigger:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.session-trigger .chevron {
+  flex-shrink: 0; width: 20px; height: 20px; transition: transform 0.3s; color: var(--text-dim);
+}
+.session-accordion.open .session-trigger { border-color: var(--orange); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.session-accordion.open .session-trigger .chevron { transform: rotate(180deg); }
+.session-body {
+  max-height: 0; overflow: hidden; transition: max-height 0.4s ease;
+  background: var(--bg-card); border: 1px solid var(--border); border-top: none;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+}
+.session-accordion.open .session-body { max-height: 5000px; }
+.session-inner { padding: 20px; }
+.session-inner p { font-size: 0.9rem; color: var(--text); line-height: 1.7; margin-bottom: 12px; }
+.session-inner p:last-child { margin-bottom: 0; }
+.session-inner h4 { font-size: 0.95rem; font-weight: 700; color: #fff; margin: 16px 0 8px; }
+.session-inner ul, .session-inner ol {
+  margin: 8px 0 12px 20px; font-size: 0.9rem; color: var(--text); line-height: 1.7;
+}
+.session-inner li { margin-bottom: 4px; }
+.session-inner strong { color: #fff; }
+
+/* Prompt Block */
+.prompt-block {
+  background: var(--bg); border: 1px solid var(--border); border-left: 3px solid var(--orange);
+  border-radius: var(--radius-sm); padding: 16px; margin: 12px 0;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.82rem; color: var(--text-dim); line-height: 1.6;
+  white-space: pre-wrap; word-break: break-word;
+}
+
+/* Exercise Card */
+.exercise-card {
+  background: var(--bg); border: 1px solid var(--amber);
+  border-radius: var(--radius); padding: 20px; margin: 16px 0;
+}
+.exercise-label {
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--amber); margin-bottom: 8px;
+}
+.exercise-card p { font-size: 0.9rem; color: var(--text); line-height: 1.6; }
+.exercise-card ol, .exercise-card ul {
+  margin: 8px 0 0 20px; font-size: 0.9rem; color: var(--text); line-height: 1.7;
+}
+
+/* Table */
+.content-table {
+  width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.85rem;
+}
+.content-table th {
+  background: var(--bg-elevated); color: #fff; font-weight: 700;
+  padding: 10px 14px; text-align: left; border: 1px solid var(--border);
+}
+.content-table td {
+  padding: 10px 14px; border: 1px solid var(--border); color: var(--text);
+}
+.content-table tr:hover td { background: rgba(232, 122, 46, 0.02); }
+@media (max-width: 640px) {
+  .content-table { font-size: 0.78rem; }
+  .content-table th, .content-table td { padding: 8px 10px; }
+}
+
+/* Homework Card */
+.homework-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; margin-top: 32px;
+}
+.homework-title {
+  font-size: 0.85rem; font-weight: 700; color: var(--amber);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;
+}
+.homework-card ul { margin: 0 0 0 20px; font-size: 0.9rem; color: var(--text); line-height: 1.8; }
+
+/* ── Quiz Section ── */
+.day-quiz { margin-top: 40px; }
+.quiz-title {
+  font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.quiz-question-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px; margin-bottom: 16px;
+  transition: border-color 0.3s;
+}
+.quiz-question-card.correct { border-color: var(--green); }
+.quiz-question-card.incorrect { border-color: var(--red); }
+.qq-text { font-size: 0.95rem; font-weight: 600; color: #fff; margin-bottom: 12px; }
+.qq-options { display: flex; flex-direction: column; gap: 8px; }
+.qq-option {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); font-size: 0.88rem; color: var(--text);
+  text-align: left; transition: all 0.2s; min-height: 48px; width: 100%;
+}
+.qq-option:hover { border-color: rgba(232, 122, 46, 0.3); }
+.qq-option:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.qq-option.selected { border-color: var(--orange); background: rgba(232, 122, 46, 0.06); }
+.qq-option.correct-answer { border-color: var(--green); background: rgba(72, 187, 120, 0.08); }
+.qq-option.wrong-answer { border-color: var(--red); background: rgba(229, 62, 62, 0.08); }
+.qq-option[disabled] { pointer-events: none; }
+.qq-marker {
+  width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+  border: 2px solid var(--border); display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700; color: var(--text-muted);
+}
+.qq-option.selected .qq-marker { border-color: var(--orange); background: var(--orange); color: #000; }
+.qq-option.correct-answer .qq-marker { border-color: var(--green); background: var(--green); color: #000; }
+.qq-option.wrong-answer .qq-marker { border-color: var(--red); background: var(--red); color: #fff; }
+
+.quiz-submit-btn {
+  padding: 14px 32px; border-radius: 100px; background: var(--forge-gradient);
+  color: #000; font-size: 0.95rem; font-weight: 700; margin-top: 8px;
+  min-height: 48px; transition: all 0.2s;
+}
+.quiz-submit-btn:hover { transform: translateY(-1px); box-shadow: var(--forge-glow); }
+.quiz-submit-btn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.quiz-submit-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.quiz-result-banner {
+  display: none; padding: 20px; border-radius: var(--radius); margin-top: 16px;
+  font-size: 0.95rem; font-weight: 600; text-align: center;
+}
+.quiz-result-banner.pass {
+  display: block; background: rgba(72, 187, 120, 0.1);
+  border: 1px solid var(--green); color: var(--green);
+}
+.quiz-result-banner.fail {
+  display: block; background: rgba(229, 62, 62, 0.1);
+  border: 1px solid var(--red); color: var(--red);
+}
+.quiz-retry-btn {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 12px;
+  padding: 10px 24px; border-radius: 100px; background: transparent;
+  border: 1px solid var(--red); color: var(--red); font-size: 0.85rem; font-weight: 600;
+  transition: all 0.2s; min-height: 44px;
+}
+.quiz-retry-btn:hover { background: rgba(229, 62, 62, 0.08); }
+.quiz-retry-btn:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.quiz-hint { font-size: 0.85rem; color: var(--text-dim); margin-top: 8px; font-weight: 400; }
+
+/* ── Completion Banner ── */
+.completion-section { display: none; }
+.completion-section.active { display: block; }
+.completion-banner {
+  background: var(--bg-card); border: 1px solid var(--green);
+  border-radius: var(--radius); padding: 40px; text-align: center; margin-bottom: 32px;
+}
+.completion-icon { font-size: 3rem; margin-bottom: 16px; }
+.completion-title {
+  font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 8px;
+}
+.completion-sub { font-size: 1rem; color: var(--text-dim); margin-bottom: 24px; }
+.completion-cert-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 32px; border-radius: 100px; background: var(--forge-gradient);
+  color: #000; font-size: 1rem; font-weight: 700; min-height: 48px;
+  transition: all 0.2s;
+}
+.completion-cert-btn:hover { transform: translateY(-2px); box-shadow: var(--forge-glow); }
+.completion-cert-btn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+.community-card, .testimonial-card, .directory-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; margin-bottom: 20px;
+}
+.card-title { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 12px; }
+.card-desc { font-size: 0.9rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 16px; }
+.card-link {
+  display: inline-flex; align-items: center; gap: 6px; color: var(--orange);
+  font-size: 0.9rem; font-weight: 600; padding: 4px 0;
+}
+.card-link:hover { text-decoration: underline; }
+.card-link:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; }
+
+/* Testimonial Form */
+.form-group { margin-bottom: 14px; }
+.form-group label {
+  display: block; font-size: 0.8rem; font-weight: 600;
+  color: var(--text-dim); margin-bottom: 6px;
+}
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 14px 16px; border-radius: var(--radius-sm);
+  background: var(--bg); border: 1px solid var(--border);
+  color: #fff; font-size: 0.9rem; font-family: inherit;
+  transition: border-color 0.2s; min-height: 48px;
+}
+.form-textarea { min-height: 100px; resize: vertical; }
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: 2px solid var(--orange); outline-offset: 1px; border-color: var(--orange);
+}
+.form-input::placeholder, .form-textarea::placeholder { color: var(--text-muted); }
+.form-select { appearance: none; cursor: pointer; }
+
+/* Star Rating */
+.star-rating { display: flex; gap: 4px; margin: 8px 0; }
+.star-btn {
+  background: none; font-size: 1.5rem; color: var(--border);
+  min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center;
+  transition: color 0.2s;
+}
+.star-btn:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; border-radius: 4px; }
+.star-btn.filled { color: var(--amber); }
+.star-btn:hover { color: var(--orange-light); }
+
+.form-submit-btn {
+  padding: 14px 28px; border-radius: 100px; background: var(--forge-gradient);
+  color: #000; font-size: 0.9rem; font-weight: 700; min-height: 48px;
+  transition: all 0.2s;
+}
+.form-submit-btn:hover { transform: translateY(-1px); box-shadow: var(--forge-glow); }
+.form-submit-btn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+/* Checkbox */
+.checkbox-group {
+  display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px;
+}
+.checkbox-group input[type="checkbox"] {
+  width: 20px; height: 20px; margin-top: 2px; accent-color: var(--orange);
+  flex-shrink: 0; cursor: pointer;
+}
+.checkbox-group label { font-size: 0.9rem; color: var(--text); cursor: pointer; }
+.inline-fields { display: flex; gap: 12px; }
+.inline-fields .form-group { flex: 1; }
+@media (max-width: 480px) { .inline-fields { flex-direction: column; } }
+
+/* ── Accessibility Toolbar ── */
+.a11y-toolbar {
+  position: fixed; bottom: 24px; right: 24px; z-index: 200;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.a11y-btn {
+  width: 44px; height: 44px; border-radius: 50%; display: flex;
+  align-items: center; justify-content: center; font-weight: 700;
+  font-size: 0.8rem; background: var(--bg-card); border: 1px solid var(--border);
+  color: var(--text-dim); transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.a11y-btn:hover { border-color: var(--orange); color: var(--orange); }
+.a11y-btn:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.a11y-btn.active { background: var(--orange); color: #000; border-color: var(--orange); }
+
+/* ── Footer ── */
+.footer { padding: 48px 0 32px; border-top: 1px solid var(--border); }
+.footer-inner {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  flex-wrap: wrap; gap: 32px;
+}
+.footer-brand { max-width: 300px; }
+.footer-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.1rem; font-weight: 900; color: #fff; letter-spacing: 1px; margin-bottom: 12px;
+}
+.footer-logo svg { width: 24px; height: 24px; }
+.footer-desc { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 16px; }
+.footer-email { font-size: 0.85rem; color: var(--orange); font-weight: 500; }
+.footer-right { text-align: right; }
+.footer-portfolio { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+.footer-links {
+  display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 16px;
+}
+.footer-links a {
+  font-size: 0.85rem; color: var(--text-dim); transition: color 0.2s; padding: 4px 0;
+}
+.footer-links a:hover { color: var(--orange); }
+.footer-links a:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; color: var(--orange); }
+.footer-bottom {
+  text-align: center; padding-top: 32px; margin-top: 32px;
+  border-top: 1px solid var(--border); font-size: 0.75rem; color: var(--text-muted);
+}
+@media (max-width: 640px) {
+  .footer-inner { flex-direction: column; align-items: center; text-align: center; }
+  .footer-right { text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- Skip to content -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ── Navigation ── -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="url(#anvil-g)"/>
+        <defs><linearGradient id="anvil-g" x1="3" y1="2" x2="25" y2="26"><stop stop-color="#e87a2e"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs>
+      </svg>
+      ANVIL
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/learn.html" class="active">Learn</a></li>
+      <li><a href="/about.html">About</a></li>
+    </ul>
+    <a href="/#quiz" class="nav-cta">Take the Quiz</a>
+    <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu" role="navigation" aria-label="Mobile menu">
+  <a href="/" onclick="closeMobile()">Home</a>
+  <a href="/learn.html" onclick="closeMobile()">Learn</a>
+  <a href="/about.html" onclick="closeMobile()">About</a>
+</div>
+
+<!-- ── Main Content ── -->
+<main id="main-content">
+
+<!-- Mobile Tab Bar -->
+<div class="day-tabbar" id="dayTabbar" role="tablist" aria-label="Day navigation"></div>
+
+<div class="learn-layout">
+  <!-- Desktop Sidebar -->
+  <aside class="day-sidebar" id="daySidebar" role="navigation" aria-label="Day navigation"></aside>
+
+  <!-- Content Area -->
+  <div class="learn-content" id="learnContent"></div>
+</div>
+
+<!-- Completion Section (shown after Day 7) -->
+<div class="completion-section" id="completionSection">
+  <div class="container" style="padding-top:40px; padding-bottom:80px;">
+    <div class="completion-banner">
+      <div class="completion-icon" aria-hidden="true">&#127942;</div>
+      <h2 class="completion-title">Congratulations! You've completed the 7-Day Sprint!</h2>
+      <p class="completion-sub">You now have the skills, the tools, and the framework to build a real income as an AI-augmented specialist.</p>
+      <a href="/certificate.html" class="completion-cert-btn">Get Your Certificate &#8594;</a>
+    </div>
+
+    <div class="community-card">
+      <h3 class="card-title">Join the ANVIL Community</h3>
+      <p class="card-desc">Connect with fellow graduates, share wins, ask questions, and find accountability partners.</p>
+      <a href="#" class="card-link" aria-label="Join ANVIL Discord community">Join our Discord &#8594;</a>
+      <span style="margin: 0 12px; color: var(--text-muted);">or</span>
+      <a href="#" class="card-link" aria-label="Join ANVIL Signal group">Join our Signal group &#8594;</a>
+    </div>
+
+    <div class="testimonial-card">
+      <h3 class="card-title">Share Your Experience</h3>
+      <p class="card-desc">Your story helps the next person who is right where you were 7 days ago.</p>
+      <form id="testimonialForm" novalidate>
+        <div class="form-group">
+          <label for="testName">Your Name</label>
+          <input type="text" id="testName" class="form-input" placeholder="First name or full name" required>
+        </div>
+        <div class="form-group">
+          <label for="testText">Your Testimonial</label>
+          <textarea id="testText" class="form-textarea" placeholder="What was your experience with the 7-Day Sprint?" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="testNiche">Your Niche</label>
+          <select id="testNiche" class="form-select form-input">
+            <option value="">Select your niche</option>
+            <option value="benefits">Benefits Navigation</option>
+            <option value="medical">Medical Bill Auditing</option>
+            <option value="insurance">Insurance Appeal Specialist</option>
+            <option value="senior">Senior Services Coordinator</option>
+            <option value="compliance">Small Business Compliance</option>
+            <option value="tenant">Tenant Rights Advocate</option>
+            <option value="disability">Disability Benefits Navigator</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Rating</label>
+          <div class="star-rating" id="starRating" role="radiogroup" aria-label="Rating">
+            <button type="button" class="star-btn" data-star="1" aria-label="1 star">&#9733;</button>
+            <button type="button" class="star-btn" data-star="2" aria-label="2 stars">&#9733;</button>
+            <button type="button" class="star-btn" data-star="3" aria-label="3 stars">&#9733;</button>
+            <button type="button" class="star-btn" data-star="4" aria-label="4 stars">&#9733;</button>
+            <button type="button" class="star-btn" data-star="5" aria-label="5 stars">&#9733;</button>
+          </div>
+        </div>
+        <button type="submit" class="form-submit-btn">Submit Testimonial</button>
+      </form>
+    </div>
+
+    <div class="directory-card">
+      <h3 class="card-title">Graduate Directory</h3>
+      <p class="card-desc">Opt in to be listed in the ANVIL graduate directory so potential clients and partners can find you.</p>
+      <form id="directoryForm" novalidate>
+        <div class="checkbox-group">
+          <input type="checkbox" id="dirOptIn" name="optIn">
+          <label for="dirOptIn">List me in the ANVIL graduate directory</label>
+        </div>
+        <div class="inline-fields">
+          <div class="form-group">
+            <label for="dirCity">City <span style="font-weight:400;color:var(--text-muted)">(optional)</span></label>
+            <input type="text" id="dirCity" class="form-input" placeholder="Your city">
+          </div>
+          <div class="form-group">
+            <label for="dirState">State <span style="font-weight:400;color:var(--text-muted)">(optional)</span></label>
+            <input type="text" id="dirState" class="form-input" placeholder="Your state">
+          </div>
+        </div>
+        <button type="submit" class="form-submit-btn" style="margin-top:8px;">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- ── Footer ── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <svg viewBox="0 0 28 28" fill="none"><path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="url(#anvil-g2)"/><defs><linearGradient id="anvil-g2" x1="3" y1="2" x2="25" y2="26"><stop stop-color="#e87a2e"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs></svg>
+          ANVIL
+        </div>
+        <p class="footer-desc">AI Navigation &amp; Vocational Integration Layer. Turning displacement into reinvention.</p>
+        <a href="mailto:hello@getanvil.co" class="footer-email">hello@getanvil.co</a>
+      </div>
+      <div class="footer-right">
+        
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-links">
+        <a href="/about.html">About</a>
+        <a href="/terms.html">Terms of Service</a>
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/disclaimer.html">Disclaimer</a>
+        <a href="/accessibility.html">Accessibility</a>
+      </div>
+      <div>&copy; 2026 ANVIL. All rights reserved.</div>
+    </div>
+  </div>
+</footer>
+
+<!-- ── Accessibility Toolbar ── -->
+<div class="a11y-toolbar" role="toolbar" aria-label="Accessibility controls">
+  <button class="a11y-btn" id="fontSizeBtn" aria-label="Increase font size" title="Font size">A</button>
+  <button class="a11y-btn" id="contrastBtn" aria-label="Toggle high contrast" title="High contrast">HC</button>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   ANVIL 7-Day Sprint — Learn Page
+   Self-contained, no external dependencies
+   ═══════════════════════════════════════════════ */
+
+/* ── Navigation ── */
+var nav = document.getElementById('nav');
+var hamburger = document.getElementById('hamburger');
+var mobileMenu = document.getElementById('mobileMenu');
+
+window.addEventListener('scroll', function() {
+  nav.classList.toggle('scrolled', window.scrollY > 20);
+});
+hamburger.addEventListener('click', function() {
+  var isOpen = hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+  hamburger.setAttribute('aria-expanded', isOpen);
+  document.body.style.overflow = isOpen ? 'hidden' : '';
+});
+function closeMobile() {
+  hamburger.classList.remove('open');
+  mobileMenu.classList.remove('open');
+  hamburger.setAttribute('aria-expanded', 'false');
+  document.body.style.overflow = '';
+}
+
+/* ── Curriculum Data ── */
+var DAYS = [
+  {
+    day: 1, title: '"AI Is Your New Co-Worker"', duration: '2.5 hours',
+    objectives: [
+      'Understand what AI can and cannot do (with specific examples)',
+      'Set up your free AI toolkit with accounts on 3+ platforms',
+      'Complete your first AI-assisted research task',
+      'Identify which of the 7 niches resonates with your background'
+    ],
+    sessions: [
+      {
+        id: '1A', title: 'What AI Can and Can\'t Do', time: '30 min',
+        html: '<h4>AI CAN:</h4><ul><li>Research government programs and eligibility criteria faster than any human</li><li>Analyze medical bills line by line for errors, duplicates, and overcharges</li><li>Draft appeal letters, applications, and dispute documents</li><li>Summarize complex regulations into plain language</li><li>Compare costs, programs, and options across states</li><li>Find information buried in government websites</li><li>Generate checklists, templates, and structured workflows</li></ul><h4>AI CANNOT:</h4><ul><li>Give legal advice (and you should never present your work as legal advice)</li><li>Give medical advice or diagnose conditions</li><li>Make financial investment recommendations</li><li>Access private databases, medical records, or government systems directly</li><li>Replace the human relationship &mdash; empathy, trust, hand-holding</li><li>Guarantee accuracy &mdash; you MUST verify everything AI produces</li></ul><h4>AI SOMETIMES GETS WRONG:</h4><ul><li>Specific dollar amounts for benefits (change annually, vary by state)</li><li>Whether a specific program is currently accepting applications</li><li>Exact eligibility thresholds (always verify against the official source)</li><li>Links and URLs (AI frequently generates plausible but broken links)</li><li>Legal citations and regulation numbers</li></ul><div class="exercise-card"><div class="exercise-label">The Golden Rule</div><p><strong>AI is your research assistant, not your authority.</strong> Every output must be verified against an official source before you share it with a client. Your value is the verification, the human explanation, and the handholding.</p></div>'
+      },
+      {
+        id: '1B', title: 'Setting Up Your Free Toolkit', time: '30 min',
+        html: '<p>Create free accounts on all four platforms. You will use different ones for different tasks.</p><h4>1. ChatGPT (chat.openai.com)</h4><p>Best for: Conversational research, brainstorming, drafting letters. Free tier: GPT-4o mini, sufficient for all ANVIL work.</p><h4>2. Claude (claude.ai)</h4><p>Best for: Detailed analysis, long documents, nuanced reasoning. Free tier: Generous daily limit, excellent for bill auditing.</p><h4>3. Gemini (gemini.google.com)</h4><p>Best for: Web-connected research, current information, fact-checking. Free tier: Connected to Google search.</p><h4>4. Perplexity (perplexity.ai)</h4><p>Best for: Sourced research with citations, finding official links. Free tier: 5 Pro searches/day, unlimited basic searches.</p><p><strong>Why multiple tools?</strong> Each AI has different strengths. When two AIs agree on something, you can be more confident it\'s correct. When they disagree, you know to dig deeper.</p><div class="exercise-card"><div class="exercise-label">Exercise (15 min)</div><ol><li>Create accounts on all four platforms</li><li>In each one, type: "What is LIHEAP and who qualifies?"</li><li>Compare the four answers &mdash; note where they agree and differ</li><li>This is your verification workflow: always cross-check</li></ol></div>'
+      },
+      {
+        id: '1C', title: 'Your First AI Conversation', time: '30 min',
+        html: '<p>Pick any one of the 7 niches &mdash; whichever interests you most. You will officially choose on Day 2; this is exploratory.</p><div class="prompt-block">I\'m researching [NICHE NAME] as a potential service I could offer to people in my community. I have no professional background in this area. Please help me understand:\n\n1. What specific problems do people face in this area?\n2. What services could a non-licensed person provide (vs what requires a licensed professional)?\n3. What are the most common tasks/deliverables in this type of service?\n4. What do people typically pay for this kind of help?\n5. Where do people currently go when they need this help?\n6. What free tools and resources exist that would help me deliver this service?\n7. What are the ethical and legal boundaries I must respect?\n\nBe specific and practical. I need to understand this well enough to start helping people within a week.</div><p>Run this prompt on ChatGPT AND Claude. Read both responses carefully.</p><div class="exercise-card"><div class="exercise-label">Exercise (30 min)</div><p>Based on the AI responses, write a 1-paragraph summary answering: <strong>"Who needs this service, what exactly would I do for them, and why would they pay me instead of doing it themselves?"</strong></p><p>This paragraph is the seed of your elevator pitch. Save it.</p></div>'
+      },
+      {
+        id: '1D', title: 'Niche Exploration', time: '45 min',
+        html: '<p><strong>Read your niche playbook.</strong> Each niche has a detailed playbook covering market size, specific AI prompts, client intake scripts, pricing models, ethical boundaries, and sample deliverables.</p><p><strong>Skim all 7 playbook summaries</strong> (15 min), then <strong>deep-read the one that interests you most</strong> (30 min).</p><h4>Choosing criteria &mdash; the right niche for you has:</h4><ol><li><strong>Demand in your area</strong> &mdash; are there people near you who need this?</li><li><strong>Personal connection</strong> &mdash; have you or someone you know dealt with this?</li><li><strong>Emotional motivation</strong> &mdash; does helping these people genuinely matter to you?</li><li><strong>Practical fit</strong> &mdash; can you access the client base through channels you already use?</li></ol>'
+      }
+    ],
+    homework: [
+      'Finish reading your chosen niche playbook (or your top 2 if undecided)',
+      'Write down 3 people you know who have struggled with the problem your niche solves',
+      'Test one more AI prompt from the playbook and save the results'
+    ]
+  },
+  {
+    day: 2, title: '"Your Niche Deep Dive"', duration: '2.5 hours',
+    objectives: [
+      'Officially select your niche and commit to it for the sprint',
+      'Understand your target client: who they are, where they are, what they need',
+      'Learn the service delivery model from intake to delivery',
+      'Complete a role-play client intake exercise'
+    ],
+    sessions: [
+      {
+        id: '2A', title: 'Choosing Your Niche', time: '30 min',
+        html: '<p><strong>Decision time.</strong> You cannot optimize for all 7 niches. Pick one. You can always add a second niche later, but for this sprint, you are going all-in on one.</p><h4>Decision matrix &mdash; score each niche 1-5 on:</h4><table class="content-table"><thead><tr><th>Factor</th><th>Why It Matters</th></tr></thead><tbody><tr><td>Local demand</td><td>Are there enough potential clients within 30 miles of you?</td></tr><tr><td>Personal experience</td><td>Have you or someone close dealt with this problem?</td></tr><tr><td>Emotional fuel</td><td>Will you still care about this work on a bad Tuesday?</td></tr><tr><td>Access to clients</td><td>Can you reach these people through channels you already use?</td></tr><tr><td>Comfort with subject</td><td>Do you find this topic interesting (or at least tolerable)?</td></tr></tbody></table><p>The niche with the highest total score is your niche. Write it down. Commit.</p>'
+      },
+      {
+        id: '2B', title: 'Know Your Client', time: '45 min',
+        html: '<div class="prompt-block">I\'m starting a [NICHE] service in [CITY/STATE]. Help me build a detailed client profile:\n\n1. Demographics: Who typically needs this service?\n2. Triggers: What events cause someone to need this service?\n3. Pain points: What are they feeling? What\'s keeping them up at night?\n4. Current alternatives: Where do they go now? What\'s wrong with those alternatives?\n5. Decision factors: What would make them trust a new service provider?\n6. Willingness to pay: What\'s the typical budget?\n7. Where they gather: Online and offline &mdash; where do these people spend time?\n\nBe specific to [CITY/STATE]. Use real data where possible.</div><div class="exercise-card"><div class="exercise-label">Write Your Client Avatar</div><p>One paragraph describing your ideal first client. Give them a name, age, and situation. Example:</p><p><em>"Maria, 58, was laid off from her administrative assistant job after 22 years. She\'s on COBRA but it\'s $680/month. She doesn\'t know she qualifies for Medicaid. She\'s overwhelmed by government websites and found me through her church bulletin board."</em></p><p>This avatar will guide every decision about messaging, pricing, and service delivery.</p></div>'
+      },
+      {
+        id: '2C', title: 'The Service Delivery Model', time: '45 min',
+        html: '<p>Every ANVIL niche follows the same four-step delivery model:</p><h4>Step 1: INTAKE (15-30 min with client)</h4><ul><li>Collect basic information: location, household size, income, situation</li><li>Understand what they need and what they\'ve already tried</li><li>Set expectations: what you will and will not do</li><li>Get written consent to proceed</li></ul><h4>Step 2: AI-ASSISTED ANALYSIS (30-90 min)</h4><ul><li>Run your niche-specific AI prompts with the client\'s information</li><li>Cross-check AI outputs against official sources</li><li>Build your deliverable: a clear, organized document</li></ul><h4>Step 3: HUMAN REVIEW (15-30 min)</h4><ul><li>Verify every claim, link, dollar amount, and eligibility threshold</li><li>Check all links actually work</li><li>Remove anything you\'re not confident about</li><li>Add your own notes, explanations, and recommendations</li></ul><h4>Step 4: CLIENT DELIVERY (30-45 min with client)</h4><ul><li>Walk the client through findings in plain language</li><li>Answer their questions</li><li>Help them understand next steps</li><li>Provide written deliverable (PDF or printed)</li><li>Offer follow-up support</li></ul><h4>Time investment per case:</h4><ul><li>Simple case (benefits check): 1.5-2 hours total</li><li>Medium case (bill audit): 2-3 hours total</li><li>Complex case (disability application): 3-5 hours total</li></ul>'
+      },
+      {
+        id: '2D', title: 'Client Intake Role-Play', time: '30 min',
+        html: '<p>Practice the intake conversation with a partner. If nobody is available, use Claude or ChatGPT as your practice client.</p><div class="prompt-block">You are going to role-play as a potential client for my [NICHE] service.\n\nYour character: [DESCRIPTION]\n\nI\'m going to practice my intake conversation with you. Respond as this character would &mdash; confused about government programs, slightly embarrassed to be asking for help, and skeptical that anyone can actually help. Ask realistic questions. Push back a little. Be human.\n\nLet me start the conversation.</div><div class="exercise-card"><div class="exercise-label">Exercise</div><p>Practice the full intake: introduction, information gathering, expectation setting, and consent. <strong>Time yourself &mdash; aim for 20 minutes.</strong></p></div>'
+      }
+    ],
+    homework: [
+      'Practice the intake conversation with one more person',
+      'Write down 5 questions your practice client asked that you didn\'t know the answer to &mdash; research those answers',
+      'Read the Day 3 prompt library section of your niche playbook'
+    ]
+  },
+  {
+    day: 3, title: '"The AI Workflow"', duration: '3 hours',
+    objectives: [
+      'Master the core AI prompts for your specific niche',
+      'Understand prompt engineering principles that make every prompt better',
+      'Build your personal prompt library (your most valuable asset)',
+      'Run 3 complete practice cases through your full workflow'
+    ],
+    sessions: [
+      {
+        id: '3A', title: 'Prompt Engineering Fundamentals', time: '30 min',
+        html: '<p>The quality of your AI output is directly proportional to the quality of your prompts.</p><h4>Principle 1: Assign a Role</h4><p>Bad: "Look at this medical bill."</p><p>Good: <em>"You are a medical billing analyst with 20 years of experience reviewing hospital bills for errors."</em></p><h4>Principle 2: Provide Context</h4><p>Bad: "Find benefits for this person."</p><p>Good: <em>"I\'m helping a 45-year-old single mother of two in Florida, recently laid off. Household income dropped from $52,000/year to $14,000/year..."</em></p><h4>Principle 3: Be Specific About What You Want</h4><p>Bad: "What benefits can they get?"</p><p>Good: <em>"List every federal, state, and Florida-specific benefit program this person may be eligible for. For each, include: program name, estimated monthly benefit, eligibility requirements, application URL, and deadlines."</em></p><h4>Principle 4: Specify the Output Format</h4><p>Bad: "Give me the results."</p><p>Good: <em>"Present your findings as a table with columns: Program Name | Estimated Monthly Benefit | Key Eligibility Requirement | How to Apply | Application Deadline. Sort by benefit amount, highest first."</em></p><h4>Principle 5: Iterate and Refine</h4><p>Your first prompt rarely gives the best output. Follow up with refinement questions to drill deeper.</p>'
+      },
+      {
+        id: '3B', title: 'Your Niche Prompt Library', time: '45 min',
+        html: '<p>Each niche has 8-12 core prompts. Today you will:</p><ol><li><strong>Copy all core prompts</strong> into your personal Google Doc / Notion page</li><li><strong>Run each prompt</strong> with sample data</li><li><strong>Customize each prompt</strong> based on your results</li><li><strong>Add verification checkpoints</strong> &mdash; note what to manually verify after each prompt</li></ol><div class="exercise-card"><div class="exercise-label">Your Prompt Library Is Your Business</div><p>Treat it like a chef treats recipes. You will refine these prompts every time you run a case. The better your prompts, the faster and more accurate your work, and the more you earn per hour.</p></div><h4>Sample prompt library structure:</h4><div class="prompt-block">PROMPT 1: Initial Eligibility Scan\nPROMPT 2: State-Specific Program Deep Dive\nPROMPT 3: Income Threshold Verification\nPROMPT 4: Application Checklist Generator\nPROMPT 5: Client-Facing Summary (Plain Language)\nPROMPT 6: Appeal Letter Draft\nPROMPT 7: Follow-Up Action Plan\nPROMPT 8: Case Documentation</div>'
+      },
+      {
+        id: '3C', title: 'Practice Cases', time: '90 min',
+        html: '<p><strong>Run 3 complete practice cases through your full workflow.</strong></p><h4>Practice Case 1 (Simple &mdash; 20 min)</h4><p>A straightforward case with clear eligibility. Focus on speed and accuracy.</p><h4>Practice Case 2 (Medium &mdash; 30 min)</h4><p>A case with complications &mdash; multiple programs, edge-case eligibility questions, one program the AI might miss.</p><h4>Practice Case 3 (Complex &mdash; 40 min)</h4><p>A messy case with conflicting information, unclear eligibility, and a client needing extra hand-holding. Focus on communicating uncertainty.</p><div class="exercise-card"><div class="exercise-label">After Each Case, Self-Evaluate</div><ul><li>Did the AI miss anything? What did you catch in verification?</li><li>How long did it take? Where could you be faster?</li><li>Is the deliverable clear enough for a non-expert to act on?</li><li>What would you change about your prompts?</li></ul></div>'
+      }
+    ],
+    homework: [
+      'Refine your prompts based on what you learned from the 3 practice cases',
+      'Run one additional practice case using improved prompts &mdash; aim for 20% faster',
+      'Save your updated prompt library in a place you can access from any device'
+    ]
+  },
+  {
+    day: 4, title: '"Quality & Ethics"', duration: '2.5 hours',
+    objectives: [
+      'Understand the legal and ethical boundaries of your niche',
+      'Distinguish between what you CAN do and what requires a licensed professional',
+      'Build your quality assurance checklist',
+      'Understand data privacy obligations and client confidentiality'
+    ],
+    sessions: [
+      {
+        id: '4A', title: 'What You CAN and CANNOT Do', time: '45 min',
+        html: '<p><strong>This is the most important session of the entire sprint.</strong></p><h4>YOU CAN (across all niches):</h4><ul><li>Research programs, eligibility criteria, and application processes</li><li>Help clients understand their options in plain language</li><li>Assist with paperwork and application completion</li><li>Draft letters, appeals, and communications (for client review)</li><li>Organize and present information in a clear format</li><li>Refer clients to appropriate licensed professionals</li><li>Charge for your time, research, and document preparation</li></ul><h4>YOU CANNOT (across all niches):</h4><ul><li>Provide legal advice or represent yourself as an attorney</li><li>Provide medical advice or diagnose conditions</li><li>Provide financial advice or recommend investments</li><li>Guarantee outcomes &mdash; never say "You WILL get approved"</li><li>Sign documents on behalf of a client</li><li>Access client accounts or systems with their credentials</li><li>Make decisions for a client &mdash; present options, they decide</li></ul><h4>The Language That Protects You:</h4><ul><li>Say: "Based on my research, you appear to be eligible for..."</li><li>Don\'t say: "You qualify for..."</li><li>Say: "This letter template is for your review."</li><li>Don\'t say: "Sign this and send it."</li><li>Say: "I recommend consulting with a [lawyer/doctor]."</li><li>Don\'t say: "You don\'t need a lawyer for this."</li></ul>'
+      },
+      {
+        id: '4B', title: 'Quality Assurance Checklist', time: '30 min',
+        html: '<p>Every deliverable must pass this checklist before it reaches a client.</p><div class="exercise-card"><div class="exercise-label">The ANVIL Quality Checklist (13 Items)</div><ol><li>All dollar amounts verified against official 2026 sources</li><li>All eligibility thresholds confirmed for client\'s state and county</li><li>All links tested and working (clicked, not just read)</li><li>All program names are current</li><li>No AI hallucinations present (fabricated programs, wrong agencies, fake URLs)</li><li>Language is plain and clear &mdash; a high schooler could understand it</li><li>Appropriate disclaimers included (not legal/medical/financial advice)</li><li>No guaranteed outcomes promised anywhere</li><li>Client\'s personal information handled appropriately</li><li>Next steps are specific and actionable</li><li>Your contact information included for follow-up</li><li>Document formatted cleanly (no raw AI output)</li><li>Anything you are uncertain about is flagged for the client</li></ol></div><p><strong>Print this checklist. Tape it next to your screen. Use it every single time.</strong></p>'
+      },
+      {
+        id: '4C', title: 'Data Privacy and Client Confidentiality', time: '30 min',
+        html: '<p>You will handle sensitive personal information. Treat it like a doctor treats medical records.</p><h4>Rules:</h4><ol><li><strong>Never paste real client data into AI tools without consent.</strong> Explain to clients that you use AI research tools and get written permission.</li><li><strong>Anonymize when possible.</strong> Use "Client, age 58, income $24,000" instead of real names and SSNs.</li><li><strong>Secure your files.</strong> Client documents in a password-protected folder. Not in your regular downloads.</li><li><strong>Delete when done.</strong> After a case is closed, retain only what you need. Delete AI chat histories with client data.</li><li><strong>Never share client information</strong> without explicit consent &mdash; including in cohort discussions or social media.</li><li><strong>Clear your AI chat history</strong> after each client session.</li></ol>'
+      },
+      {
+        id: '4D', title: 'Ethical Scenario Exercise', time: '30 min',
+        html: '<p><strong>Work through these 5 scenarios:</strong></p><h4>Scenario 1</h4><p>A client asks you to help them apply for disability benefits. Their symptoms don\'t match eligibility criteria. The client says, "Just write it so I\'ll get approved."</p><h4>Scenario 2</h4><p>You\'re auditing a medical bill and find what appears to be a significant error &mdash; but you\'re not 100% sure. The client wants to call the hospital immediately.</p><h4>Scenario 3</h4><p>A client shares their SSN, bank account, and Medicare credentials, saying "just do whatever you need to do."</p><h4>Scenario 4</h4><p>A client you helped posts on Facebook calling you a "benefits lawyer." You see the post.</p><h4>Scenario 5</h4><p>A friend asks you to "just quickly look up" whether their elderly mother qualifies for a program. No intake, no consent, no formal engagement.</p><div class="exercise-card"><div class="exercise-label">Key Themes</div><p>Don\'t guarantee outcomes. Don\'t practice outside your scope. Always get consent. Always be transparent.</p></div>'
+      },
+      {
+        id: '4E', title: 'Draft Your Service Agreement', time: '15 min',
+        html: '<p>Customize your service agreement. This goes to every client before you start work.</p><h4>Must include:</h4><ul><li>Your name and contact information</li><li>Description of services you provide</li><li>Clear statement of what you are NOT</li><li>Scope of work for this engagement</li><li>Fee structure and payment terms</li><li>Data handling and privacy commitment</li><li>Client\'s right to terminate at any time</li><li>Your disclaimer and limitation of liability</li></ul><p><strong>Do not skip this step.</strong> A clear service agreement protects you and builds client trust.</p>'
+      }
+    ],
+    homework: [
+      'Finalize your service agreement &mdash; have someone read it for clarity',
+      'Write your one-paragraph "scope of services" description',
+      'Review the 5 ethical scenarios and make sure you could explain your reasoning'
+    ]
+  },
+  {
+    day: 5, title: '"Finding Clients"', duration: '2.5 hours',
+    objectives: [
+      'Identify the 3-5 channels where your specific clients are reachable for free',
+      'Write platform-specific posts that attract clients without being salesy',
+      'Understand the referral partnership model',
+      'Post at least one client-attracting message on a live platform'
+    ],
+    sessions: [
+      {
+        id: '5A', title: 'Where Your Clients Actually Are', time: '30 min',
+        html: '<p><strong>Your clients are NOT on LinkedIn.</strong> They are not reading your blog.</p><table class="content-table"><thead><tr><th>Channel</th><th>Why It Works</th><th>Best For</th></tr></thead><tbody><tr><td>Local Facebook groups</td><td>People ask for help here every day</td><td>Benefits, bills, tenant rights</td></tr><tr><td>Nextdoor</td><td>Hyperlocal, high trust</td><td>All niches, especially senior services</td></tr><tr><td>Church bulletin boards</td><td>Trusted community hub</td><td>Benefits, senior services, disability</td></tr><tr><td>Community center boards</td><td>Libraries, YMCAs &mdash; free to post</td><td>All niches</td></tr><tr><td>Nonprofit referrals</td><td>They already have the clients</td><td>Benefits, disability, tenant rights</td></tr><tr><td>Doctor\'s office referrals</td><td>Patients get bills right there</td><td>Medical billing, insurance appeals</td></tr><tr><td>Senior centers</td><td>Concentrated target audience</td><td>Senior services, benefits</td></tr></tbody></table><div class="exercise-card"><div class="exercise-label">Exercise</div><p>Based on your niche and client avatar, <strong>rank the top 5 channels</strong> for YOUR situation. Where does your avatar actually spend time?</p></div>'
+      },
+      {
+        id: '5B', title: 'Writing Posts That Attract (Not Repel)', time: '45 min',
+        html: '<h4>The Formula:</h4><ol><li>Lead with the PROBLEM (not your service)</li><li>Offer something FREE</li><li>Be specific about what you\'ll do</li><li>Remove all risk ("no strings attached")</li><li>Make it easy to respond ("DM me")</li></ol><h4>Bad example:</h4><p><em>"Hi! I\'m a certified AI-powered benefits navigation specialist offering comprehensive eligibility assessments. Visit my website..."</em></p><h4>Good example:</h4><p><em>"Hey neighbors &mdash; did you know there are government programs that help with heating bills, internet costs, and prescription drugs that most people don\'t know about? I\'m offering free eligibility checks for anyone in [AREA]. No cost, no strings. DM me if you want me to check for you."</em></p><div class="exercise-card"><div class="exercise-label">Exercise</div><p>Write 3 posts customized for your niche and location:</p><ol><li>A Facebook group post for your local community</li><li>A Nextdoor post for your neighborhood</li><li>A third post for your top-ranked channel</li></ol></div>'
+      },
+      {
+        id: '5C', title: 'The Referral Partnership Model', time: '30 min',
+        html: '<p>The most sustainable client source is referral partnerships with organizations that already serve your target clients.</p><table class="content-table"><thead><tr><th>Niche</th><th>Partner With</th></tr></thead><tbody><tr><td>Benefits Navigation</td><td>Churches, food banks, nonprofits, community action agencies</td></tr><tr><td>Medical Bill Auditing</td><td>Patient advocacy groups, doctor\'s offices, hospital social workers</td></tr><tr><td>Insurance Appeals</td><td>Doctor\'s offices, clinics, patient advocacy organizations</td></tr><tr><td>Senior Services</td><td>Senior centers, Area Agency on Aging, churches</td></tr><tr><td>Small Business Compliance</td><td>Chamber of Commerce, SBDCs, coworking spaces</td></tr><tr><td>Tenant Rights</td><td>Legal aid societies, community housing orgs</td></tr><tr><td>Disability Benefits</td><td>Support groups, rehab centers, social workers</td></tr></tbody></table><div class="exercise-card"><div class="exercise-label">Exercise</div><p>Identify <strong>3 specific organizations in your area</strong> that could be referral partners. Find the contact name. Draft a short email or plan a walk-in introduction.</p></div>'
+      },
+      {
+        id: '5D', title: 'The "Free First Case" Strategy', time: '30 min',
+        html: '<p>Your first 3 clients should be free. This is not charity &mdash; this is your investment.</p><h4>Why free works:</h4><ul><li>Removes all risk for the client</li><li>Gives you real-world practice without pressure</li><li>Generates testimonials and word-of-mouth referrals</li><li>Builds your case portfolio</li><li>Free clients almost always refer you to paying clients</li></ul><h4>The script:</h4><div class="prompt-block">"I\'m a [NICHE TITLE] and I\'m looking for a few people to work with this week at no charge as I build my practice. I\'ll do a complete [DELIVERABLE] for you &mdash; same quality I\'ll charge for later &mdash; and all I ask in return is an honest testimonial if you\'re happy with the work. Interested?"</div><p><strong>Transition to paid:</strong> After your 3 free cases, offer 50% discount for the next 5 clients. Then full price with confidence.</p>'
+      },
+      {
+        id: '5E', title: 'Post and Track', time: '15 min',
+        html: '<p><strong>Do this now. Not later. Now.</strong></p><p>Post at least ONE of the 3 messages you wrote on a live platform. Then:</p><ol><li>Screenshot the post</li><li>Note the time you posted</li><li>Set a reminder to check for responses in 4 hours and 24 hours</li><li>Share your post in the cohort chat for accountability</li></ol><table class="content-table"><thead><tr><th>Date</th><th>Platform</th><th>Post Type</th><th>Responses</th><th>Leads</th><th>Clients</th></tr></thead><tbody><tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Start tracking here...</td></tr></tbody></table>'
+      }
+    ],
+    homework: [
+      'Monitor your posted message for responses &mdash; reply within 2 hours',
+      'Send your first partnership outreach email',
+      'Identify 2 more platforms/groups where you can post tomorrow',
+      'If someone responded &mdash; schedule your first free case for Day 6 or 7'
+    ]
+  },
+  {
+    day: 6, title: '"Delivering Value"', duration: '3 hours',
+    objectives: [
+      'Complete a full practice case from intake to deliverable with timed peer review',
+      'Master client communication: setting expectations, delivering results',
+      'Establish your pricing with confidence',
+      'Begin building your case portfolio'
+    ],
+    sessions: [
+      {
+        id: '6A', title: 'Full Practice Case &mdash; Timed', time: '75 min',
+        html: '<p>Today you run a complete case as if it were a real client. You will be timed.</p><table class="content-table"><thead><tr><th>Step</th><th>Target Time</th><th>What You Do</th></tr></thead><tbody><tr><td>Intake review</td><td>10 min</td><td>Read case file, note key details</td></tr><tr><td>AI analysis</td><td>30 min</td><td>Run full prompt library, gather outputs</td></tr><tr><td>Verification</td><td>15 min</td><td>Cross-check key data against official sources</td></tr><tr><td>Deliverable creation</td><td>15 min</td><td>Organize findings into client document</td></tr><tr><td>Quality checklist</td><td>5 min</td><td>Run through every QA item</td></tr></tbody></table><p><strong>Total target: 75 minutes.</strong> If you finish faster, that\'s more earnings per hour.</p>'
+      },
+      {
+        id: '6B', title: 'Peer Review', time: '30 min',
+        html: '<p>Swap your deliverable with a cohort peer. If no peer is available, use the AI peer review prompt.</p><h4>Peer review checklist:</h4><ul><li>Is the document clear enough for a non-expert?</li><li>Are next steps specific?</li><li>Are there unverified or potentially inaccurate claims?</li><li>Does it make any promises or guarantees?</li><li>Is formatting professional and consistent?</li><li>Would you feel confident if a client showed this to a lawyer?</li></ul><div class="prompt-block">You are a quality assurance reviewer for a [NICHE] service. Review this deliverable critically for:\n\n1. Clarity: Could a non-expert understand and act on this?\n2. Accuracy concerns: Any unverified or incorrect claims?\n3. Professionalism: Is the formatting clean?\n4. Scope: Does anything cross into legal/medical/financial advice?\n5. Actionability: Are next steps specific enough?\n6. Missing items: Anything obvious that should be included?\n\nBe harsh. I\'d rather fix problems now than have a client find them.</div>'
+      },
+      {
+        id: '6C', title: 'Client Communication Scripts', time: '30 min',
+        html: '<h4>The Expectation-Setting Call:</h4><div class="prompt-block">"Hi [CLIENT NAME], here\'s how this works: I\'m going to research your situation and put together a clear document showing [DELIVERABLE]. This usually takes [TIME ESTIMATE]. Important: I\'m a trained [NICHE] specialist, but I\'m not a lawyer. I research and organize information to help you make informed decisions. I\'ll have your results ready by [DATE]. Any questions?"</div><h4>The Delivery Call:</h4><div class="prompt-block">"Hi [CLIENT NAME], I\'ve completed your [DELIVERABLE]. Let me walk you through what I found. [Walk through document.] The most important takeaway is [KEY FINDING]. Your next step is [SPECIFIC ACTION]. I\'ll email you everything right after this call. Any questions?"</div><h4>The Follow-Up (3-5 days later):</h4><div class="prompt-block">"Hi [CLIENT NAME], just checking in &mdash; were you able to [NEXT STEP]? If you ran into any issues, I\'m here to help. Also, if you know anyone who could use this kind of help, I\'d appreciate a referral. Thanks again."</div><p><strong>Practice each script out loud.</strong> Not in your head &mdash; out loud.</p>'
+      },
+      {
+        id: '6D', title: 'Pricing Your Services', time: '30 min',
+        html: '<p><strong>Do not underprice yourself.</strong></p><table class="content-table"><thead><tr><th>Niche</th><th>Starting Price</th><th>After 10 Clients</th></tr></thead><tbody><tr><td>Benefits Navigation</td><td>$65-85 per case</td><td>$85-125 per case</td></tr><tr><td>Medical Bill Auditing</td><td>25% of savings (min $75)</td><td>30% of savings (min $100)</td></tr><tr><td>Insurance Appeals</td><td>$100-150 per appeal</td><td>$150-250 per appeal</td></tr><tr><td>Senior Services</td><td>$65-85/hr</td><td>$85-120/hr</td></tr><tr><td>Small Biz Compliance</td><td>$85-100/hr</td><td>$100-150/hr</td></tr><tr><td>Tenant Rights</td><td>$60-80 per case</td><td>$80-120 per case</td></tr><tr><td>Disability Benefits</td><td>$125-175 per case</td><td>$175-250 per case</td></tr></tbody></table><div class="exercise-card"><div class="exercise-label">The Confidence Script</div><p>"My fee for a [DELIVERABLE] is [AMOUNT]. That includes [WHAT\'S INCLUDED]. Most clients find the value is [X] times what they pay. Would you like to get started?"</p><p><strong>Sliding scale:</strong> "My standard rate is $[X]. If that\'s outside your budget, let me know and we\'ll figure something out."</p></div>'
+      },
+      {
+        id: '6E', title: 'Building Your Case Portfolio', time: '15 min',
+        html: '<p>Every case you complete goes into your portfolio. Anonymize all client information.</p><h4>Portfolio entry format:</h4><ul><li><strong>Case type</strong> (e.g., "Benefits Eligibility Assessment")</li><li><strong>Client situation</strong> (anonymized, 2-3 sentences)</li><li><strong>What I did</strong> (2-3 sentences)</li><li><strong>Outcome</strong> (specific numbers: benefits found, errors identified, savings)</li><li><strong>Time invested</strong></li><li><strong>Client testimonial</strong> (when available)</li></ul><p>After 5 cases, your portfolio does your selling for you.</p>'
+      }
+    ],
+    homework: [
+      'Finalize your pricing and write it down',
+      'Create your "service menu" &mdash; a simple one-page document with services and prices',
+      'Complete one more practice case &mdash; time yourself and aim to beat your Day 6 time',
+      'If you have a real client for Day 7, prepare by reviewing their intake tonight'
+    ]
+  },
+  {
+    day: 7, title: '"Launch Day"', duration: '3 hours',
+    objectives: [
+      'Pass the ANVIL certification assessment',
+      'Set up your professional presence (Google Business, scheduling, payments)',
+      'Understand and commit to your 30-day growth plan',
+      'Serve your first real client (or plan to within 72 hours)'
+    ],
+    sessions: [
+      {
+        id: '7A', title: 'Certification Assessment', time: '45 min',
+        html: '<p><strong>The ANVIL Practical Assessment &mdash; 10 questions.</strong></p><p>This is not a memorization test. It is a practical evaluation of your ability to deliver safely, ethically, and effectively.</p><h4>The 10 areas assessed:</h4><ol><li><strong>Intake:</strong> What information do you still need?</li><li><strong>Scope:</strong> Which requests are within your scope?</li><li><strong>AI workflow:</strong> Write the prompt you would use</li><li><strong>Verification:</strong> Identify items that need verification</li><li><strong>Ethics:</strong> How do you respond to boundary scenarios?</li><li><strong>Quality:</strong> Identify issues in a sample deliverable</li><li><strong>Communication:</strong> Write your opening presentation</li><li><strong>Referral:</strong> When to refer to a licensed professional?</li><li><strong>Privacy:</strong> Handle a client sharing sensitive info</li><li><strong>Pricing:</strong> State your fees confidently</li></ol><p><strong>Passing score: 8/10.</strong> You have one retry if needed.</p>'
+      },
+      {
+        id: '7B', title: 'Professional Presence Setup', time: '45 min',
+        html: '<p>You need three things: a way to be found, a way to schedule, and a way to get paid.</p><h4>1. Google Business Profile (15 min)</h4><ul><li>Go to business.google.com</li><li>Create a profile as a "Service area business"</li><li>Add services, hours, phone number, description</li><li>This makes you findable on Google Maps &mdash; for free</li></ul><h4>2. Scheduling: Calendly Free Tier (10 min)</h4><ul><li>Set up one event type: "Free Consultation &mdash; 30 minutes"</li><li>Set your availability (be realistic in week 1)</li><li>Share this link everywhere</li></ul><h4>3. Payment Methods (10 min)</h4><ul><li><strong>Venmo:</strong> Good for individuals</li><li><strong>Zelle:</strong> Bank-to-bank, no fees, instant</li><li><strong>PayPal:</strong> Most professional-looking, allows invoices</li><li><strong>Cash/check:</strong> For in-person clients, especially seniors</li><li>Set up at least 2 methods</li></ul><h4>4. Simple Website (optional, 10 min)</h4><p>Use Carrd.co (free tier) for a one-page site. Or just use your Google Business profile as your web presence. <strong>Do NOT spend hours on a website.</strong></p>'
+      },
+      {
+        id: '7C', title: 'The 30-Day Growth Plan', time: '30 min',
+        html: '<h4>Week 1-2 (Days 8-21): Foundation</h4><ul><li>Complete 3 free cases for portfolio and testimonials</li><li>Post on 2 platforms, 3x per week</li><li>Send 2 partnership outreach emails per week</li><li>Respond to every inquiry within 2 hours</li></ul><h4>Week 3 (Days 22-28): Transition to Paid</h4><ul><li>Offer 50% discount for next 5 clients</li><li>Ask every free client for a testimonial and referral</li><li>Post your first client success story (anonymized)</li></ul><h4>Week 4 (Days 29-35): Full Price</h4><ul><li>Move to full pricing</li><li>You should have 3-5 testimonials and growing referral network</li><li>Evaluate which platforms generate clients and double down</li></ul><table class="content-table"><thead><tr><th>Week</th><th>Clients</th><th>Revenue</th></tr></thead><tbody><tr><td>1-2</td><td>3 (free)</td><td>$0 (investment)</td></tr><tr><td>3</td><td>3-5</td><td>$200-500</td></tr><tr><td>4</td><td>5-8</td><td>$500-1,200</td></tr><tr><td>Month 2</td><td>8-12</td><td>$1,500-3,500</td></tr><tr><td>Month 3</td><td>10-15</td><td>$2,500-5,000</td></tr></tbody></table>'
+      },
+      {
+        id: '7D', title: 'ANVIL Marketplace Onboarding', time: '15 min',
+        html: '<p>The ANVIL marketplace connects certified specialists with people who need services.</p><h4>Onboarding steps:</h4><ol><li>Create your specialist profile (name, niche, location, bio, photo)</li><li>Upload your certification (auto-generated after passing assessment)</li><li>Set your availability and service area</li><li>Set your pricing (marketplace suggests ranges)</li><li>Review and accept terms of service</li></ol><p>The marketplace is a <strong>supplement</strong>, not a replacement, for your own client acquisition.</p>'
+      },
+      {
+        id: '7E', title: 'Serve Your First Real Client', time: '45-90 min',
+        html: '<h4>If you have a client scheduled:</h4><p><strong>Before:</strong> Review intake info, pre-run AI prompts, have service agreement ready, print quality checklist.</p><p><strong>During:</strong> Follow your scripts from Day 6. Take notes. Be honest about confidence levels. Set clear expectations.</p><p><strong>After:</strong> Complete deliverable within 24 hours. Follow up within 3 days. Ask for testimonial. Add to portfolio.</p><h4>If you don\'t have a client yet:</h4><p>Your Day 7 commitment: <strong>secure one within 72 hours.</strong> Post on your highest-performing platform. Reach out to the 3 people you identified on Day 1. Message everyone who responded to your Day 5 post.</p>'
+      },
+      {
+        id: '7F', title: 'Celebration and Commitment', time: '15 min',
+        html: '<p><strong>You did it.</strong> Seven days ago you were learning what AI could do. Today you have:</p><ul><li>A niche you understand deeply</li><li>A prompt library that makes you fast and accurate</li><li>An ethical framework that protects you and your clients</li><li>A pricing structure you can state with confidence</li><li>A professional presence that makes you findable</li><li>A 30-day plan to grow</li><li>A certification that proves your competence</li></ul><div class="exercise-card"><div class="exercise-label">Your Commitment (Write This Down)</div><p>"I will post on [PLATFORM] at least 3 times per week. I will follow up with every inquiry within 2 hours. I will send 2 partnership emails per week. I will complete every case with quality I\'m proud of. I will ask for a referral from every satisfied client. I will revisit this curriculum whenever I need to sharpen my skills."</p></div>'
+      }
+    ],
+    homework: [] // No homework on Day 7
+  }
+];
+
+/* ── Quiz Data (per day) ── */
+var QUIZZES = {
+  1: [
+    { q: 'What should you ALWAYS do with AI output before sharing with a client?', opts: ['Trust it completely', 'Verify against official sources', 'Add more detail', 'Format it nicely'], ans: 1 },
+    { q: 'Why use multiple AI tools?', opts: ['They\'re all free', 'To use more data', 'When they agree, you can be more confident', 'To impress clients'], ans: 2 },
+    { q: 'What is the Golden Rule of AI assistance?', opts: ['AI is always right', 'Faster is better', 'AI is your authority', 'AI is your research assistant, not your authority'], ans: 3 },
+    { q: 'Which tool is best for finding sourced research with citations?', opts: ['ChatGPT', 'Claude', 'Gemini', 'Perplexity'], ans: 3 },
+    { q: 'What makes a niche right for you?', opts: ['Highest pay', 'Local demand + personal connection + emotional motivation', 'Easiest to learn', 'Most clients'], ans: 1 }
+  ],
+  2: [
+    { q: 'How many niches should you focus on during the sprint?', opts: ['All 7', '3-4', '1', '2'], ans: 2 },
+    { q: 'What is the four-step service delivery model?', opts: ['Research, Write, Send, Invoice', 'Intake, AI Analysis, Human Review, Client Delivery', 'Find, Call, Email, Bill', 'Learn, Practice, Deliver, Scale'], ans: 1 },
+    { q: 'What\'s the purpose of a client avatar?', opts: ['Marketing only', 'To guide messaging, pricing, and service delivery', 'Legal requirement', 'Looks professional'], ans: 1 },
+    { q: 'How long should a simple case take?', opts: ['30 minutes', '1.5-2 hours', '4+ hours', 'All day'], ans: 1 },
+    { q: 'Why practice intake with a role-play partner?', opts: ['Fun exercise', 'Required for certification', 'So your first real conversation isn\'t your first practice', 'To memorize a script'], ans: 2 }
+  ],
+  3: [
+    { q: 'What is the first prompt engineering principle?', opts: ['Be specific', 'Assign a role', 'Keep it short', 'Use keywords'], ans: 1 },
+    { q: 'What is your most valuable business asset?', opts: ['Your AI accounts', 'Your client list', 'Your prompt library', 'Your certification'], ans: 2 },
+    { q: 'How should you handle an AI output that seems wrong?', opts: ['Delete it', 'Trust it anyway', 'Verify against an official source', 'Try a different AI'], ans: 2 },
+    { q: 'What should you do after each practice case?', opts: ['Move to the next one', 'Self-evaluate what worked and what didn\'t', 'Share on social media', 'Nothing'], ans: 1 },
+    { q: 'Which prompt principle involves asking for a specific table or bullet format?', opts: ['Assign a Role', 'Provide Context', 'Be Specific', 'Specify Output Format'], ans: 3 }
+  ],
+  4: [
+    { q: 'Which of these CAN you do?', opts: ['Give legal advice', 'Guarantee outcomes', 'Help clients understand their options', 'Sign documents for clients'], ans: 2 },
+    { q: 'Instead of "You qualify for SNAP," you should say:', opts: ['"You will definitely get SNAP"', '"Based on my research, you appear eligible for SNAP"', '"Apply for SNAP"', '"SNAP is easy to get"'], ans: 1 },
+    { q: 'What should you do with a client\'s Social Security number?', opts: ['Save it in your files', 'Put it in AI prompts', 'Never store it \u2014 anonymize data', 'Share with partners'], ans: 2 },
+    { q: 'How many items are on the ANVIL Quality Checklist?', opts: ['5', '8', '13', '20'], ans: 2 },
+    { q: 'A client wants you to "write it so they get approved." You should:', opts: ['Do what they ask', 'Refuse the case immediately', 'Explain you present accurate information only', 'Report them'], ans: 2 }
+  ],
+  5: [
+    { q: 'Where are your clients most likely found?', opts: ['LinkedIn', 'Job boards', 'Local Facebook groups, Nextdoor, churches', 'Twitter'], ans: 2 },
+    { q: 'Good outreach posts should lead with:', opts: ['Your credentials', 'The problem the client faces', 'Your pricing', 'A link to your website'], ans: 1 },
+    { q: 'How many free cases should you do first?', opts: ['0', '1', '3', '10'], ans: 2 },
+    { q: 'What is the most sustainable client source?', opts: ['Paid ads', 'Cold calling', 'Referral partnerships', 'Social media'], ans: 2 },
+    { q: 'When should you post your first message?', opts: ['After perfecting your website', 'After 3 months of practice', 'Day 5 \u2014 right now', 'After certification'], ans: 2 }
+  ],
+  6: [
+    { q: 'What is the target time for a full intermediate case?', opts: ['30 minutes', '75 minutes', '3 hours', 'All day'], ans: 1 },
+    { q: 'When stating your prices, you should:', opts: ['Apologize for the cost', 'Say "my fee is $X" with confidence', 'Always offer a discount', 'Let the client suggest a price'], ans: 1 },
+    { q: 'What goes into your case portfolio?', opts: ['Only successful cases', 'Only paid cases', 'Every case \u2014 anonymized', 'Nothing until month 3'], ans: 2 },
+    { q: 'How soon after delivery should you follow up?', opts: ['24 hours', '3-5 days', '2 weeks', 'Never'], ans: 1 },
+    { q: 'A sliding scale policy shows:', opts: ['Weakness', 'You value your work AND you\'re human', 'Desperation', 'Lack of confidence'], ans: 1 }
+  ],
+  7: [
+    { q: 'What is the passing score on the certification assessment?', opts: ['5/10', '6/10', '8/10', '10/10'], ans: 2 },
+    { q: 'The three things you need for professional presence are:', opts: ['Website, blog, social media', 'Findability, scheduling, payments', 'Logo, business cards, office', 'LinkedIn, resume, portfolio'], ans: 1 },
+    { q: 'When should you transition from free to paid?', opts: ['After 1 case', 'After 3 free cases', 'After 1 month', 'Never'], ans: 1 },
+    { q: 'What is the Week 4 income target?', opts: ['$0', '$200-500', '$500-1,200', '$5,000'], ans: 2 },
+    { q: 'Your 30-day commitment includes posting at least:', opts: ['Once a month', 'Once a week', '3 times per week', 'Daily'], ans: 2 }
+  ]
+};
+
+/* ── State Management ── */
+var STORAGE_KEY = 'anvil_learn_progress';
+var state = loadState();
+
+function loadState() {
+  try {
+    var saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return { currentDay: 1, completed: [], quizScores: {} };
+}
+
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+function isDayUnlocked(day) {
+  if (day === 1) return true;
+  return state.completed.indexOf(day - 1) !== -1;
+}
+
+function isDayCompleted(day) {
+  return state.completed.indexOf(day) !== -1;
+}
+
+/* ── Build UI ── */
+function buildSidebar() {
+  var sb = document.getElementById('daySidebar');
+  var html = '<div class="sidebar-title">7-Day Sprint</div>';
+  DAYS.forEach(function(d) {
+    var unlocked = isDayUnlocked(d.day);
+    var completed = isDayCompleted(d.day);
+    var active = state.currentDay === d.day;
+    var cls = 'day-nav-item';
+    if (active) cls += ' active';
+    if (completed) cls += ' completed';
+    if (!unlocked) cls += ' locked';
+    var icon = completed ? '&#10003;' : (!unlocked ? '&#128274;' : d.day);
+    html += '<button class="' + cls + '" data-day="' + d.day + '"' + (!unlocked ? ' disabled aria-disabled="true"' : '') + ' aria-label="Day ' + d.day + '">';
+    html += '<span class="day-nav-icon">' + icon + '</span>';
+    html += '<span class="day-nav-label">Day ' + d.day + '<span class="day-nav-sub">' + d.title.replace(/"/g, '') + '</span></span>';
+    html += '</button>';
+  });
+  sb.innerHTML = html;
+  sb.querySelectorAll('.day-nav-item').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var day = parseInt(btn.dataset.day);
+      if (isDayUnlocked(day)) { state.currentDay = day; saveState(); render(); }
+    });
+  });
+}
+
+function buildTabbar() {
+  var tb = document.getElementById('dayTabbar');
+  var html = '';
+  DAYS.forEach(function(d) {
+    var unlocked = isDayUnlocked(d.day);
+    var completed = isDayCompleted(d.day);
+    var active = state.currentDay === d.day;
+    var cls = 'day-tab';
+    if (active) cls += ' active';
+    if (completed) cls += ' completed';
+    if (!unlocked) cls += ' locked';
+    var icon = completed ? '&#10003; ' : (!unlocked ? '&#128274; ' : '');
+    html += '<button class="' + cls + '" data-day="' + d.day + '"' + (!unlocked ? ' disabled aria-disabled="true"' : '') + '>' + icon + 'Day ' + d.day + '</button>';
+  });
+  tb.innerHTML = html;
+  tb.querySelectorAll('.day-tab').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var day = parseInt(btn.dataset.day);
+      if (isDayUnlocked(day)) { state.currentDay = day; saveState(); render(); }
+    });
+  });
+}
+
+function buildContent() {
+  var container = document.getElementById('learnContent');
+  var html = '';
+  DAYS.forEach(function(d) {
+    var active = state.currentDay === d.day;
+    html += '<div class="day-panel' + (active ? ' active' : '') + '" id="dayPanel' + d.day + '">';
+
+    // Header
+    html += '<div class="day-header">';
+    html += '<div class="day-label">Day ' + d.day + '</div>';
+    html += '<h1 class="day-title">' + d.title + '</h1>';
+    html += '<div class="day-meta"><span class="day-meta-item">&#9201; ' + d.duration + '</span><span class="day-meta-item">&#128218; ' + d.sessions.length + ' sessions</span></div>';
+    html += '</div>';
+
+    // Read Aloud
+    html += '<div class="read-aloud-bar" id="readAloudBar' + d.day + '">';
+    html += '<button class="read-aloud-btn" id="readPlayBtn' + d.day + '" aria-label="Read aloud" title="Read aloud">&#9654;</button>';
+    html += '<button class="read-aloud-btn" id="readPauseBtn' + d.day + '" aria-label="Pause reading" title="Pause" style="display:none">&#10074;&#10074;</button>';
+    html += '<button class="read-aloud-btn" id="readStopBtn' + d.day + '" aria-label="Stop reading" title="Stop">&#9632;</button>';
+    html += '<span class="read-aloud-label">Read Aloud</span>';
+    html += '<span class="speaking-indicator" id="speakIndicator' + d.day + '"></span>';
+    html += '</div>';
+
+    // Objectives
+    html += '<div class="objectives-card">';
+    html += '<div class="objectives-title">Learning Objectives</div>';
+    html += '<ul class="objectives-list">';
+    d.objectives.forEach(function(o) { html += '<li>' + o + '</li>'; });
+    html += '</ul></div>';
+
+    // Sessions
+    d.sessions.forEach(function(s) {
+      html += '<div class="session-accordion" id="session' + s.id + '">';
+      html += '<button class="session-trigger" aria-expanded="false" aria-controls="sessionBody' + s.id + '">';
+      html += '<span>Session ' + s.id + ': ' + s.title + ' <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem;">(' + s.time + ')</span></span>';
+      html += '<svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>';
+      html += '</button>';
+      html += '<div class="session-body" id="sessionBody' + s.id + '">';
+      html += '<div class="session-inner">' + s.html + '</div>';
+      html += '</div></div>';
+    });
+
+    // Homework
+    if (d.homework.length > 0) {
+      html += '<div class="homework-card">';
+      html += '<div class="homework-title">Day ' + d.day + ' Homework</div>';
+      html += '<ul>';
+      d.homework.forEach(function(h) { html += '<li>' + h + '</li>'; });
+      html += '</ul></div>';
+    }
+
+    // Quiz
+    html += '<div class="day-quiz" id="dayQuiz' + d.day + '">';
+    html += '<div class="quiz-title">&#128221; Knowledge Check</div>';
+    var quiz = QUIZZES[d.day];
+    quiz.forEach(function(q, qi) {
+      html += '<div class="quiz-question-card" id="qq' + d.day + '_' + qi + '">';
+      html += '<div class="qq-text">' + (qi + 1) + '. ' + q.q + '</div>';
+      html += '<div class="qq-options">';
+      q.opts.forEach(function(opt, oi) {
+        html += '<button class="qq-option" data-day="' + d.day + '" data-qi="' + qi + '" data-oi="' + oi + '">';
+        html += '<span class="qq-marker">' + String.fromCharCode(65 + oi) + '</span>' + opt;
+        html += '</button>';
+      });
+      html += '</div></div>';
+    });
+    html += '<button class="quiz-submit-btn" id="quizSubmit' + d.day + '" disabled>Check Answers</button>';
+    html += '<div class="quiz-result-banner" id="quizBanner' + d.day + '"></div>';
+    html += '</div>';
+
+    html += '</div>'; // day-panel
+  });
+  container.innerHTML = html;
+
+  // Session accordion handlers
+  container.querySelectorAll('.session-trigger').forEach(function(trigger) {
+    trigger.addEventListener('click', function() {
+      var acc = trigger.parentElement;
+      var isOpen = acc.classList.contains('open');
+      acc.classList.toggle('open');
+      trigger.setAttribute('aria-expanded', !isOpen);
+    });
+  });
+
+  // Quiz option handlers
+  container.querySelectorAll('.qq-option').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var day = parseInt(btn.dataset.day);
+      var qi = parseInt(btn.dataset.qi);
+      var card = document.getElementById('qq' + day + '_' + qi);
+      // Don't allow changes if quiz already submitted and passed
+      if (card.classList.contains('correct') || card.classList.contains('incorrect')) return;
+      card.querySelectorAll('.qq-option').forEach(function(o) { o.classList.remove('selected'); });
+      btn.classList.add('selected');
+      // Enable submit if all questions answered
+      checkAllAnswered(day);
+    });
+  });
+
+  // Quiz submit handlers
+  DAYS.forEach(function(d) {
+    var submitBtn = document.getElementById('quizSubmit' + d.day);
+    if (submitBtn) {
+      submitBtn.addEventListener('click', function() { submitQuiz(d.day); });
+    }
+  });
+}
+
+function checkAllAnswered(day) {
+  var quiz = QUIZZES[day];
+  var allAnswered = true;
+  for (var i = 0; i < quiz.length; i++) {
+    var card = document.getElementById('qq' + day + '_' + i);
+    if (!card.querySelector('.qq-option.selected')) { allAnswered = false; break; }
+  }
+  document.getElementById('quizSubmit' + day).disabled = !allAnswered;
+}
+
+function submitQuiz(day) {
+  var quiz = QUIZZES[day];
+  var correct = 0;
+  quiz.forEach(function(q, qi) {
+    var card = document.getElementById('qq' + day + '_' + qi);
+    var selected = card.querySelector('.qq-option.selected');
+    var selectedIdx = parseInt(selected.dataset.oi);
+    card.querySelectorAll('.qq-option').forEach(function(o) { o.setAttribute('disabled', 'true'); });
+    if (selectedIdx === q.ans) {
+      correct++;
+      card.classList.add('correct');
+      selected.classList.add('correct-answer');
+    } else {
+      card.classList.add('incorrect');
+      selected.classList.add('wrong-answer');
+      // Highlight correct answer
+      var correctBtn = card.querySelectorAll('.qq-option')[q.ans];
+      correctBtn.classList.add('correct-answer');
+    }
+  });
+
+  var passed = correct >= 3;
+  state.quizScores[day] = correct;
+
+  var banner = document.getElementById('quizBanner' + day);
+  var submitBtn = document.getElementById('quizSubmit' + day);
+
+  if (passed) {
+    banner.className = 'quiz-result-banner pass';
+    banner.innerHTML = 'You scored ' + correct + '/5. Day ' + day + ' complete! ' + (day < 7 ? 'Day ' + (day + 1) + ' is now unlocked.' : 'You have completed the 7-Day Sprint!');
+    submitBtn.style.display = 'none';
+    if (state.completed.indexOf(day) === -1) { state.completed.push(day); }
+    saveState();
+    // Rebuild nav to reflect unlocked status
+    buildSidebar();
+    buildTabbar();
+    // Show completion section after Day 7
+    if (day === 7) {
+      document.getElementById('completionSection').classList.add('active');
+    }
+  } else {
+    banner.className = 'quiz-result-banner fail';
+    banner.innerHTML = 'You scored ' + correct + '/5. You need at least 3/5 to pass.<br><span class="quiz-hint">Review the session content above and try again.</span><br><button class="quiz-retry-btn" onclick="retryQuiz(' + day + ')">Try Again</button>';
+    submitBtn.style.display = 'none';
+  }
+  saveState();
+}
+
+function retryQuiz(day) {
+  var quiz = QUIZZES[day];
+  quiz.forEach(function(q, qi) {
+    var card = document.getElementById('qq' + day + '_' + qi);
+    card.className = 'quiz-question-card';
+    card.querySelectorAll('.qq-option').forEach(function(o) {
+      o.classList.remove('selected', 'correct-answer', 'wrong-answer');
+      o.removeAttribute('disabled');
+    });
+  });
+  var banner = document.getElementById('quizBanner' + day);
+  banner.className = 'quiz-result-banner';
+  banner.innerHTML = '';
+  var submitBtn = document.getElementById('quizSubmit' + day);
+  submitBtn.style.display = '';
+  submitBtn.disabled = true;
+}
+
+/* ── Render ── */
+function render() {
+  buildSidebar();
+  buildTabbar();
+  // Show active panel
+  document.querySelectorAll('.day-panel').forEach(function(p) { p.classList.remove('active'); });
+  var activePanel = document.getElementById('dayPanel' + state.currentDay);
+  if (activePanel) activePanel.classList.add('active');
+  // Show completion section if all days done
+  if (state.completed.length === 7) {
+    document.getElementById('completionSection').classList.add('active');
+  }
+  // Scroll to top of content
+  window.scrollTo(0, 0);
+  // Init read aloud for current day
+  initReadAloud(state.currentDay);
+}
+
+/* ── Read Aloud (SpeechSynthesis) ── */
+function initReadAloud(day) {
+  if (!('speechSynthesis' in window)) return;
+  var bar = document.getElementById('readAloudBar' + day);
+  if (!bar) return;
+  bar.classList.add('supported');
+
+  var playBtn = document.getElementById('readPlayBtn' + day);
+  var pauseBtn = document.getElementById('readPauseBtn' + day);
+  var stopBtn = document.getElementById('readStopBtn' + day);
+  var indicator = document.getElementById('speakIndicator' + day);
+
+  function getText() {
+    var panel = document.getElementById('dayPanel' + day);
+    if (!panel) return '';
+    // Get text from objectives and visible session content
+    var text = '';
+    var title = panel.querySelector('.day-title');
+    if (title) text += title.textContent + '. ';
+    var objs = panel.querySelectorAll('.objectives-list li');
+    objs.forEach(function(li) { text += li.textContent + '. '; });
+    var sessions = panel.querySelectorAll('.session-inner');
+    sessions.forEach(function(s) { text += s.textContent + '. '; });
+    return text.substring(0, 5000); // Limit length
+  }
+
+  playBtn.onclick = function() {
+    speechSynthesis.cancel();
+    var utterance = new SpeechSynthesisUtterance(getText());
+    utterance.rate = 0.95;
+    utterance.onstart = function() {
+      bar.classList.add('is-speaking');
+      playBtn.style.display = 'none';
+      pauseBtn.style.display = '';
+    };
+    utterance.onend = function() {
+      bar.classList.remove('is-speaking');
+      playBtn.style.display = '';
+      pauseBtn.style.display = 'none';
+    };
+    speechSynthesis.speak(utterance);
+  };
+
+  pauseBtn.onclick = function() {
+    if (speechSynthesis.speaking && !speechSynthesis.paused) {
+      speechSynthesis.pause();
+      pauseBtn.innerHTML = '&#9654;';
+      pauseBtn.setAttribute('aria-label', 'Resume reading');
+    } else if (speechSynthesis.paused) {
+      speechSynthesis.resume();
+      pauseBtn.innerHTML = '&#10074;&#10074;';
+      pauseBtn.setAttribute('aria-label', 'Pause reading');
+    }
+  };
+
+  stopBtn.onclick = function() {
+    speechSynthesis.cancel();
+    bar.classList.remove('is-speaking');
+    playBtn.style.display = '';
+    pauseBtn.style.display = 'none';
+    pauseBtn.innerHTML = '&#10074;&#10074;';
+  };
+}
+
+/* ── Accessibility Toolbar ── */
+var fontSizes = [1, 1.15, 1.3];
+var fontLabels = ['A', 'A+', 'A++'];
+var fontIndex = 0;
+
+// Restore font scale
+(function() {
+  try {
+    var saved = localStorage.getItem('anvil_font_scale');
+    if (saved) {
+      var val = parseFloat(saved);
+      var idx = fontSizes.indexOf(val);
+      if (idx !== -1) { fontIndex = idx; document.documentElement.style.setProperty('--font-scale', val); }
+    }
+  } catch(e) {}
+})();
+
+document.getElementById('fontSizeBtn').addEventListener('click', function() {
+  fontIndex = (fontIndex + 1) % fontSizes.length;
+  document.documentElement.style.setProperty('--font-scale', fontSizes[fontIndex]);
+  this.textContent = fontLabels[fontIndex];
+  try { localStorage.setItem('anvil_font_scale', fontSizes[fontIndex]); } catch(e) {}
+});
+// Set initial label
+document.getElementById('fontSizeBtn').textContent = fontLabels[fontIndex];
+
+// High contrast
+(function() {
+  var btn = document.getElementById('contrastBtn');
+  try {
+    if (localStorage.getItem('anvil_high_contrast') === 'true') {
+      document.body.classList.add('high-contrast');
+      btn.classList.add('active');
+    }
+  } catch(e) {}
+  btn.addEventListener('click', function() {
+    var isHC = document.body.classList.toggle('high-contrast');
+    btn.classList.toggle('active', isHC);
+    try { localStorage.setItem('anvil_high_contrast', isHC); } catch(e) {}
+  });
+})();
+
+/* ── Testimonial Form ── */
+document.getElementById('testimonialForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var name = document.getElementById('testName').value.trim();
+  var text = document.getElementById('testText').value.trim();
+  var niche = document.getElementById('testNiche').value;
+  var stars = document.querySelectorAll('#starRating .star-btn.filled').length;
+  if (!name || !text) return;
+  var data = { name: name, testimonial: text, niche: niche, rating: stars || 5 };
+  fetch('/api/testimonials', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).catch(function() {});
+  // Show success regardless
+  var form = document.getElementById('testimonialForm');
+  form.innerHTML = '<p style="color:var(--green);font-weight:600;padding:20px 0;">Thank you for sharing your experience!</p>';
+});
+
+/* Star rating */
+document.querySelectorAll('#starRating .star-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var val = parseInt(btn.dataset.star);
+    document.querySelectorAll('#starRating .star-btn').forEach(function(s) {
+      s.classList.toggle('filled', parseInt(s.dataset.star) <= val);
+    });
+  });
+});
+
+/* ── Directory Form ── */
+document.getElementById('directoryForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var optIn = document.getElementById('dirOptIn').checked;
+  if (!optIn) return;
+  var data = {
+    optIn: true,
+    city: document.getElementById('dirCity').value.trim(),
+    state: document.getElementById('dirState').value.trim()
+  };
+  fetch('/api/graduates', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).catch(function() {});
+  var form = document.getElementById('directoryForm');
+  form.innerHTML = '<p style="color:var(--green);font-weight:600;padding:20px 0;">You\'ve been added to the graduate directory!</p>';
+});
+
+/* ── Initialize ── */
+buildContent();
+render();
+</script>
+
+<!-- No-JS fallback: basic content visible without JavaScript -->
+<noscript>
+<style>
+  .day-sidebar, .day-tabbar, .a11y-toolbar, .read-aloud-bar, .day-quiz { display: none !important; }
+  .learn-content { padding: 80px 24px !important; }
+  .day-panel { display: block !important; margin-bottom: 60px; padding-bottom: 60px; border-bottom: 1px solid var(--border); }
+  .session-body { max-height: none !important; }
+  .session-accordion.open .session-body, .session-body { max-height: none; overflow: visible; }
+</style>
+</noscript>
+</body>
+</html>

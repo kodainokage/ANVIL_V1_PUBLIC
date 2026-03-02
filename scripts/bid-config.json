@@ -1,0 +1,156 @@
+{
+  "version": "1.0",
+  "last_updated": "2026-03-02",
+
+  "naics_codes": {
+    "primary": [
+      {"code": "611430", "description": "Professional and Management Development Training"},
+      {"code": "611710", "description": "Educational Support Services"}
+    ],
+    "secondary": [
+      {"code": "611310", "description": "Colleges, Universities, and Professional Schools"},
+      {"code": "611410", "description": "Business and Secretarial Schools"},
+      {"code": "611420", "description": "Computer Training"},
+      {"code": "611519", "description": "Other Technical and Trade Schools"},
+      {"code": "611699", "description": "All Other Miscellaneous Schools and Instruction"},
+      {"code": "624190", "description": "Other Individual and Family Services"}
+    ]
+  },
+
+  "keywords": {
+    "primary": [
+      "workforce development",
+      "workforce training",
+      "WIOA",
+      "dislocated worker",
+      "displaced worker",
+      "career services",
+      "training provider",
+      "retraining",
+      "job training",
+      "adult education"
+    ],
+    "secondary": [
+      "artificial intelligence training",
+      "AI workforce",
+      "digital skills",
+      "upskilling",
+      "reskilling",
+      "workforce innovation",
+      "eligible training provider",
+      "individual training account",
+      "ITA",
+      "career pathway"
+    ],
+    "exclude": [
+      "construction",
+      "healthcare clinical",
+      "CDL",
+      "welding",
+      "nursing"
+    ]
+  },
+
+  "geography": {
+    "priority_states": [
+      {"state": "CA", "name": "California", "wioa_funding_rank": 1, "notes": "Largest WIOA allocation ~$539M"},
+      {"state": "TX", "name": "Texas", "wioa_funding_rank": 2, "notes": "Second largest allocation"},
+      {"state": "NY", "name": "New York", "wioa_funding_rank": 3, "notes": "Large dislocated worker pool"},
+      {"state": "FL", "name": "Florida", "wioa_funding_rank": 4, "notes": "High growth, large workforce system"},
+      {"state": "PA", "name": "Pennsylvania", "wioa_funding_rank": 5, "notes": "Strong manufacturing displacement"},
+      {"state": "IL", "name": "Illinois", "wioa_funding_rank": 6, "notes": "Large metro workforce boards"},
+      {"state": "OH", "name": "Ohio", "wioa_funding_rank": 7, "notes": "Manufacturing + tech displacement"},
+      {"state": "MI", "name": "Michigan", "wioa_funding_rank": 8, "notes": "Auto industry AI displacement"},
+      {"state": "NC", "name": "North Carolina", "wioa_funding_rank": 9, "notes": "Growing tech sector"},
+      {"state": "GA", "name": "Georgia", "wioa_funding_rank": 10, "notes": "Atlanta metro workforce demand"}
+    ],
+    "include_all_states": true
+  },
+
+  "filters": {
+    "dollar_amount": {
+      "min": 10000,
+      "max": 500000,
+      "preferred_min": 25000,
+      "preferred_max": 250000
+    },
+    "due_date_window_days": 60,
+    "urgent_deadline_days": 14,
+    "status": ["active", "forecasted", "posted"],
+    "set_aside_types": [
+      "SBA",
+      "8A",
+      "WOSB",
+      "HUBZone",
+      "SDVOSB",
+      "SBP"
+    ]
+  },
+
+  "scoring": {
+    "weights": {
+      "keyword_match": 30,
+      "naics_match": 25,
+      "dollar_range_fit": 15,
+      "geography_priority": 15,
+      "deadline_proximity": 10,
+      "set_aside_match": 5
+    },
+    "minimum_score": 20
+  },
+
+  "sources": {
+    "sam_gov": {
+      "enabled": true,
+      "api_base": "https://api.sam.gov/opportunities/v2/search",
+      "requires_api_key": true,
+      "api_key_env_var": "SAM_GOV_API_KEY",
+      "rate_limit_per_second": 1,
+      "max_results_per_query": 1000,
+      "notes": "Register at sam.gov to get free API key"
+    },
+    "grants_gov": {
+      "enabled": true,
+      "api_base": "https://api.grants.gov/v1/api/search2",
+      "requires_api_key": false,
+      "rate_limit_per_second": 1,
+      "max_results_per_query": 100,
+      "notes": "No authentication required"
+    },
+    "usaspending": {
+      "enabled": true,
+      "api_base": "https://api.usaspending.gov/api/v2",
+      "requires_api_key": false,
+      "rate_limit_per_second": 1,
+      "notes": "Research who is winning contracts in our space"
+    }
+  },
+
+  "notifications": {
+    "daily_digest": true,
+    "urgent_alerts": true,
+    "digest_format": "text",
+    "email_template": true
+  },
+
+  "anvil": {
+    "program_name": "ANVIL AI-Augmented Specialist Training Sprint",
+    "provider_name": "[LEGAL ENTITY NAME]",
+    "dba": "ANVIL -- AI Navigation & Vocational Integration Layer",
+    "wioa_cost_per_participant": {"min": 2000, "max": 3000},
+    "program_duration_days": 7,
+    "program_hours": 19,
+    "cohort_size": {"min": 10, "max": 25},
+    "career_pathways": [
+      "Government Benefits Navigation",
+      "Medical Bill Auditing",
+      "Small Business Compliance"
+    ],
+    "soc_codes": [
+      "21-1093", "43-4061", "21-1094",
+      "13-2011", "43-3011", "43-9041",
+      "13-1041", "13-1199", "43-4199"
+    ],
+    "credential": "ANVIL AI-Augmented Specialist Certification"
+  }
+}

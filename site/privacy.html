@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy - ANVIL</title>
+<meta name="description" content="ANVIL Privacy Policy. Learn how we collect, use, and protect your personal information on the ANVIL training platform.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M14 2L3 26h6l5-12 5 12h6L14 2z' fill='%23e87a2e'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#e87a2e">
+<style>
+/* ── Reset & Base ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  background: #0a0a0a;
+  color: #e0e0e0;
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a { color: #e87a2e; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+:root {
+  --bg: #0a0a0a;
+  --bg-card: #141414;
+  --bg-elevated: #1a1a1a;
+  --border: #2a2a2a;
+  --text: #e0e0e0;
+  --text-dim: #888;
+  --text-muted: #666;
+  --orange: #e87a2e;
+  --orange-light: #f09040;
+  --amber: #f5a623;
+  --forge-gradient: linear-gradient(135deg, #e87a2e, #f5a623);
+  --radius: 12px;
+  --max-w: 800px;
+}
+
+/* ── Navigation ── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner {
+  max-width: 1140px; margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.25rem; font-weight: 900; color: #fff;
+  letter-spacing: 1px; text-decoration: none;
+}
+.nav-logo svg { width: 28px; height: 28px; }
+.nav-links { display: flex; gap: 24px; list-style: none; }
+.nav-links a {
+  font-size: 0.875rem; font-weight: 500; color: var(--text-dim);
+  transition: color 0.2s; text-decoration: none;
+}
+.nav-links a:hover { color: #fff; text-decoration: none; }
+
+.hamburger {
+  display: none; background: none; border: none; padding: 12px;
+  flex-direction: column; gap: 5px; cursor: pointer;
+  min-width: 44px; min-height: 44px; align-items: center; justify-content: center;
+}
+.hamburger span {
+  display: block; width: 22px; height: 2px; background: #fff;
+  border-radius: 2px; transition: all 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.mobile-menu {
+  display: none; position: fixed; top: 64px; left: 0; right: 0; bottom: 0;
+  background: rgba(10, 10, 10, 0.97); z-index: 99;
+  flex-direction: column; align-items: center; justify-content: center; gap: 32px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  font-size: 1.25rem; font-weight: 600; color: var(--text-dim);
+  transition: color 0.2s; text-decoration: none;
+}
+.mobile-menu a:hover { color: #fff; }
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+}
+
+/* ── Content ── */
+.legal-page {
+  max-width: var(--max-w); margin: 0 auto; padding: 100px 24px 80px;
+}
+.legal-updated {
+  font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;
+  text-transform: uppercase; letter-spacing: 1px; font-weight: 600;
+}
+.legal-page h1 {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 900; color: #fff; margin-bottom: 8px; line-height: 1.15;
+}
+.legal-page .legal-intro {
+  font-size: 1rem; color: var(--text-dim); margin-bottom: 40px;
+  line-height: 1.7; border-bottom: 1px solid var(--border); padding-bottom: 32px;
+}
+.legal-page h2 {
+  font-size: 1.3rem; font-weight: 700; color: #fff;
+  margin-top: 40px; margin-bottom: 12px;
+  padding-top: 24px; border-top: 1px solid var(--border);
+}
+.legal-page h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+.legal-page h3 {
+  font-size: 1.05rem; font-weight: 600; color: #ddd;
+  margin-top: 24px; margin-bottom: 8px;
+}
+.legal-page p {
+  font-size: 0.95rem; color: var(--text); line-height: 1.8;
+  margin-bottom: 14px;
+}
+.legal-page ul, .legal-page ol {
+  margin-bottom: 14px; padding-left: 24px;
+}
+.legal-page li {
+  font-size: 0.95rem; color: var(--text); line-height: 1.8;
+  margin-bottom: 6px;
+}
+.legal-page strong { color: #fff; }
+.legal-page .highlight-box {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-left: 3px solid var(--orange); border-radius: 8px;
+  padding: 20px 24px; margin: 20px 0;
+}
+.legal-page .highlight-box p { margin-bottom: 0; }
+.legal-page table {
+  width: 100%; border-collapse: collapse; margin: 16px 0;
+  font-size: 0.9rem;
+}
+.legal-page th, .legal-page td {
+  text-align: left; padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.legal-page th {
+  color: #fff; font-weight: 600; background: var(--bg-card);
+  font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.legal-page td { color: var(--text); }
+
+/* ── Footer ── */
+.footer {
+  padding: 48px 0 32px; border-top: 1px solid var(--border);
+}
+.footer-inner {
+  max-width: 1140px; margin: 0 auto; padding: 0 24px;
+  display: flex; justify-content: space-between; align-items: flex-start;
+  flex-wrap: wrap; gap: 32px;
+}
+.footer-brand { max-width: 300px; }
+.footer-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.1rem; font-weight: 900; color: #fff;
+  letter-spacing: 1px; margin-bottom: 12px; text-decoration: none;
+}
+.footer-logo svg { width: 24px; height: 24px; }
+.footer-desc { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 16px; }
+.footer-email { font-size: 0.85rem; color: var(--orange); font-weight: 500; }
+.footer-right { text-align: right; }
+.footer-links { display: flex; gap: 24px; list-style: none; margin-bottom: 16px; justify-content: flex-end; }
+.footer-links a { font-size: 0.8rem; color: var(--text-dim); text-decoration: none; }
+.footer-links a:hover { color: #fff; text-decoration: none; }
+.footer-portfolio { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+.footer-bottom {
+  max-width: 1140px; margin: 0 auto; padding: 0 24px;
+  text-align: center; padding-top: 32px; margin-top: 32px;
+  border-top: 1px solid var(--border);
+  font-size: 0.75rem; color: var(--text-muted);
+}
+@media (max-width: 640px) {
+  .footer-inner { flex-direction: column; align-items: center; text-align: center; }
+  .footer-right { text-align: center; }
+  .footer-links { justify-content: center; }
+  .legal-page table { font-size: 0.8rem; }
+  .legal-page th, .legal-page td { padding: 8px 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="url(#anvil-g)"/>
+        <defs><linearGradient id="anvil-g" x1="3" y1="2" x2="25" y2="26"><stop stop-color="#e87a2e"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs>
+      </svg>
+      ANVIL
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/terms.html">Terms</a></li>
+      <li><a href="/privacy.html">Privacy</a></li>
+      <li><a href="/disclaimer.html">Disclaimer</a></li>
+      <li><a href="/accessibility.html">Accessibility</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="/" onclick="closeMobile()">Home</a>
+  <a href="/terms.html" onclick="closeMobile()">Terms</a>
+  <a href="/privacy.html" onclick="closeMobile()">Privacy</a>
+  <a href="/disclaimer.html" onclick="closeMobile()">Disclaimer</a>
+  <a href="/accessibility.html" onclick="closeMobile()">Accessibility</a>
+</div>
+
+<!-- ── Content ── -->
+<main class="legal-page">
+  <div class="legal-updated">Last updated: March 2, 2026</div>
+  <h1>Privacy Policy</h1>
+  <p class="legal-intro">This Privacy Policy describes how ANVIL (AI Navigation &amp; Vocational Integration Layer) collects, uses, and protects your personal information. We believe in being straightforward about what we collect and why. No hidden tracking, no selling your data.</p>
+
+  <h2>1. Information We Collect</h2>
+
+  <h3>Information You Provide Directly</h3>
+  <table>
+    <thead>
+      <tr><th>Data Type</th><th>When Collected</th><th>Required?</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Full name</td><td>Career quiz submission</td><td>Yes</td></tr>
+      <tr><td>Email address</td><td>Career quiz submission</td><td>Yes</td></tr>
+      <tr><td>Phone number</td><td>Career quiz submission</td><td>No (optional)</td></tr>
+      <tr><td>Quiz answers</td><td>During career quiz</td><td>Yes (to generate results)</td></tr>
+      <tr><td>Niche match results</td><td>Calculated from quiz answers</td><td>Automatic</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Information Collected Automatically</h3>
+  <table>
+    <thead>
+      <tr><th>Data Type</th><th>How Collected</th><th>Purpose</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>IP address</td><td>Server logs</td><td>Security, rate limiting, abuse prevention</td></tr>
+      <tr><td>Browser type and version</td><td>HTTP headers</td><td>Debugging, compatibility</td></tr>
+      <tr><td>Page visited and timestamp</td><td>Server logs</td><td>Basic analytics, troubleshooting</td></tr>
+      <tr><td>Referring URL</td><td>HTTP headers</td><td>Understanding how users find us</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Information We Do NOT Collect</h3>
+  <p>We want to be explicit about what we are not doing:</p>
+  <ul>
+    <li>We do <strong>not</strong> use cookies for tracking or advertising.</li>
+    <li>We do <strong>not</strong> use third-party analytics (no Google Analytics, no Facebook Pixel, no tracking scripts).</li>
+    <li>We do <strong>not</strong> collect financial information (no credit cards, no bank accounts).</li>
+    <li>We do <strong>not</strong> collect Social Security numbers or government ID numbers.</li>
+    <li>We do <strong>not</strong> collect health information, medical records, or protected health information (PHI).</li>
+  </ul>
+
+  <h2>2. How We Use Your Information</h2>
+  <p>We use the information we collect for these specific purposes:</p>
+  <ul>
+    <li><strong>Career matching:</strong> Your quiz answers are used to calculate your niche match and generate your personalized roadmap.</li>
+    <li><strong>Lead nurturing:</strong> Your name and email are used to send you your roadmap, follow-up information about ANVIL programs, and relevant updates.</li>
+    <li><strong>Program enrollment:</strong> If you proceed to enroll in an ANVIL training program, your information is used to create your account and manage your participation.</li>
+    <li><strong>WIOA reporting:</strong> If you are a WIOA-funded participant, your progress and outcome data may be shared with your local workforce development board (see Section 4).</li>
+    <li><strong>Platform improvement:</strong> Aggregated, anonymized quiz data helps us improve our career matching algorithm and training content.</li>
+    <li><strong>Security:</strong> IP addresses and server logs are used to detect abuse, enforce rate limits, and protect the platform.</li>
+  </ul>
+
+  <h2>3. Legal Basis for Processing</h2>
+  <p>We process your personal information based on:</p>
+  <ul>
+    <li><strong>Consent:</strong> You actively submit your information through our quiz and lead form.</li>
+    <li><strong>Contract:</strong> Processing is necessary to provide you with the services you requested (career matching, roadmap delivery).</li>
+    <li><strong>Legitimate interest:</strong> Platform security, abuse prevention, and service improvement.</li>
+    <li><strong>Legal obligation:</strong> WIOA reporting requirements, if applicable to your participation.</li>
+  </ul>
+
+  <h2>4. Data Sharing</h2>
+  <p>We do not sell your personal information. Period. We share data only in these limited circumstances:</p>
+
+  <h3>WIOA Workforce Development Boards</h3>
+  <p>If you are a WIOA-funded participant, we may share the following with your local workforce development board as required by federal and state WIOA reporting obligations:</p>
+  <ul>
+    <li>Your name and contact information</li>
+    <li>Program enrollment and completion status</li>
+    <li>Training progress and assessment results</li>
+    <li>Employment outcomes (if you report them to us)</li>
+  </ul>
+
+  <h3>Service Providers</h3>
+  <p>We may use third-party service providers to help operate the platform (e.g., email delivery, hosting). These providers are contractually obligated to protect your data and may only use it to provide services to ANVIL.</p>
+
+  <h3>Legal Requirements</h3>
+  <p>We may disclose your information if required by law, legal process, or government request, or if we believe disclosure is necessary to protect our rights, your safety, or the safety of others.</p>
+
+  <h2>5. Data Retention</h2>
+  <table>
+    <thead>
+      <tr><th>Data Type</th><th>Retention Period</th><th>Reason</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Quiz submissions</td><td>3 years from submission</td><td>Lead nurturing, program enrollment</td></tr>
+      <tr><td>Active user accounts</td><td>Duration of account + 1 year</td><td>Service delivery, re-enrollment</td></tr>
+      <tr><td>WIOA participant data</td><td>As required by federal regulation (typically 3-5 years)</td><td>Federal WIOA compliance</td></tr>
+      <tr><td>Server logs (IP, access)</td><td>90 days</td><td>Security, debugging</td></tr>
+      <tr><td>Email correspondence</td><td>2 years from last communication</td><td>Support history</td></tr>
+    </tbody>
+  </table>
+  <p>After the retention period, data is permanently deleted or irreversibly anonymized. You may request deletion before the retention period expires (see Section 7).</p>
+
+  <h2>6. Cookies and Tracking</h2>
+  <p>As of the effective date of this policy, ANVIL uses <strong>no tracking cookies, no third-party analytics, and no advertising pixels.</strong></p>
+  <p>We may use essential cookies in the future (such as session cookies for logged-in users). If we do, we will update this policy and provide notice. We will never use third-party advertising or tracking cookies without explicit opt-in consent.</p>
+  <p>Your quiz results are stored in your browser's local storage to preserve your results during your session. This data stays on your device and is not sent to any third party.</p>
+
+  <h2>7. Your Rights</h2>
+  <p>You have the following rights regarding your personal information:</p>
+  <ul>
+    <li><strong>Access:</strong> You can request a copy of all personal information we hold about you.</li>
+    <li><strong>Correction:</strong> You can request correction of inaccurate or incomplete information.</li>
+    <li><strong>Deletion:</strong> You can request that we delete your personal information. We will comply within 30 days, except where retention is required by law (e.g., WIOA reporting).</li>
+    <li><strong>Portability:</strong> You can request your data in a commonly used, machine-readable format.</li>
+    <li><strong>Opt-out of communications:</strong> Every email we send includes an unsubscribe link. You can also contact us directly to opt out.</li>
+    <li><strong>Withdraw consent:</strong> You can withdraw your consent for data processing at any time. This does not affect the lawfulness of processing based on consent before withdrawal.</li>
+  </ul>
+  <p>To exercise any of these rights, email us at <a href="mailto:hello@getanvil.co">hello@getanvil.co</a> with the subject line "Privacy Request." We will respond within 30 days.</p>
+
+  <h2>8. Data Security</h2>
+  <p>We take reasonable measures to protect your personal information, including:</p>
+  <ul>
+    <li><strong>Rate limiting:</strong> API endpoints are rate-limited to prevent abuse and brute-force attacks.</li>
+    <li><strong>Input sanitization:</strong> All user inputs are validated and sanitized before processing.</li>
+    <li><strong>API key authentication:</strong> Administrative endpoints require authentication.</li>
+    <li><strong>HTTPS:</strong> All data transmitted between your browser and our servers is encrypted using TLS.</li>
+    <li><strong>Access controls:</strong> Access to user data is restricted to authorized personnel on a need-to-know basis.</li>
+  </ul>
+  <p>No system is 100% secure. While we take commercially reasonable precautions, we cannot guarantee absolute security. If we discover a data breach that affects your personal information, we will notify you as required by applicable law.</p>
+
+  <h2>9. Third-Party Services</h2>
+  <p>As of the effective date of this policy, ANVIL does not integrate with third-party analytics, advertising, or social media tracking services. If we add third-party integrations in the future, we will update this policy and clearly identify each service, what data it accesses, and why.</p>
+  <p>Our website may contain links to third-party websites. We are not responsible for the privacy practices of those websites. We encourage you to read their privacy policies before providing any personal information.</p>
+
+  <h2>10. Children's Privacy</h2>
+  <p>ANVIL is not directed at children under the age of 13. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal information, contact us at <a href="mailto:hello@getanvil.co">hello@getanvil.co</a> and we will promptly delete the information.</p>
+  <p>ANVIL's training programs are designed for adults (18+) who are entering or re-entering the workforce. Users between 13 and 18 must have parental or guardian consent.</p>
+
+  <h2>11. California Residents (CCPA)</h2>
+  <p>If you are a California resident, the California Consumer Privacy Act (CCPA) provides you with additional rights:</p>
+  <ul>
+    <li><strong>Right to Know:</strong> You have the right to know what personal information we collect, use, disclose, and sell (we do not sell personal information).</li>
+    <li><strong>Right to Delete:</strong> You have the right to request deletion of your personal information, subject to certain exceptions.</li>
+    <li><strong>Right to Non-Discrimination:</strong> We will not discriminate against you for exercising your CCPA rights. You will not receive different pricing or service quality.</li>
+    <li><strong>Right to Opt-Out of Sale:</strong> We do not sell personal information, so this right does not currently apply. If this ever changes, we will provide a "Do Not Sell My Personal Information" link.</li>
+  </ul>
+  <p>To exercise your CCPA rights, email us at <a href="mailto:hello@getanvil.co">hello@getanvil.co</a> with the subject line "CCPA Request." We will verify your identity before processing your request and respond within 45 days.</p>
+  <div class="highlight-box">
+    <p><strong>We do not sell your personal information.</strong> We have not sold personal information in the preceding 12 months and have no plans to do so.</p>
+  </div>
+
+  <h2>12. International Users</h2>
+  <p>ANVIL is operated from the United States. If you are accessing our platform from outside the United States, your information will be transferred to, stored, and processed in the United States. By using ANVIL, you consent to this transfer. We will take reasonable steps to ensure your data is treated securely and in accordance with this policy.</p>
+
+  <h2>13. Changes to This Policy</h2>
+  <p>We may update this Privacy Policy from time to time. When we make changes:</p>
+  <ul>
+    <li>We will update the "Last updated" date at the top of this page.</li>
+    <li>For material changes, we will notify registered users by email at least 14 days before the changes take effect.</li>
+    <li>Previous versions of this policy will be made available upon request.</li>
+  </ul>
+
+  <h2>14. Contact Us</h2>
+  <p>If you have questions about this Privacy Policy or want to exercise your data rights, contact us:</p>
+  <p>
+    <strong>ANVIL Privacy</strong><br>
+    Email: <a href="mailto:hello@getanvil.co">hello@getanvil.co</a><br>
+    Subject line: "Privacy Inquiry"
+  </p>
+  <p>We aim to respond to all privacy-related inquiries within 30 days.</p>
+</main>
+
+<!-- ── Footer ── -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="/" class="footer-logo">
+        <svg viewBox="0 0 28 28" fill="none"><path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="url(#anvil-g2)"/><defs><linearGradient id="anvil-g2" x1="3" y1="2" x2="25" y2="26"><stop stop-color="#e87a2e"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs></svg>
+        ANVIL
+      </a>
+      <p class="footer-desc">AI Navigation &amp; Vocational Integration Layer. Turning displacement into reinvention.</p>
+      <a href="mailto:hello@getanvil.co" class="footer-email">hello@getanvil.co</a>
+    </div>
+    <div class="footer-right">
+      <ul class="footer-links">
+        <li><a href="/terms.html">Terms</a></li>
+        <li><a href="/privacy.html">Privacy</a></li>
+        <li><a href="/disclaimer.html">Disclaimer</a></li>
+        <li><a href="/accessibility.html">Accessibility</a></li>
+      </ul>
+      
+    </div>
+  </div>
+  <div class="footer-bottom">&copy; 2026 ANVIL. All rights reserved.</div>
+</footer>
+
+<script>
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+  document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+});
+function closeMobile() {
+  hamburger.classList.remove('open');
+  mobileMenu.classList.remove('open');
+  document.body.style.overflow = '';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service - ANVIL</title>
+<meta name="description" content="ANVIL Terms of Service. Read the terms governing your use of the ANVIL training platform for AI-augmented specialists.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M14 2L3 26h6l5-12 5 12h6L14 2z' fill='%23e87a2e'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#e87a2e">
+<style>
+/* ── Reset & Base ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  background: #0a0a0a;
+  color: #e0e0e0;
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a { color: #e87a2e; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+:root {
+  --bg: #0a0a0a;
+  --bg-card: #141414;
+  --bg-elevated: #1a1a1a;
+  --border: #2a2a2a;
+  --text: #e0e0e0;
+  --text-dim: #888;
+  --text-muted: #666;
+  --orange: #e87a2e;
+  --orange-light: #f09040;
+  --amber: #f5a623;
+  --forge-gradient: linear-gradient(135deg, #e87a2e, #f5a623);
+  --radius: 12px;
+  --max-w: 800px;
+}
+
+/* ── Navigation ── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner {
+  max-width: 1140px; margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.25rem; font-weight: 900; color: #fff;
+  letter-spacing: 1px; text-decoration: none;
+}
+.nav-logo svg { width: 28px; height: 28px; }
+.nav-links { display: flex; gap: 24px; list-style: none; }
+.nav-links a {
+  font-size: 0.875rem; font-weight: 500; color: var(--text-dim);
+  transition: color 0.2s; text-decoration: none;
+}
+.nav-links a:hover { color: #fff; text-decoration: none; }
+
+.hamburger {
+  display: none; background: none; border: none; padding: 12px;
+  flex-direction: column; gap: 5px; cursor: pointer;
+  min-width: 44px; min-height: 44px; align-items: center; justify-content: center;
+}
+.hamburger span {
+  display: block; width: 22px; height: 2px; background: #fff;
+  border-radius: 2px; transition: all 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.mobile-menu {
+  display: none; position: fixed; top: 64px; left: 0; right: 0; bottom: 0;
+  background: rgba(10, 10, 10, 0.97); z-index: 99;
+  flex-direction: column; align-items: center; justify-content: center; gap: 32px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  font-size: 1.25rem; font-weight: 600; color: var(--text-dim);
+  transition: color 0.2s; text-decoration: none;
+}
+.mobile-menu a:hover { color: #fff; }
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+}
+
+/* ── Content ── */
+.legal-page {
+  max-width: var(--max-w); margin: 0 auto; padding: 100px 24px 80px;
+}
+.legal-updated {
+  font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;
+  text-transform: uppercase; letter-spacing: 1px; font-weight: 600;
+}
+.legal-page h1 {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 900; color: #fff; margin-bottom: 8px; line-height: 1.15;
+}
+.legal-page .legal-intro {
+  font-size: 1rem; color: var(--text-dim); margin-bottom: 40px;
+  line-height: 1.7; border-bottom: 1px solid var(--border); padding-bottom: 32px;
+}
+.legal-page h2 {
+  font-size: 1.3rem; font-weight: 700; color: #fff;
+  margin-top: 40px; margin-bottom: 12px;
+  padding-top: 24px; border-top: 1px solid var(--border);
+}
+.legal-page h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+.legal-page h3 {
+  font-size: 1.05rem; font-weight: 600; color: #ddd;
+  margin-top: 24px; margin-bottom: 8px;
+}
+.legal-page p {
+  font-size: 0.95rem; color: var(--text); line-height: 1.8;
+  margin-bottom: 14px;
+}
+.legal-page ul, .legal-page ol {
+  margin-bottom: 14px; padding-left: 24px;
+}
+.legal-page li {
+  font-size: 0.95rem; color: var(--text); line-height: 1.8;
+  margin-bottom: 6px;
+}
+.legal-page strong { color: #fff; }
+.legal-page .highlight-box {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-left: 3px solid var(--orange); border-radius: 8px;
+  padding: 20px 24px; margin: 20px 0;
+}
+.legal-page .highlight-box p { margin-bottom: 0; }
+
+/* ── Footer ── */
+.footer {
+  padding: 48px 0 32px; border-top: 1px solid var(--border);
+}
+.footer-inner {
+  max-width: 1140px; margin: 0 auto; padding: 0 24px;
+  display: flex; justify-content: space-between; align-items: flex-start;
+  flex-wrap: wrap; gap: 32px;
+}
+.footer-brand { max-width: 300px; }
+.footer-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.1rem; font-weight: 900; color: #fff;
+  letter-spacing: 1px; margin-bottom: 12px; text-decoration: none;
+}
+.footer-logo svg { width: 24px; height: 24px; }
+.footer-desc { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 16px; }
+.footer-email { font-size: 0.85rem; color: var(--orange); font-weight: 500; }
+.footer-right { text-align: right; }
+.footer-links { display: flex; gap: 24px; list-style: none; margin-bottom: 16px; justify-content: flex-end; }
+.footer-links a { font-size: 0.8rem; color: var(--text-dim); text-decoration: none; }
+.footer-links a:hover { color: #fff; text-decoration: none; }
+.footer-portfolio { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+.footer-bottom {
+  max-width: 1140px; margin: 0 auto; padding: 0 24px;
+  text-align: center; padding-top: 32px; margin-top: 32px;
+  border-top: 1px solid var(--border);
+  font-size: 0.75rem; color: var(--text-muted);
+}
+@media (max-width: 640px) {
+  .footer-inner { flex-direction: column; align-items: center; text-align: center; }
+  .footer-right { text-align: center; }
+  .footer-links { justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="url(#anvil-g)"/>
+        <defs><linearGradient id="anvil-g" x1="3" y1="2" x2="25" y2="26"><stop stop-color="#e87a2e"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs>
+      </svg>
+      ANVIL
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/terms.html">Terms</a></li>
+      <li><a href="/privacy.html">Privacy</a></li>
+      <li><a href="/disclaimer.html">Disclaimer</a></li>
+      <li><a href="/accessibility.html">Accessibility</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="/" onclick="closeMobile()">Home</a>
+  <a href="/terms.html" onclick="closeMobile()">Terms</a>
+  <a href="/privacy.html" onclick="closeMobile()">Privacy</a>
+  <a href="/disclaimer.html" onclick="closeMobile()">Disclaimer</a>
+  <a href="/accessibility.html" onclick="closeMobile()">Accessibility</a>
+</div>
+
+<!-- ── Content ── -->
+<main class="legal-page">
+  <div class="legal-updated">Last updated: March 2, 2026</div>
+  <h1>Terms of Service</h1>
+  <p class="legal-intro">These Terms of Service ("Terms") govern your use of ANVIL (AI Navigation &amp; Vocational Integration Layer), operated by ANVIL ("we," "us," or "our"). By accessing or using our platform, you agree to be bound by these Terms. If you do not agree, do not use our services.</p>
+
+  <h2>1. What ANVIL Is</h2>
+  <p>ANVIL is a <strong>training platform</strong> that teaches people to become AI-augmented specialists in fields like benefits navigation, medical billing advocacy, and small business compliance.</p>
+  <div class="highlight-box">
+    <p><strong>ANVIL is not a professional services firm.</strong> We do not provide legal advice, medical advice, financial advice, or tax advice. We train individuals to use AI tools effectively in specific service niches. Our specialists are not licensed attorneys, physicians, CPAs, or financial advisors. See our <a href="/disclaimer.html">Disclaimer</a> for full details.</p>
+  </div>
+
+  <h2>2. Acceptance of Terms</h2>
+  <p>By creating an account, taking the career quiz, submitting your information, or using any part of the ANVIL platform, you confirm that:</p>
+  <ul>
+    <li>You are at least 18 years old.</li>
+    <li>You have the legal capacity to enter into these Terms.</li>
+    <li>You agree to comply with all applicable laws and regulations.</li>
+    <li>You have read and understood these Terms in their entirety.</li>
+  </ul>
+
+  <h2>3. User Accounts and Registration</h2>
+  <p>To access certain features of ANVIL, you may need to create an account. When you do:</p>
+  <ul>
+    <li>You must provide accurate, current, and complete information.</li>
+    <li>You are responsible for maintaining the security of your account credentials.</li>
+    <li>You must notify us immediately if you suspect unauthorized access to your account.</li>
+    <li>You are responsible for all activity that occurs under your account.</li>
+    <li>We reserve the right to suspend or terminate accounts that violate these Terms.</li>
+  </ul>
+
+  <h2>4. Service Description</h2>
+  <p>ANVIL provides:</p>
+  <ul>
+    <li><strong>Career Assessment:</strong> An interactive quiz that matches users to AI-augmented service niches based on their skills, experience, and preferences.</li>
+    <li><strong>Training Content:</strong> Curriculum, playbooks, and instructional materials for becoming an AI-augmented specialist.</li>
+    <li><strong>AI Tool Training:</strong> Instruction on how to use AI tools (such as ChatGPT, Claude, and others) as research assistants in specific service domains.</li>
+    <li><strong>Community Access:</strong> Connection with other ANVIL participants and mentors.</li>
+    <li><strong>Job Placement Support:</strong> Guidance on finding and landing clients in your chosen niche.</li>
+  </ul>
+  <p>ANVIL does <strong>not</strong> provide professional services to end clients. We train specialists who then provide their own services independently.</p>
+
+  <h2>5. Acceptable Use</h2>
+  <p>You agree not to:</p>
+  <ul>
+    <li>Use the platform for any unlawful purpose or in violation of any applicable laws.</li>
+    <li>Misrepresent yourself as a licensed professional (attorney, physician, CPA, etc.) as a result of ANVIL training.</li>
+    <li>Share, resell, or redistribute ANVIL training materials without written permission.</li>
+    <li>Attempt to gain unauthorized access to our systems or other users' accounts.</li>
+    <li>Submit false or misleading information during registration or the career quiz.</li>
+    <li>Use automated tools to scrape, crawl, or extract data from the platform.</li>
+    <li>Harass, threaten, or abuse other users or ANVIL staff.</li>
+    <li>Use ANVIL training to provide services that require licensure you do not hold.</li>
+  </ul>
+
+  <h2>6. Intellectual Property</h2>
+  <h3>What ANVIL Owns</h3>
+  <p>All ANVIL training materials, playbooks, curriculum, course content, software, branding, logos, and platform design are the intellectual property of ANVIL. These are protected by copyright, trademark, and other intellectual property laws. You may not reproduce, distribute, or create derivative works from our materials without written permission.</p>
+  <h3>What You Own</h3>
+  <p>You retain full ownership of any work product you create while serving your own clients. ANVIL makes no claim to your client deliverables, your business relationships, or income you generate using the skills you learn through our platform. Your business is yours.</p>
+  <h3>Feedback and Submissions</h3>
+  <p>If you provide feedback, suggestions, or ideas about ANVIL, you grant us a non-exclusive, royalty-free, perpetual license to use that feedback to improve our platform. You are not required to provide feedback.</p>
+
+  <h2>7. Payment Terms</h2>
+  <h3>Free Tier</h3>
+  <p>ANVIL's core training program is currently free for displaced workers. We reserve the right to introduce paid tiers, premium features, or subscription plans in the future. If we do, existing free users will be notified in advance, and access to features available at the time of registration will not be retroactively restricted without notice.</p>
+  <h3>Future Paid Services</h3>
+  <p>If paid tiers are introduced:</p>
+  <ul>
+    <li>Pricing will be clearly displayed before purchase.</li>
+    <li>Payments will be processed through a secure third-party payment processor.</li>
+    <li>Refund policies will be stated at the time of purchase.</li>
+    <li>You may cancel paid subscriptions at any time; access continues through the end of the billing period.</li>
+  </ul>
+
+  <h2>8. WIOA Program Terms</h2>
+  <p>ANVIL may accept participants funded through the Workforce Innovation and Opportunity Act (WIOA). If you are a WIOA-funded participant:</p>
+  <ul>
+    <li>Your enrollment is subject to eligibility requirements determined by your local workforce development board, not by ANVIL.</li>
+    <li>ANVIL may share your progress data, attendance records, and outcomes with your local workforce board as required by WIOA reporting obligations.</li>
+    <li>WIOA funding does not guarantee placement, employment, or a specific income level.</li>
+    <li>ANVIL certification is specific to our training program and is <strong>not</strong> a government credential or license.</li>
+    <li>You must comply with your local workforce board's requirements in addition to these Terms.</li>
+    <li>Funding availability varies by state, local area, and fiscal year. ANVIL does not control funding decisions.</li>
+  </ul>
+
+  <h2>9. Limitation of Liability</h2>
+  <div class="highlight-box">
+    <p><strong>To the maximum extent permitted by applicable law, ANVIL and its officers, directors, employees, agents, and affiliates shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of income, loss of profits, loss of data, or loss of business opportunities, regardless of the cause of action or the theory of liability, even if ANVIL has been advised of the possibility of such damages.</strong></p>
+  </div>
+  <p>Our total liability to you for any claims arising from your use of the platform shall not exceed the total amount you paid to ANVIL in the twelve (12) months preceding the claim, or fifty dollars ($50), whichever is greater.</p>
+  <p>This limitation applies to:</p>
+  <ul>
+    <li>Decisions you make based on ANVIL training content.</li>
+    <li>Services you provide to your clients using skills learned through ANVIL.</li>
+    <li>Income projections, earnings estimates, or career outcomes.</li>
+    <li>Errors, interruptions, or unavailability of the platform.</li>
+    <li>Third-party actions, including those of AI tool providers.</li>
+  </ul>
+
+  <h2>10. Disclaimer of Warranties</h2>
+  <p>THE ANVIL PLATFORM AND ALL CONTENT, MATERIALS, AND SERVICES ARE PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS, IMPLIED, OR STATUTORY. WE DISCLAIM ALL WARRANTIES, INCLUDING BUT NOT LIMITED TO:</p>
+  <ul>
+    <li>IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.</li>
+    <li>WARRANTIES THAT THE PLATFORM WILL BE UNINTERRUPTED, ERROR-FREE, OR SECURE.</li>
+    <li>WARRANTIES REGARDING THE ACCURACY, RELIABILITY, OR COMPLETENESS OF ANY CONTENT.</li>
+    <li>WARRANTIES THAT THE PLATFORM WILL MEET YOUR SPECIFIC REQUIREMENTS OR EXPECTATIONS.</li>
+  </ul>
+  <p>ANVIL does not guarantee any specific income, employment outcome, or career result. Earning projections mentioned on the platform are estimates based on market research and are not promises or guarantees.</p>
+
+  <h2>11. Dispute Resolution</h2>
+  <h3>Informal Resolution First</h3>
+  <p>Before initiating any formal dispute proceeding, you agree to contact us at our support email address and attempt to resolve the dispute informally for at least thirty (30) days.</p>
+  <h3>Binding Arbitration</h3>
+  <p>If informal resolution fails, any dispute, claim, or controversy arising out of or relating to these Terms or your use of ANVIL shall be resolved by binding arbitration administered by the American Arbitration Association (AAA) under its Consumer Arbitration Rules. Arbitration will be conducted in English, and the arbitrator's decision shall be final and binding.</p>
+  <h3>Class Action Waiver</h3>
+  <p>You agree that any dispute resolution proceeding will be conducted on an individual basis and not as part of a class, consolidated, or representative action. You waive any right to participate in a class action lawsuit against ANVIL.</p>
+  <h3>Exceptions</h3>
+  <p>Either party may seek injunctive relief in a court of competent jurisdiction for claims involving intellectual property infringement or unauthorized access to the platform.</p>
+
+  <h2>12. Governing Law</h2>
+  <p>These Terms shall be governed by and construed in accordance with the laws of the State of Delaware, without regard to its conflict of law provisions. Any legal proceedings not subject to arbitration shall be brought in the federal or state courts located in the State of Delaware.</p>
+
+  <h2>13. Modification of Terms</h2>
+  <p>We may update these Terms from time to time. When we make material changes:</p>
+  <ul>
+    <li>We will update the "Last updated" date at the top of this page.</li>
+    <li>We will notify registered users by email at least fourteen (14) days before changes take effect.</li>
+    <li>Continued use of the platform after changes take effect constitutes acceptance of the updated Terms.</li>
+    <li>If you disagree with updated Terms, your remedy is to stop using the platform and request account deletion.</li>
+  </ul>
+
+  <h2>14. Termination</h2>
+  <h3>By You</h3>
+  <p>You may stop using ANVIL at any time. To delete your account and data, contact us at our support email address.</p>
+  <h3>By Us</h3>
+  <p>We may suspend or terminate your access to ANVIL if:</p>
+  <ul>
+    <li>You violate these Terms.</li>
+    <li>You misrepresent your credentials or professional status.</li>
+    <li>Your use of the platform poses a risk to other users or to ANVIL.</li>
+    <li>We are required to do so by law.</li>
+  </ul>
+  <p>Upon termination, your right to access the platform ceases immediately. Provisions that by their nature should survive termination (including limitation of liability, dispute resolution, and intellectual property) will survive.</p>
+
+  <h2>15. Miscellaneous</h2>
+  <ul>
+    <li><strong>Severability:</strong> If any provision of these Terms is found unenforceable, the remaining provisions remain in full force and effect.</li>
+    <li><strong>Entire Agreement:</strong> These Terms, together with our Privacy Policy and Disclaimer, constitute the entire agreement between you and ANVIL regarding the platform.</li>
+    <li><strong>Waiver:</strong> Our failure to enforce any provision of these Terms does not waive our right to enforce it later.</li>
+    <li><strong>Assignment:</strong> You may not assign your rights or obligations under these Terms without our written consent. We may assign our rights and obligations without restriction.</li>
+  </ul>
+
+  <h2>16. Contact Information</h2>
+  <p>If you have questions about these Terms, contact us at:</p>
+  <p>
+    <strong>ANVIL Support</strong><br>
+    Email: <a href="mailto:hello@getanvil.co">hello@getanvil.co</a><br>
+    Subject line: "Terms of Service Inquiry"
+  </p>
+</main>
+
+<!-- ── Footer ── -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="/" class="footer-logo">
+        <svg viewBox="0 0 28 28" fill="none"><path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="url(#anvil-g2)"/><defs><linearGradient id="anvil-g2" x1="3" y1="2" x2="25" y2="26"><stop stop-color="#e87a2e"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs></svg>
+        ANVIL
+      </a>
+      <p class="footer-desc">AI Navigation &amp; Vocational Integration Layer. Turning displacement into reinvention.</p>
+      <a href="mailto:hello@getanvil.co" class="footer-email">hello@getanvil.co</a>
+    </div>
+    <div class="footer-right">
+      <ul class="footer-links">
+        <li><a href="/terms.html">Terms</a></li>
+        <li><a href="/privacy.html">Privacy</a></li>
+        <li><a href="/disclaimer.html">Disclaimer</a></li>
+        <li><a href="/accessibility.html">Accessibility</a></li>
+      </ul>
+      
+    </div>
+  </div>
+  <div class="footer-bottom">&copy; 2026 ANVIL. All rights reserved.</div>
+</footer>
+
+<script>
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+  document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+});
+function closeMobile() {
+  hamburger.classList.remove('open');
+  mobileMenu.classList.remove('open');
+  document.body.style.overflow = '';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANVIL - Marketing Console</title>
+<meta name="description" content="ANVIL Marketing Console — TikTok scripts, outreach templates, and content management.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M14 2L3 26h6l5-12 5 12h6L14 2z' fill='%23e87a2e'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#e87a2e">
+<meta name="robots" content="noindex, nofollow">
+<style>
+/* ── Reset & Base ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  background: #0a0a0a;
+  color: #e0e0e0;
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: inherit; border: none; }
+input, select { font-family: inherit; }
+
+/* Skip to content */
+.skip-link {
+  position: absolute; left: -9999px; top: 10px; z-index: 9999;
+  background: var(--orange); color: #000; padding: 12px 20px;
+  border-radius: 4px; font-weight: 700; font-size: 0.95rem;
+}
+.skip-link:focus { left: 10px; outline: 3px solid #fff; outline-offset: 2px; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Colors ── */
+:root {
+  --bg: #0a0a0a;
+  --bg-card: #141414;
+  --bg-elevated: #1a1a1a;
+  --border: #2a2a2a;
+  --text: #e0e0e0;
+  --text-dim: #888;
+  --text-muted: #666;
+  --orange: #e87a2e;
+  --orange-light: #f09040;
+  --amber: #f5a623;
+  --amber-glow: rgba(245, 166, 35, 0.15);
+  --ember: #c45e1a;
+  --forge-gradient: linear-gradient(135deg, #e87a2e, #f5a623);
+  --forge-glow: 0 0 30px rgba(232, 122, 46, 0.2);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --max-w: 1140px;
+  --green: #48bb78;
+  --red: #dc3c3c;
+}
+
+/* ── Utility ── */
+.container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+.hidden { display: none !important; }
+
+/* Focus visible */
+*:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+/* ── Navigation ── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner {
+  max-width: var(--max-w); margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.25rem; font-weight: 900; color: #fff;
+  letter-spacing: 1px;
+}
+.nav-logo svg { width: 28px; height: 28px; }
+.nav-label {
+  font-size: 0.8rem; font-weight: 600; color: var(--text-dim);
+  padding: 4px 12px; background: var(--bg-elevated);
+  border-radius: 100px; border: 1px solid var(--border);
+  margin-left: 8px;
+}
+.nav-links { display: flex; gap: 20px; list-style: none; align-items: center; }
+.nav-links a {
+  font-size: 0.875rem; font-weight: 500; color: var(--text-dim);
+  transition: color 0.2s; padding: 4px 0; min-height: 44px;
+  display: inline-flex; align-items: center;
+}
+.nav-links a:hover { color: #fff; }
+
+/* Hamburger */
+.hamburger {
+  display: none; background: none; border: none; padding: 12px;
+  flex-direction: column; gap: 5px; cursor: pointer;
+  min-width: 44px; min-height: 44px; align-items: center; justify-content: center;
+}
+.hamburger span {
+  display: block; width: 22px; height: 2px; background: #fff;
+  border-radius: 2px; transition: all 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.mobile-menu {
+  display: none; position: fixed; top: 64px; left: 0; right: 0; bottom: 0;
+  background: rgba(10, 10, 10, 0.97); z-index: 99; backdrop-filter: blur(8px);
+  flex-direction: column; align-items: center; justify-content: center; gap: 24px;
+  padding: 24px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  font-size: 1.25rem; font-weight: 600; color: var(--text-dim);
+  transition: color 0.2s; min-height: 44px; display: flex; align-items: center;
+  padding: 8px 16px; border-radius: 8px;
+}
+.mobile-menu a:hover { color: #fff; background: rgba(232, 122, 46, 0.08); }
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+}
+
+/* ── API Key Gate ── */
+.gate-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.gate-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 48px 40px;
+  max-width: 440px; width: 100%; text-align: center;
+}
+.gate-card h1 {
+  font-size: 1.5rem; font-weight: 800; color: #fff;
+  margin-bottom: 8px;
+}
+.gate-card p {
+  font-size: 0.9rem; color: var(--text-dim); margin-bottom: 28px;
+}
+.gate-card .gate-logo {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  margin-bottom: 24px;
+}
+.gate-card .gate-logo svg { width: 36px; height: 36px; }
+.gate-card .gate-logo span {
+  font-size: 1.5rem; font-weight: 900; color: #fff; letter-spacing: 1px;
+}
+.gate-input {
+  width: 100%; padding: 14px 16px; border-radius: var(--radius-sm);
+  background: var(--bg); border: 1px solid var(--border);
+  color: #fff; font-size: 0.95rem;
+  transition: border-color 0.2s; min-height: 48px;
+}
+.gate-input:focus { outline: none; border-color: var(--orange); }
+.gate-input::placeholder { color: var(--text-muted); }
+.gate-btn {
+  width: 100%; padding: 14px; border-radius: 100px; margin-top: 16px;
+  background: var(--forge-gradient); color: #000;
+  font-size: 1rem; font-weight: 800; transition: all 0.2s;
+  min-height: 48px;
+}
+.gate-btn:hover { transform: translateY(-1px); box-shadow: var(--forge-glow); }
+.gate-error {
+  color: var(--red); font-size: 0.85rem; margin-top: 12px;
+  min-height: 20px;
+}
+
+/* ── Main Content ── */
+.main-content { padding-top: 88px; padding-bottom: 60px; }
+
+/* ── Tabs ── */
+.tab-nav {
+  display: flex; gap: 0; border-bottom: 1px solid var(--border);
+  margin-bottom: 28px;
+}
+.tab-btn {
+  padding: 14px 28px; font-size: 0.9rem; font-weight: 700;
+  color: var(--text-dim); background: none;
+  border-bottom: 3px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+  min-height: 48px; position: relative; top: 1px;
+}
+.tab-btn:hover { color: #fff; }
+.tab-btn.active {
+  color: var(--orange); border-bottom-color: var(--orange);
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ── Search/Filter Bar ── */
+.filter-bar {
+  display: flex; align-items: center; gap: 12px;
+  flex-wrap: wrap; margin-bottom: 24px;
+}
+.filter-input {
+  flex: 1; min-width: 200px; padding: 12px 16px;
+  border-radius: var(--radius-sm); background: var(--bg-card);
+  border: 1px solid var(--border); color: #fff; font-size: 0.9rem;
+  min-height: 48px;
+}
+.filter-input:focus { outline: none; border-color: var(--orange); }
+.filter-input::placeholder { color: var(--text-muted); }
+.filter-select {
+  padding: 12px 16px; border-radius: var(--radius-sm);
+  background: var(--bg-card); border: 1px solid var(--border);
+  color: var(--text-dim); font-size: 0.9rem; min-height: 48px;
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20' fill='%23888'%3E%3Cpath d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+  padding-right: 36px; cursor: pointer;
+}
+.filter-select:focus { outline: none; border-color: var(--orange); }
+
+/* ── Content Card Grid ── */
+.card-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+@media (max-width: 768px) {
+  .card-grid { grid-template-columns: 1fr; }
+}
+
+.content-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  transition: border-color 0.3s;
+  display: flex; flex-direction: column;
+}
+.content-card:hover { border-color: #3a3a3a; }
+
+.card-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 12px; margin-bottom: 12px;
+}
+.card-title {
+  font-size: 1rem; font-weight: 700; color: #fff; line-height: 1.4;
+}
+.card-badges {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;
+}
+.badge {
+  display: inline-block; font-size: 0.65rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 3px 10px; border-radius: 100px; white-space: nowrap;
+}
+.badge-format {
+  color: var(--amber); background: var(--amber-glow);
+}
+.badge-duration {
+  color: var(--text-dim); background: var(--bg-elevated);
+  border: 1px solid var(--border);
+}
+.badge-platform {
+  color: var(--orange); background: rgba(232, 122, 46, 0.1);
+  border: 1px solid rgba(232, 122, 46, 0.2);
+}
+
+.card-subject {
+  font-size: 0.85rem; font-weight: 600; color: var(--orange-light);
+  margin-bottom: 8px;
+}
+
+.card-preview {
+  font-size: 0.85rem; color: var(--text-dim); line-height: 1.6;
+  margin-bottom: 16px; flex: 1;
+}
+.card-preview.clamped {
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-full-content {
+  display: none; font-size: 0.85rem; color: var(--text-dim);
+  line-height: 1.7; margin-bottom: 16px;
+  white-space: pre-wrap; word-wrap: break-word;
+  padding: 16px; background: var(--bg);
+  border-radius: var(--radius-sm); border: 1px solid var(--border);
+  max-height: 400px; overflow-y: auto;
+}
+.card-full-content.open { display: block; }
+
+.card-hashtags {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;
+}
+.hashtag {
+  font-size: 0.7rem; font-weight: 600; color: var(--text-muted);
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  padding: 2px 8px; border-radius: 100px;
+}
+
+.card-actions {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto;
+}
+
+.btn {
+  padding: 10px 18px; border-radius: 100px;
+  font-size: 0.8rem; font-weight: 700; transition: all 0.2s;
+  min-height: 44px; display: inline-flex; align-items: center;
+  justify-content: center; gap: 6px; white-space: nowrap;
+}
+.btn-primary {
+  background: var(--forge-gradient); color: #000;
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: var(--forge-glow); }
+.btn-secondary {
+  background: transparent; color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { border-color: var(--text-dim); color: #fff; }
+.btn-danger {
+  background: transparent; color: var(--red);
+  border: 1px solid rgba(220, 60, 60, 0.3);
+}
+.btn-danger:hover { border-color: var(--red); }
+.btn-sm {
+  padding: 8px 14px; font-size: 0.75rem; min-height: 36px;
+}
+.btn-expand {
+  background: transparent; color: var(--orange); border: 1px solid rgba(232, 122, 46, 0.3);
+}
+.btn-expand:hover { border-color: var(--orange); background: rgba(232, 122, 46, 0.06); }
+
+/* ── Empty State ── */
+.empty-state {
+  text-align: center; padding: 60px 24px; color: var(--text-muted);
+  grid-column: 1 / -1;
+}
+.empty-state-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.5; }
+.empty-state-text { font-size: 0.95rem; }
+
+/* ── Loading ── */
+.loading-overlay {
+  display: flex; align-items: center; justify-content: center;
+  padding: 60px; color: var(--text-muted); gap: 12px;
+  font-size: 0.9rem; grid-column: 1 / -1;
+}
+.loading-spinner {
+  display: inline-block; width: 20px; height: 20px;
+  border: 2px solid var(--border); border-top-color: var(--orange);
+  border-radius: 50%; animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Footer ── */
+.footer {
+  padding: 32px 0; border-top: 1px solid var(--border);
+  text-align: center;
+}
+.footer-text {
+  font-size: 0.75rem; color: var(--text-muted);
+}
+.footer-logo-sm {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.85rem; font-weight: 900; color: var(--text-dim);
+  letter-spacing: 1px; margin-bottom: 8px;
+}
+.footer-logo-sm svg { width: 18px; height: 18px; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 300;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 14px 20px;
+  font-size: 0.85rem; color: var(--text);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  transform: translateY(100px); opacity: 0;
+  transition: transform 0.3s, opacity 0.3s;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-color: rgba(72, 187, 120, 0.3); }
+.toast.error { border-color: rgba(220, 60, 60, 0.3); }
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ── Navigation ── -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="url(#anvil-g)"/>
+        <defs><linearGradient id="anvil-g" x1="3" y1="2" x2="25" y2="26"><stop stop-color="#e87a2e"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs>
+      </svg>
+      ANVIL
+      <span class="nav-label">Marketing</span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="/">Home</a></li>
+      <li><a href="/admin.html">Admin</a></li>
+      <li><a href="#" id="navSignOut" class="hidden" style="color:var(--red);">Sign Out</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="/">Home</a>
+  <a href="/admin.html">Admin</a>
+  <a href="#" id="mobileSignOut" class="hidden" style="color:var(--red);">Sign Out</a>
+</div>
+
+<!-- ── API Key Gate ── -->
+<div class="gate-overlay" id="gateOverlay">
+  <div class="gate-card">
+    <div class="gate-logo">
+      <svg viewBox="0 0 28 28" fill="none"><path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="url(#anvil-g2)"/><defs><linearGradient id="anvil-g2" x1="3" y1="2" x2="25" y2="26"><stop stop-color="#e87a2e"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs></svg>
+      <span>ANVIL</span>
+    </div>
+    <h1>Marketing Console</h1>
+    <p>Enter your API key to access marketing content.</p>
+    <input type="password" class="gate-input" id="gateInput" placeholder="API key" autocomplete="off">
+    <button class="gate-btn" id="gateBtn">Enter</button>
+    <div class="gate-error" id="gateError"></div>
+  </div>
+</div>
+
+<!-- ── Main Content ── -->
+<main id="main-content" class="main-content container hidden" role="main">
+
+  <h1 style="font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:24px;">Marketing Console</h1>
+
+  <!-- Tabs -->
+  <div class="tab-nav" role="tablist">
+    <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tiktokTab" id="tiktokTabBtn" data-tab="tiktok">TikTok Scripts</button>
+    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="outreachTab" id="outreachTabBtn" data-tab="outreach">Outreach Templates</button>
+  </div>
+
+  <!-- TikTok Scripts Tab -->
+  <div class="tab-content active" id="tiktokTab" role="tabpanel" aria-labelledby="tiktokTabBtn">
+    <div class="filter-bar">
+      <input type="text" class="filter-input" id="tiktokSearch" placeholder="Search scripts by title or content..." aria-label="Search TikTok scripts">
+    </div>
+    <div class="card-grid" id="tiktokGrid">
+      <div class="loading-overlay"><span class="loading-spinner"></span> Loading scripts...</div>
+    </div>
+  </div>
+
+  <!-- Outreach Templates Tab -->
+  <div class="tab-content" id="outreachTab" role="tabpanel" aria-labelledby="outreachTabBtn">
+    <div class="filter-bar">
+      <input type="text" class="filter-input" id="outreachSearch" placeholder="Search templates by title or content..." aria-label="Search outreach templates">
+      <select class="filter-select" id="platformFilter" aria-label="Filter by platform">
+        <option value="">All Platforms</option>
+        <option value="Reddit">Reddit</option>
+        <option value="Facebook">Facebook</option>
+        <option value="LinkedIn">LinkedIn</option>
+        <option value="Nextdoor">Nextdoor</option>
+        <option value="Email">Email</option>
+      </select>
+    </div>
+    <div class="card-grid" id="outreachGrid">
+      <div class="loading-overlay"><span class="loading-spinner"></span> Loading templates...</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Footer -->
+<footer class="footer hidden" id="footerEl">
+  <div class="container">
+    <div class="footer-logo-sm">
+      <svg viewBox="0 0 28 28" fill="none"><path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="url(#anvil-g3)"/><defs><linearGradient id="anvil-g3" x1="3" y1="2" x2="25" y2="26"><stop stop-color="#e87a2e"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs></svg>
+      ANVIL
+    </div>
+    <div class="footer-text">&copy; 2026 ANVIL Marketing Console. All rights reserved.</div>
+  </div>
+</footer>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── State ── */
+let tiktokScripts = [];
+let outreachTemplates = [];
+let filteredTiktok = [];
+let filteredOutreach = [];
+
+/* ── Helpers ── */
+function getApiKey() {
+  return sessionStorage.getItem('anvil_api_key') || '';
+}
+
+function setApiKey(key) {
+  sessionStorage.setItem('anvil_api_key', key);
+}
+
+function clearApiKey() {
+  sessionStorage.removeItem('anvil_api_key');
+}
+
+function getHeaders() {
+  return {
+    'Authorization': 'Bearer ' + getApiKey(),
+    'Content-Type': 'application/json'
+  };
+}
+
+function showToast(msg, type) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast ' + (type || '');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function copyToClipboard(text, btn) {
+  navigator.clipboard.writeText(text).then(function() {
+    var orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = orig; }, 2000);
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    var orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = orig; }, 2000);
+  });
+}
+
+function truncateLines(text, lines) {
+  if (!text) return '';
+  const parts = text.split('\n');
+  return parts.slice(0, lines).join('\n');
+}
+
+/* ── Gate ── */
+const gateOverlay = document.getElementById('gateOverlay');
+const gateInput = document.getElementById('gateInput');
+const gateBtn = document.getElementById('gateBtn');
+const gateError = document.getElementById('gateError');
+const mainContent = document.getElementById('main-content');
+const footerEl = document.getElementById('footerEl');
+
+async function attemptAuth(key) {
+  gateBtn.disabled = true;
+  gateBtn.textContent = 'Verifying...';
+  gateError.textContent = '';
+
+  try {
+    const res = await fetch('/api/content-calendar', {
+      headers: { 'Authorization': 'Bearer ' + key }
+    });
+    if (!res.ok) throw new Error('Unauthorized');
+    setApiKey(key);
+    const data = await res.json();
+    tiktokScripts = data.tiktokScripts || [];
+    outreachTemplates = data.outreachTemplates || [];
+    showConsole();
+  } catch (err) {
+    gateError.textContent = 'Invalid API key';
+    gateInput.style.borderColor = 'var(--red)';
+  } finally {
+    gateBtn.disabled = false;
+    gateBtn.textContent = 'Enter';
+  }
+}
+
+gateBtn.addEventListener('click', function() {
+  var key = gateInput.value.trim();
+  if (!key) {
+    gateError.textContent = 'Please enter an API key';
+    gateInput.style.borderColor = 'var(--red)';
+    return;
+  }
+  attemptAuth(key);
+});
+
+gateInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') gateBtn.click();
+});
+
+gateInput.addEventListener('focus', function() {
+  gateInput.style.borderColor = '';
+  gateError.textContent = '';
+});
+
+function showConsole() {
+  gateOverlay.classList.add('hidden');
+  mainContent.classList.remove('hidden');
+  footerEl.classList.remove('hidden');
+  document.getElementById('navSignOut').classList.remove('hidden');
+  document.getElementById('mobileSignOut').classList.remove('hidden');
+  renderTiktok();
+  renderOutreach();
+}
+
+function signOut() {
+  clearApiKey();
+  mainContent.classList.add('hidden');
+  footerEl.classList.add('hidden');
+  document.getElementById('navSignOut').classList.add('hidden');
+  document.getElementById('mobileSignOut').classList.add('hidden');
+  gateOverlay.classList.remove('hidden');
+  gateInput.value = '';
+  gateError.textContent = '';
+}
+
+document.getElementById('navSignOut').addEventListener('click', function(e) { e.preventDefault(); signOut(); });
+document.getElementById('mobileSignOut').addEventListener('click', function(e) { e.preventDefault(); signOut(); });
+
+/* ── Check existing session ── */
+if (getApiKey()) {
+  attemptAuth(getApiKey());
+}
+
+/* ── Tabs ── */
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var tab = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(function(b) {
+      b.classList.remove('active');
+      b.setAttribute('aria-selected', 'false');
+    });
+    document.querySelectorAll('.tab-content').forEach(function(c) {
+      c.classList.remove('active');
+    });
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+    document.getElementById(tab + 'Tab').classList.add('active');
+  });
+});
+
+/* ── TikTok Scripts Rendering ── */
+function renderTiktok() {
+  var search = (document.getElementById('tiktokSearch').value || '').toLowerCase().trim();
+  var grid = document.getElementById('tiktokGrid');
+
+  filteredTiktok = tiktokScripts.filter(function(s) {
+    if (!search) return true;
+    var title = (s.title || '').toLowerCase();
+    var content = (s.content || s.body || '').toLowerCase();
+    var hook = (s.hook || '').toLowerCase();
+    return title.includes(search) || content.includes(search) || hook.includes(search);
+  });
+
+  if (filteredTiktok.length === 0) {
+    grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#127909;</div><div class="empty-state-text">' +
+      (tiktokScripts.length === 0 ? 'No TikTok scripts loaded' : 'No scripts match your search') + '</div></div>';
+    return;
+  }
+
+  grid.innerHTML = filteredTiktok.map(function(s, i) {
+    var title = escapeHtml(s.title || 'Untitled Script');
+    var format = escapeHtml(s.format || '');
+    var duration = escapeHtml(s.duration || '');
+    var hook = escapeHtml(s.hook || truncateLines(s.content || s.body || '', 2));
+    var fullContent = s.content || s.body || '';
+    var hashtags = s.hashtags || [];
+
+    var hashtagsHtml = '';
+    if (hashtags.length > 0) {
+      hashtagsHtml = '<div class="card-hashtags">' +
+        hashtags.map(function(h) { return '<span class="hashtag">' + escapeHtml(h) + '</span>'; }).join('') +
+        '</div>';
+    }
+
+    var badgesHtml = '';
+    if (format) badgesHtml += '<span class="badge badge-format">' + format + '</span>';
+    if (duration) badgesHtml += '<span class="badge badge-duration">' + duration + '</span>';
+
+    return '<div class="content-card" data-tiktok-idx="' + i + '">' +
+      '<div class="card-header"><div class="card-title">' + title + '</div></div>' +
+      (badgesHtml ? '<div class="card-badges">' + badgesHtml + '</div>' : '') +
+      '<div class="card-preview clamped">' + escapeHtml(hook || truncateLines(fullContent, 2)) + '</div>' +
+      '<div class="card-full-content" id="tiktok-full-' + i + '">' + escapeHtml(fullContent) + '</div>' +
+      hashtagsHtml +
+      '<div class="card-actions">' +
+        '<button class="btn btn-expand btn-sm" onclick="toggleTiktokExpand(' + i + ', this)">Show Full Script</button>' +
+        '<button class="btn btn-primary btn-sm" onclick="copyTiktokFull(' + i + ', this)">Copy Full Text</button>' +
+        '<button class="btn btn-secondary btn-sm" onclick="copyTiktokHook(' + i + ', this)">Copy Hook Only</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function toggleTiktokExpand(idx, btn) {
+  var el = document.getElementById('tiktok-full-' + idx);
+  if (!el) return;
+  var isOpen = el.classList.toggle('open');
+  btn.textContent = isOpen ? 'Hide Full Script' : 'Show Full Script';
+}
+
+function copyTiktokFull(idx, btn) {
+  var s = filteredTiktok[idx];
+  if (!s) return;
+  var text = (s.hook || '') + '\n\n' + (s.content || s.body || '');
+  if (s.cta) text += '\n\n' + s.cta;
+  if (s.hashtags && s.hashtags.length) text += '\n\n' + s.hashtags.join(' ');
+  copyToClipboard(text.trim(), btn);
+}
+
+function copyTiktokHook(idx, btn) {
+  var s = filteredTiktok[idx];
+  if (!s) return;
+  var hook = s.hook || truncateLines(s.content || s.body || '', 2);
+  copyToClipboard(hook.trim(), btn);
+}
+
+document.getElementById('tiktokSearch').addEventListener('input', debounce(renderTiktok, 300));
+
+/* ── Outreach Templates Rendering ── */
+function renderOutreach() {
+  var search = (document.getElementById('outreachSearch').value || '').toLowerCase().trim();
+  var platform = document.getElementById('platformFilter').value;
+  var grid = document.getElementById('outreachGrid');
+
+  filteredOutreach = outreachTemplates.filter(function(t) {
+    if (platform && (t.platform || '') !== platform) return false;
+    if (!search) return true;
+    var title = (t.title || '').toLowerCase();
+    var content = (t.content || t.body || '').toLowerCase();
+    var subject = (t.subject || '').toLowerCase();
+    return title.includes(search) || content.includes(search) || subject.includes(search);
+  });
+
+  if (filteredOutreach.length === 0) {
+    grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#128231;</div><div class="empty-state-text">' +
+      (outreachTemplates.length === 0 ? 'No outreach templates loaded' : 'No templates match your filters') + '</div></div>';
+    return;
+  }
+
+  grid.innerHTML = filteredOutreach.map(function(t, i) {
+    var title = escapeHtml(t.title || 'Untitled Template');
+    var platform = escapeHtml(t.platform || '');
+    var subject = t.subject ? '<div class="card-subject">Subject: ' + escapeHtml(t.subject) + '</div>' : '';
+    var fullContent = t.content || t.body || '';
+    var preview = escapeHtml(truncateLines(fullContent, 3));
+
+    return '<div class="content-card" data-outreach-idx="' + i + '">' +
+      '<div class="card-header"><div class="card-title">' + title + '</div></div>' +
+      (platform ? '<div class="card-badges"><span class="badge badge-platform">' + platform + '</span></div>' : '') +
+      subject +
+      '<div class="card-preview clamped">' + preview + '</div>' +
+      '<div class="card-full-content" id="outreach-full-' + i + '">' + escapeHtml(fullContent) + '</div>' +
+      '<div class="card-actions">' +
+        '<button class="btn btn-expand btn-sm" onclick="toggleOutreachExpand(' + i + ', this)">Show Full Template</button>' +
+        '<button class="btn btn-primary btn-sm" onclick="copyOutreachFull(' + i + ', this)">Copy Full Text</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function toggleOutreachExpand(idx, btn) {
+  var el = document.getElementById('outreach-full-' + idx);
+  if (!el) return;
+  var isOpen = el.classList.toggle('open');
+  btn.textContent = isOpen ? 'Hide Full Template' : 'Show Full Template';
+}
+
+function copyOutreachFull(idx, btn) {
+  var t = filteredOutreach[idx];
+  if (!t) return;
+  var text = '';
+  if (t.subject) text += 'Subject: ' + t.subject + '\n\n';
+  text += t.content || t.body || '';
+  copyToClipboard(text.trim(), btn);
+}
+
+document.getElementById('outreachSearch').addEventListener('input', debounce(renderOutreach, 300));
+document.getElementById('platformFilter').addEventListener('change', renderOutreach);
+
+/* ── Debounce ── */
+function debounce(fn, delay) {
+  var t;
+  return function() {
+    clearTimeout(t);
+    t = setTimeout(function() { fn(); }, delay);
+  };
+}
+
+/* ── Mobile Navigation ── */
+var hamburger = document.getElementById('hamburger');
+var mobileMenu = document.getElementById('mobileMenu');
+
+hamburger.addEventListener('click', function() {
+  hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+  document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+});
+
+function closeMobile() {
+  hamburger.classList.remove('open');
+  mobileMenu.classList.remove('open');
+  document.body.style.overflow = '';
+}
+</script>
+</body>
+</html>

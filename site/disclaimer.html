@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Professional Services Disclaimer - ANVIL</title>
+<meta name="description" content="ANVIL Professional Services Disclaimer. Important information about the nature of ANVIL training and specialist services.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M14 2L3 26h6l5-12 5 12h6L14 2z' fill='%23e87a2e'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#e87a2e">
+<style>
+/* ── Reset & Base ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  background: #0a0a0a;
+  color: #e0e0e0;
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a { color: #e87a2e; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+:root {
+  --bg: #0a0a0a;
+  --bg-card: #141414;
+  --bg-elevated: #1a1a1a;
+  --border: #2a2a2a;
+  --text: #e0e0e0;
+  --text-dim: #888;
+  --text-muted: #666;
+  --orange: #e87a2e;
+  --orange-light: #f09040;
+  --amber: #f5a623;
+  --forge-gradient: linear-gradient(135deg, #e87a2e, #f5a623);
+  --radius: 12px;
+  --max-w: 800px;
+}
+
+/* ── Navigation ── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner {
+  max-width: 1140px; margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.25rem; font-weight: 900; color: #fff;
+  letter-spacing: 1px; text-decoration: none;
+}
+.nav-logo svg { width: 28px; height: 28px; }
+.nav-links { display: flex; gap: 24px; list-style: none; }
+.nav-links a {
+  font-size: 0.875rem; font-weight: 500; color: var(--text-dim);
+  transition: color 0.2s; text-decoration: none;
+}
+.nav-links a:hover { color: #fff; text-decoration: none; }
+
+.hamburger {
+  display: none; background: none; border: none; padding: 12px;
+  flex-direction: column; gap: 5px; cursor: pointer;
+  min-width: 44px; min-height: 44px; align-items: center; justify-content: center;
+}
+.hamburger span {
+  display: block; width: 22px; height: 2px; background: #fff;
+  border-radius: 2px; transition: all 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.mobile-menu {
+  display: none; position: fixed; top: 64px; left: 0; right: 0; bottom: 0;
+  background: rgba(10, 10, 10, 0.97); z-index: 99;
+  flex-direction: column; align-items: center; justify-content: center; gap: 32px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  font-size: 1.25rem; font-weight: 600; color: var(--text-dim);
+  transition: color 0.2s; text-decoration: none;
+}
+.mobile-menu a:hover { color: #fff; }
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+}
+
+/* ── Content ── */
+.legal-page {
+  max-width: var(--max-w); margin: 0 auto; padding: 100px 24px 80px;
+}
+.legal-updated {
+  font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;
+  text-transform: uppercase; letter-spacing: 1px; font-weight: 600;
+}
+.legal-page h1 {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 900; color: #fff; margin-bottom: 8px; line-height: 1.15;
+}
+.legal-page .legal-intro {
+  font-size: 1rem; color: var(--text-dim); margin-bottom: 40px;
+  line-height: 1.7; border-bottom: 1px solid var(--border); padding-bottom: 32px;
+}
+.legal-page h2 {
+  font-size: 1.3rem; font-weight: 700; color: #fff;
+  margin-top: 40px; margin-bottom: 12px;
+  padding-top: 24px; border-top: 1px solid var(--border);
+}
+.legal-page h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+.legal-page h3 {
+  font-size: 1.05rem; font-weight: 600; color: #ddd;
+  margin-top: 24px; margin-bottom: 8px;
+}
+.legal-page p {
+  font-size: 0.95rem; color: var(--text); line-height: 1.8;
+  margin-bottom: 14px;
+}
+.legal-page ul, .legal-page ol {
+  margin-bottom: 14px; padding-left: 24px;
+}
+.legal-page li {
+  font-size: 0.95rem; color: var(--text); line-height: 1.8;
+  margin-bottom: 6px;
+}
+.legal-page strong { color: #fff; }
+.legal-page .highlight-box {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-left: 3px solid var(--orange); border-radius: 8px;
+  padding: 20px 24px; margin: 20px 0;
+}
+.legal-page .highlight-box p { margin-bottom: 0; }
+.legal-page .warning-box {
+  background: rgba(220, 60, 60, 0.05); border: 1px solid rgba(220, 60, 60, 0.2);
+  border-left: 3px solid #dc3c3c; border-radius: 8px;
+  padding: 20px 24px; margin: 20px 0;
+}
+.legal-page .warning-box p { margin-bottom: 0; }
+.legal-page .warning-box strong { color: #ff6b6b; }
+.legal-page .service-disclaimer {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; margin: 16px 0;
+}
+.legal-page .service-disclaimer h4 {
+  font-size: 1rem; font-weight: 700; color: var(--orange);
+  margin-bottom: 8px;
+}
+.legal-page .service-disclaimer p {
+  margin-bottom: 8px;
+}
+.legal-page .service-disclaimer p:last-child {
+  margin-bottom: 0;
+}
+.legal-page .service-disclaimer ul {
+  margin-bottom: 8px;
+}
+
+/* ── Footer ── */
+.footer {
+  padding: 48px 0 32px; border-top: 1px solid var(--border);
+}
+.footer-inner {
+  max-width: 1140px; margin: 0 auto; padding: 0 24px;
+  display: flex; justify-content: space-between; align-items: flex-start;
+  flex-wrap: wrap; gap: 32px;
+}
+.footer-brand { max-width: 300px; }
+.footer-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.1rem; font-weight: 900; color: #fff;
+  letter-spacing: 1px; margin-bottom: 12px; text-decoration: none;
+}
+.footer-logo svg { width: 24px; height: 24px; }
+.footer-desc { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 16px; }
+.footer-email { font-size: 0.85rem; color: var(--orange); font-weight: 500; }
+.footer-right { text-align: right; }
+.footer-links { display: flex; gap: 24px; list-style: none; margin-bottom: 16px; justify-content: flex-end; }
+.footer-links a { font-size: 0.8rem; color: var(--text-dim); text-decoration: none; }
+.footer-links a:hover { color: #fff; text-decoration: none; }
+.footer-portfolio { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+.footer-bottom {
+  max-width: 1140px; margin: 0 auto; padding: 0 24px;
+  text-align: center; padding-top: 32px; margin-top: 32px;
+  border-top: 1px solid var(--border);
+  font-size: 0.75rem; color: var(--text-muted);
+}
+@media (max-width: 640px) {
+  .footer-inner { flex-direction: column; align-items: center; text-align: center; }
+  .footer-right { text-align: center; }
+  .footer-links { justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="url(#anvil-g)"/>
+        <defs><linearGradient id="anvil-g" x1="3" y1="2" x2="25" y2="26"><stop stop-color="#e87a2e"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs>
+      </svg>
+      ANVIL
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/terms.html">Terms</a></li>
+      <li><a href="/privacy.html">Privacy</a></li>
+      <li><a href="/disclaimer.html">Disclaimer</a></li>
+      <li><a href="/accessibility.html">Accessibility</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="/" onclick="closeMobile()">Home</a>
+  <a href="/terms.html" onclick="closeMobile()">Terms</a>
+  <a href="/privacy.html" onclick="closeMobile()">Privacy</a>
+  <a href="/disclaimer.html" onclick="closeMobile()">Disclaimer</a>
+  <a href="/accessibility.html" onclick="closeMobile()">Accessibility</a>
+</div>
+
+<!-- ── Content ── -->
+<main class="legal-page">
+  <div class="legal-updated">Last updated: March 2, 2026</div>
+  <h1>Professional Services Disclaimer</h1>
+  <p class="legal-intro">This page contains critical disclaimers about what ANVIL is and what it is not. Please read this carefully before using our platform or engaging with any ANVIL-trained specialist. This disclaimer protects both you and our specialists.</p>
+
+  <div class="warning-box">
+    <p><strong>ANVIL does not provide legal advice, medical advice, financial advice, or tax advice. ANVIL-trained specialists are not licensed professionals. If you need professional advice, consult a licensed attorney, physician, CPA, or financial advisor.</strong></p>
+  </div>
+
+  <h2>1. Not Professional Advice</h2>
+  <p>ANVIL is a training platform. We teach people to become AI-augmented specialists who help others navigate complex systems. Here is what that means and what it does not mean:</p>
+
+  <h3>ANVIL Specialists Are NOT:</h3>
+  <ul>
+    <li><strong>Licensed attorneys</strong> or legal professionals of any kind</li>
+    <li><strong>Licensed physicians</strong>, nurses, or healthcare providers</li>
+    <li><strong>Certified Public Accountants (CPAs)</strong> or licensed tax preparers</li>
+    <li><strong>Licensed financial advisors</strong>, investment advisors, or fiduciaries</li>
+    <li><strong>Licensed insurance agents</strong> or brokers</li>
+    <li><strong>Licensed social workers</strong> (unless separately credentialed)</li>
+    <li><strong>Government employees</strong> or representatives of any government agency</li>
+  </ul>
+
+  <h3>ANVIL Specialists ARE:</h3>
+  <ul>
+    <li>Trained researchers who use AI tools to find publicly available information</li>
+    <li>Navigators who help people understand their options and next steps</li>
+    <li>Advocates who assist with paperwork, phone calls, and process management</li>
+    <li>Educators who explain how systems work in plain language</li>
+  </ul>
+
+  <h3>What This Means for You</h3>
+  <ul>
+    <li>Information provided by ANVIL specialists is for <strong>educational and research purposes only</strong>.</li>
+    <li>Nothing provided by an ANVIL specialist constitutes legal, medical, financial, or tax advice.</li>
+    <li>You should always consult a licensed professional before making important decisions about legal matters, medical treatment, financial planning, or tax obligations.</li>
+    <li>No attorney-client relationship, doctor-patient relationship, or advisor-client relationship is created by interacting with ANVIL or any ANVIL-trained specialist.</li>
+  </ul>
+
+  <h2>2. AI Tool Disclaimer</h2>
+  <p>ANVIL trains specialists to use artificial intelligence tools as research assistants. Here is what you need to know about how AI is used:</p>
+
+  <h3>How AI Tools Are Used</h3>
+  <ul>
+    <li>ANVIL specialists use AI tools (such as ChatGPT, Claude, and similar systems) to research eligibility requirements, regulations, billing codes, and other publicly available information.</li>
+    <li>AI tools are used as <strong>research assistants</strong>, not as decision-makers.</li>
+    <li>All AI-generated output is reviewed and verified by the human specialist before being shared with a client.</li>
+    <li>AI tools help specialists work faster and more thoroughly -- they do not replace human judgment.</li>
+  </ul>
+
+  <h3>Limitations of AI</h3>
+  <ul>
+    <li><strong>AI can make mistakes.</strong> AI tools can produce incorrect, outdated, or incomplete information. This is why human review is a core part of the ANVIL methodology.</li>
+    <li><strong>AI is not a substitute for professional advice.</strong> An AI tool cannot understand your complete personal situation, and its output should not be treated as professional guidance.</li>
+    <li><strong>AI tools are provided by third parties.</strong> ANVIL does not control the AI models used by specialists. The accuracy, availability, and terms of use of these tools are determined by their respective providers (OpenAI, Anthropic, etc.).</li>
+    <li><strong>All information should be independently verified.</strong> Before acting on any information obtained with the help of AI tools, verify it with the relevant government agency, healthcare provider, or professional.</li>
+  </ul>
+
+  <h2>3. Service-Specific Disclaimers</h2>
+  <p>Each ANVIL service niche has specific boundaries. Read the disclaimer for the service you are using or providing:</p>
+
+  <div class="service-disclaimer">
+    <h4>Benefits Navigation</h4>
+    <p>ANVIL benefits navigation specialists help people understand what government programs they may be eligible for (such as SSDI, SSI, SNAP, Medicaid, Medicare, TANF, and others). Important limitations:</p>
+    <ul>
+      <li>Specialists are <strong>not licensed enrollment counselors</strong> or certified application counselors.</li>
+      <li>Information about program eligibility is <strong>educational only</strong>. Actual eligibility is determined solely by the program administrator (Social Security Administration, state Medicaid office, etc.).</li>
+      <li>Specialists may help with paperwork and applications, but cannot guarantee approval or any specific outcome.</li>
+      <li>Program rules, income thresholds, and eligibility criteria change frequently. Information may not reflect the most current requirements.</li>
+      <li>Specialists cannot represent clients in administrative hearings or legal proceedings.</li>
+    </ul>
+  </div>
+
+  <div class="service-disclaimer">
+    <h4>Medical Billing Advocacy</h4>
+    <p>ANVIL medical billing specialists help people review medical bills for potential errors and understand their billing statements. Important limitations:</p>
+    <ul>
+      <li>Bill review and auditing is <strong>not medical advice</strong> and is <strong>not legal advice</strong>.</li>
+      <li>Identifying potential billing errors is an educational service. The specialist is pointing out possible discrepancies for the client to review and take action on.</li>
+      <li>Specialists are <strong>not a substitute for a healthcare attorney</strong>. If you believe you have been a victim of medical billing fraud or need to pursue legal action against a provider, consult a licensed attorney.</li>
+      <li>Specialists cannot diagnose medical conditions, interpret clinical information, or make medical recommendations.</li>
+      <li>Negotiation with providers is conducted on the client's behalf as an advocate, not as a legal representative.</li>
+      <li>Results of billing disputes depend on the provider, insurer, and specific circumstances. No specific outcome is guaranteed.</li>
+    </ul>
+  </div>
+
+  <div class="service-disclaimer">
+    <h4>Small Business Compliance</h4>
+    <p>ANVIL compliance specialists help small business owners understand their regulatory obligations and maintain compliance. Important limitations:</p>
+    <ul>
+      <li>Compliance guidance is <strong>educational only</strong> and is <strong>not legal advice or tax advice</strong>.</li>
+      <li>Specialists are not business attorneys, CPAs, or licensed tax professionals.</li>
+      <li>Regulatory requirements vary by state, county, city, and industry. Specialists provide general guidance, not jurisdiction-specific legal opinions.</li>
+      <li>For your specific business situation, consult a <strong>licensed business attorney</strong> and a <strong>CPA</strong>.</li>
+      <li>Compliance information may not reflect the most recent regulatory changes. Always verify current requirements with the relevant regulatory agency.</li>
+      <li>Specialists cannot file legal documents, tax returns, or regulatory filings on your behalf unless explicitly authorized and legally permitted.</li>
+    </ul>
+  </div>
+
+  <div class="service-disclaimer">
+    <h4>Estate Document Preparation</h4>
+    <p>ANVIL estate document specialists assist with preparing wills, trusts, powers of attorney, and other estate planning documents. Important limitations:</p>
+    <ul>
+      <li>Document preparation is <strong>not the practice of law</strong>. Specialists fill in forms and templates based on information provided by the client.</li>
+      <li>Specialists are <strong>not estate planning attorneys</strong> and cannot provide legal advice about estate planning strategies.</li>
+      <li>Documents prepared by specialists should be reviewed by a licensed attorney before execution, especially for complex estates.</li>
+      <li>State laws governing wills, trusts, and estate documents vary significantly. Compliance with your state's specific requirements is the client's responsibility.</li>
+    </ul>
+  </div>
+
+  <div class="service-disclaimer">
+    <h4>Grant Writing</h4>
+    <p>ANVIL grant writing specialists help nonprofits and organizations prepare funding proposals. Important limitations:</p>
+    <ul>
+      <li>Grant writing assistance does not guarantee funding approval.</li>
+      <li>Funding decisions are made solely by the granting organization based on their criteria and available funds.</li>
+      <li>Specialists are not financial auditors and do not verify the financial statements or organizational health of the applicant.</li>
+    </ul>
+  </div>
+
+  <div class="service-disclaimer">
+    <h4>Insurance Claims Help</h4>
+    <p>ANVIL insurance claims specialists help individuals navigate insurance claim denials and appeals. Important limitations:</p>
+    <ul>
+      <li>Claims assistance is <strong>not legal representation</strong>. Specialists cannot represent clients in legal proceedings against insurance companies.</li>
+      <li>Specialists are <strong>not licensed insurance agents or adjusters</strong>.</li>
+      <li>If your claim involves bad faith, fraud, or requires legal action, consult a licensed insurance attorney.</li>
+      <li>Appeal outcomes depend on the insurer, policy terms, and specific circumstances. No specific outcome is guaranteed.</li>
+    </ul>
+  </div>
+
+  <div class="service-disclaimer">
+    <h4>Debt Negotiation</h4>
+    <p>ANVIL debt negotiation specialists help individuals communicate with creditors to resolve outstanding debts. Important limitations:</p>
+    <ul>
+      <li>Debt negotiation is <strong>not legal advice</strong> and is <strong>not financial advice</strong>.</li>
+      <li>Specialists are not licensed debt counselors, attorneys, or financial advisors.</li>
+      <li>Debt settlement can have tax implications (forgiven debt may be taxable income). Consult a CPA or tax professional.</li>
+      <li>Debt negotiation can affect your credit score. Specialists cannot predict or guarantee specific credit impacts.</li>
+      <li>If you are considering bankruptcy, consult a licensed bankruptcy attorney.</li>
+      <li>No specific debt reduction amount or settlement outcome is guaranteed.</li>
+    </ul>
+  </div>
+
+  <h2>4. WIOA Program Disclaimer</h2>
+  <p>ANVIL may accept participants funded through the Workforce Innovation and Opportunity Act (WIOA). If you are considering or enrolled in a WIOA-funded ANVIL program:</p>
+  <ul>
+    <li><strong>Eligibility is not guaranteed.</strong> WIOA enrollment is subject to eligibility requirements determined by your local workforce development board. ANVIL does not make eligibility decisions.</li>
+    <li><strong>Funding varies.</strong> WIOA funding availability differs by state, local area, and fiscal year. Funding may be limited or unavailable in your area.</li>
+    <li><strong>ANVIL certification is not a government credential.</strong> Completing an ANVIL training program results in an ANVIL-specific certification. It is not a government license, state credential, or nationally recognized certification (such as those issued by the National Association of Workforce Development Professionals or similar bodies).</li>
+    <li><strong>Employment is not guaranteed.</strong> While ANVIL training is designed to prepare you for self-employment or employment in AI-augmented service niches, completion of the program does not guarantee employment, a specific income level, or any particular career outcome.</li>
+    <li><strong>Income projections are estimates, not promises.</strong> Earning ranges mentioned on the ANVIL website and in training materials are based on market research and industry averages. Your actual income will depend on your effort, market conditions, geographic area, niche selection, and many other factors.</li>
+  </ul>
+
+  <h2>5. Earnings Disclaimer</h2>
+  <p>The earning ranges displayed on the ANVIL website (e.g., "$3K-8K/month") represent potential income based on market research into what these services typically charge and reasonable client volume estimates. These are not guarantees or promises of income.</p>
+  <ul>
+    <li>Your actual income will vary based on your skills, effort, geographic market, niche selection, client acquisition ability, and economic conditions.</li>
+    <li>Some participants may earn more; some may earn less. Some may not earn income from these services at all.</li>
+    <li>ANVIL is a training platform. We do not guarantee employment, clients, or revenue.</li>
+    <li>Past performance of other specialists (if applicable) does not guarantee your future results.</li>
+  </ul>
+
+  <h2>6. Limitation of Liability</h2>
+  <div class="warning-box">
+    <p><strong>ANVIL, its officers, directors, employees, agents, affiliates, and ANVIL-trained specialists are not responsible for any decisions you make based on information provided through ANVIL training or specialist services.</strong></p>
+  </div>
+  <p>Specifically:</p>
+  <ul>
+    <li>ANVIL is not liable for any loss, damage, or harm resulting from actions taken based on information provided by ANVIL specialists or ANVIL training materials.</li>
+    <li>ANVIL is not liable for errors or omissions in AI-generated research, even if reviewed by a human specialist.</li>
+    <li>ANVIL's maximum liability is limited to the fees you paid to ANVIL in the twelve (12) months preceding the claim, or fifty dollars ($50), whichever is greater.</li>
+    <li>In no event shall ANVIL be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of income, loss of benefits, loss of business opportunities, or emotional distress.</li>
+    <li>This limitation of liability applies regardless of the legal theory (contract, tort, negligence, strict liability, or otherwise).</li>
+  </ul>
+
+  <h2>7. Your Responsibility</h2>
+  <p>By using ANVIL or engaging with an ANVIL-trained specialist, you acknowledge and agree that:</p>
+  <ul>
+    <li>You are responsible for your own decisions and actions.</li>
+    <li>You will verify all important information independently before acting on it.</li>
+    <li>You will consult licensed professionals (attorneys, physicians, CPAs, financial advisors) for matters that require professional judgment.</li>
+    <li>You understand that ANVIL specialists provide educational and navigational assistance, not professional advice.</li>
+    <li>You will not hold ANVIL or its specialists liable for outcomes resulting from your decisions.</li>
+  </ul>
+
+  <h2>8. For ANVIL Specialists</h2>
+  <p>If you are an ANVIL-trained specialist, you must:</p>
+  <ul>
+    <li><strong>Never represent yourself as a licensed professional</strong> unless you hold the relevant license independently of your ANVIL training.</li>
+    <li><strong>Always disclose</strong> to clients that you are an AI-augmented specialist, not a licensed attorney, physician, CPA, or financial advisor.</li>
+    <li><strong>Always recommend</strong> that clients consult licensed professionals for matters requiring professional judgment.</li>
+    <li><strong>Always disclose</strong> when AI tools were used in your research and that AI output has been human-reviewed but may still contain errors.</li>
+    <li><strong>Never guarantee</strong> specific outcomes (benefit approval, bill reduction, compliance clearance, etc.).</li>
+    <li><strong>Stay within scope.</strong> Do not provide services that require professional licensure you do not hold.</li>
+  </ul>
+
+  <h2>9. Contact</h2>
+  <p>If you have questions about these disclaimers or need clarification about the scope of ANVIL services, contact us:</p>
+  <p>
+    <strong>ANVIL Support</strong><br>
+    Email: <a href="mailto:hello@getanvil.co">hello@getanvil.co</a><br>
+    Subject line: "Disclaimer Inquiry"
+  </p>
+</main>
+
+<!-- ── Footer ── -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="/" class="footer-logo">
+        <svg viewBox="0 0 28 28" fill="none"><path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="url(#anvil-g2)"/><defs><linearGradient id="anvil-g2" x1="3" y1="2" x2="25" y2="26"><stop stop-color="#e87a2e"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs></svg>
+        ANVIL
+      </a>
+      <p class="footer-desc">AI Navigation &amp; Vocational Integration Layer. Turning displacement into reinvention.</p>
+      <a href="mailto:hello@getanvil.co" class="footer-email">hello@getanvil.co</a>
+    </div>
+    <div class="footer-right">
+      <ul class="footer-links">
+        <li><a href="/terms.html">Terms</a></li>
+        <li><a href="/privacy.html">Privacy</a></li>
+        <li><a href="/disclaimer.html">Disclaimer</a></li>
+        <li><a href="/accessibility.html">Accessibility</a></li>
+      </ul>
+      
+    </div>
+  </div>
+  <div class="footer-bottom">&copy; 2026 ANVIL. All rights reserved.</div>
+</footer>
+
+<script>
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+  document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+});
+function closeMobile() {
+  hamburger.classList.remove('open');
+  mobileMenu.classList.remove('open');
+  document.body.style.overflow = '';
+}
+</script>
+</body>
+</html>

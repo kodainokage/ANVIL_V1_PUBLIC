@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANVIL - Your Job Didn't Disappear. It Evolved.</title>
+<meta name="description" content="Free 7-day sprint turns laid-off workers into AI-powered specialists earning $3K-8K/month in boring niches nobody else wants.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M14 2L3 26h6l5-12 5 12h6L14 2z' fill='%23e87a2e'/%3E%3C/svg%3E">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#e87a2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ANVIL">
+<!-- Open Graph -->
+<meta property="og:title" content="ANVIL - Your Job Didn't Disappear. It Evolved.">
+<meta property="og:description" content="Free 7-day sprint turns laid-off workers into AI-powered specialists earning $3K-8K/month in boring niches nobody else wants.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://anvil.onrender.com">
+<meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 630'%3E%3Crect width='1200' height='630' fill='%230a0a0a'/%3E%3Cpath d='M600 120L420 510h120l60-150 60 150h120L600 120z' fill='%23e87a2e'/%3E%3Ctext x='600' y='580' text-anchor='middle' fill='%23e0e0e0' font-size='48' font-family='sans-serif' font-weight='900'%3EANVIL%3C/text%3E%3C/svg%3E">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ANVIL - Your Job Didn't Disappear. It Evolved.">
+<meta name="twitter:description" content="Free 7-day sprint. AI-powered career. $3K-8K/month. Zero cost.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.sam.gov https://api.grants.gov https://api.usaspending.gov; img-src 'self' data: https:; font-src 'self' data:;">
+<style>
+/* ── Reset & Base ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: calc(16px * var(--font-scale)); }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  background: #0a0a0a;
+  color: #e0e0e0;
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: inherit; border: none; }
+img { max-width: 100%; display: block; }
+
+/* Skip to content link */
+.skip-link {
+  position: absolute; left: -9999px; top: 10px; z-index: 9999;
+  background: var(--orange); color: #000; padding: 12px 20px;
+  border-radius: 4px; font-weight: 700; font-size: 0.95rem;
+}
+.skip-link:focus {
+  left: 10px; outline: 3px solid #fff; outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Colors ── */
+:root {
+  --font-scale: 1;
+  --bg: #0a0a0a;
+  --bg-card: #141414;
+  --bg-elevated: #1a1a1a;
+  --border: #2a2a2a;
+  --text: #e0e0e0;
+  --text-dim: #888;
+  --text-muted: #666;
+  --orange: #e87a2e;
+  --orange-light: #f09040;
+  --amber: #f5a623;
+  --amber-glow: rgba(245, 166, 35, 0.15);
+  --ember: #c45e1a;
+  --forge-gradient: linear-gradient(135deg, #e87a2e, #f5a623);
+  --forge-glow: 0 0 30px rgba(232, 122, 46, 0.2);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --max-w: 1140px;
+}
+
+body.high-contrast {
+  --bg: #000; --bg-card: #111; --bg-elevated: #1a1a1a;
+  --border: #444; --text: #fff; --text-dim: #ddd; --text-muted: #bbb;
+  --orange: #ffcc00; --orange-light: #ffdd33; --amber: #ffcc00;
+  --amber-glow: rgba(255, 204, 0, 0.2); --ember: #cc9900;
+  --forge-gradient: linear-gradient(135deg, #ffcc00, #ffdd33);
+}
+body.high-contrast .nav { background: rgba(0, 0, 0, 0.95); }
+body.high-contrast a, body.high-contrast button { color: inherit; }
+
+/* ── Utility ── */
+.container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+.section { padding: 80px 0; }
+@media (max-width: 768px) { .section { padding: 56px 0; } }
+
+.section-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 2px; color: var(--orange);
+  margin-bottom: 16px;
+}
+.section-label::before {
+  content: ''; display: block; width: 24px; height: 2px;
+  background: var(--forge-gradient);
+}
+.section-title {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 800; line-height: 1.15;
+  color: #fff; margin-bottom: 16px;
+}
+.section-subtitle {
+  font-size: 1.05rem; color: var(--text-dim);
+  max-width: 600px; line-height: 1.7;
+}
+
+/* ── Navigation ── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  transition: box-shadow 0.3s;
+}
+.nav.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.5); }
+.nav-inner {
+  max-width: var(--max-w); margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.25rem; font-weight: 900; color: #fff;
+  letter-spacing: 1px;
+}
+.nav-logo svg { width: 28px; height: 28px; }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a {
+  font-size: 0.875rem; font-weight: 500; color: var(--text-dim);
+  transition: color 0.2s; position: relative; padding: 4px 0;
+}
+.nav-links a:hover { color: #fff; }
+.nav-links a:focus-visible {
+  outline: 2px solid var(--orange); outline-offset: 4px; border-radius: 2px; color: #fff;
+}
+.nav-cta {
+  background: var(--forge-gradient); color: #000; font-weight: 700;
+  font-size: 0.8rem; padding: 10px 20px; border-radius: 100px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  letter-spacing: 0.5px; min-height: 44px; display: inline-flex;
+  align-items: center; justify-content: center;
+}
+.nav-cta:hover { transform: translateY(-1px); box-shadow: var(--forge-glow); }
+.nav-cta:focus-visible {
+  outline: 3px solid #fff; outline-offset: 2px; transform: translateY(-1px);
+}
+
+/* Hamburger */
+.hamburger {
+  display: none; background: none; border: none; padding: 12px;
+  flex-direction: column; gap: 5px; cursor: pointer;
+  min-width: 44px; min-height: 44px; align-items: center; justify-content: center;
+}
+.hamburger:focus-visible {
+  outline: 2px solid var(--orange); outline-offset: 2px; border-radius: 4px;
+}
+.hamburger span {
+  display: block; width: 22px; height: 2px; background: #fff;
+  border-radius: 2px; transition: all 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.mobile-menu {
+  display: none; position: fixed; top: 64px; left: 0; right: 0; bottom: 0;
+  background: rgba(10, 10, 10, 0.97); z-index: 99; backdrop-filter: blur(8px);
+  flex-direction: column; align-items: center; justify-content: center; gap: 24px;
+  padding: 24px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  font-size: 1.25rem; font-weight: 600; color: var(--text-dim);
+  transition: color 0.2s; min-height: 44px; display: flex; align-items: center;
+  padding: 8px 16px; border-radius: 8px;
+}
+.mobile-menu a:hover { color: #fff; background: rgba(232, 122, 46, 0.08); }
+.mobile-menu a:focus-visible {
+  outline: 2px solid var(--orange); outline-offset: 2px; color: #fff;
+}
+
+@media (max-width: 768px) {
+  .nav-links, .nav-cta { display: none; }
+  .hamburger { display: flex; }
+}
+
+/* ── Hero ── */
+.hero {
+  padding-top: 140px; padding-bottom: 80px;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 800px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232, 122, 46, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-content { position: relative; z-index: 2; text-align: center; max-width: 800px; margin: 0 auto; }
+.hero-eyebrow {
+  display: inline-block; font-size: 0.8rem; font-weight: 600;
+  color: var(--orange); letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 20px; padding: 6px 16px;
+  border: 1px solid rgba(232, 122, 46, 0.3); border-radius: 100px;
+  background: rgba(232, 122, 46, 0.06);
+}
+.hero h1 {
+  font-size: clamp(2.2rem, 6vw, 3.75rem);
+  font-weight: 900; line-height: 1.08; color: #fff;
+  margin-bottom: 20px;
+}
+.hero h1 span {
+  background: var(--forge-gradient);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  color: var(--text-dim); line-height: 1.7;
+  max-width: 640px; margin: 0 auto 36px;
+}
+.hero-cta {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--forge-gradient); color: #000;
+  font-size: 1.05rem; font-weight: 800; padding: 16px 36px;
+  border-radius: 100px; transition: transform 0.2s, box-shadow 0.2s;
+  letter-spacing: 0.3px; min-height: 56px;
+}
+.hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(232, 122, 46, 0.35); }
+.hero-cta:focus-visible {
+  outline: 3px solid #fff; outline-offset: 4px; transform: translateY(-2px);
+}
+.hero-cta svg { width: 20px; height: 20px; }
+
+/* Stats bar */
+.stats-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 1px; margin-top: 64px;
+  background: var(--border); border-radius: var(--radius);
+  overflow: hidden;
+}
+.stat-item {
+  background: var(--bg-card); padding: 24px 16px; text-align: center;
+}
+.stat-number {
+  font-size: 1.5rem; font-weight: 800; color: #fff;
+  margin-bottom: 4px;
+}
+.stat-number span { color: var(--orange); }
+.stat-label {
+  font-size: 0.75rem; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 1px; font-weight: 500;
+}
+@media (max-width: 640px) {
+  .stats-bar { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .stat-item { padding: 16px 12px; }
+  .stat-number { font-size: 1.25rem; }
+}
+
+/* ── Problem ── */
+.problem { background: var(--bg-card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.problem-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 20px; margin-top: 40px;
+}
+.problem-card {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 28px;
+  transition: border-color 0.3s;
+}
+.problem-card:hover { border-color: #3a3a3a; }
+.problem-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  background: rgba(220, 60, 60, 0.1); display: flex;
+  align-items: center; justify-content: center; margin-bottom: 16px;
+  font-size: 1.25rem;
+}
+.problem-card h3 {
+  font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 8px;
+}
+.problem-card p { font-size: 0.9rem; color: var(--text-dim); line-height: 1.6; }
+.problem-stat {
+  display: inline-block; margin-top: 10px; font-size: 0.75rem;
+  font-weight: 700; color: #dc3c3c; background: rgba(220, 60, 60, 0.08);
+  padding: 4px 10px; border-radius: 100px;
+}
+@media (max-width: 640px) {
+  .problem-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Solution ── */
+.solution-header { text-align: center; margin-bottom: 48px; }
+.solution-header .section-subtitle { margin: 0 auto; }
+.solution-statement {
+  font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+  font-weight: 600; color: #fff; text-align: center;
+  max-width: 700px; margin: 0 auto 48px; line-height: 1.6;
+}
+.solution-statement em {
+  font-style: normal; color: var(--orange); font-weight: 700;
+}
+.niche-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+.niche-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  display: flex; align-items: flex-start; gap: 16px;
+  transition: border-color 0.3s, transform 0.2s;
+}
+.niche-card:hover { border-color: rgba(232, 122, 46, 0.3); transform: translateY(-2px); }
+.niche-icon {
+  width: 42px; height: 42px; border-radius: 10px; flex-shrink: 0;
+  background: var(--amber-glow); display: flex;
+  align-items: center; justify-content: center; font-size: 1.2rem;
+}
+.niche-name { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.niche-detail { font-size: 0.8rem; color: var(--text-dim); }
+.niche-earn {
+  font-size: 0.75rem; font-weight: 700; color: var(--orange);
+  margin-top: 6px;
+}
+.ai-badge {
+  display: inline-block; font-size: 0.65rem; font-weight: 700;
+  color: var(--amber); background: rgba(245, 166, 35, 0.1);
+  padding: 2px 8px; border-radius: 100px; margin-top: 4px;
+}
+
+/* ── Pipeline ── */
+.pipeline { background: var(--bg-card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.pipeline-header { text-align: center; margin-bottom: 48px; }
+.pipeline-header .section-subtitle { margin: 0 auto; }
+.pipeline-steps {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+  position: relative;
+}
+.pipeline-steps::before {
+  content: ''; position: absolute; top: 36px; left: 10%; right: 10%;
+  height: 2px; background: linear-gradient(90deg, var(--orange), var(--amber));
+  opacity: 0.3; z-index: 0;
+}
+.step {
+  text-align: center; position: relative; z-index: 1;
+}
+.step-badge {
+  width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 20px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg); border: 2px solid var(--border);
+  font-size: 1.5rem; transition: border-color 0.3s;
+}
+.step:hover .step-badge { border-color: var(--orange); }
+.step-day {
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--orange); margin-bottom: 8px;
+}
+.step h3 { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 6px; }
+.step p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.5; }
+@media (max-width: 768px) {
+  .pipeline-steps { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .pipeline-steps::before { display: none; }
+}
+@media (max-width: 480px) {
+  .pipeline-steps { grid-template-columns: 1fr; }
+}
+
+/* ── Quiz ── */
+.quiz-section { position: relative; overflow: hidden; }
+.quiz-section::before {
+  content: ''; position: absolute; bottom: -200px; right: -200px;
+  width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232, 122, 46, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.quiz-header { text-align: center; margin-bottom: 40px; }
+.quiz-header .section-subtitle { margin: 0 auto; }
+.quiz-container {
+  max-width: 640px; margin: 0 auto; position: relative; z-index: 2;
+}
+.quiz-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 40px 32px; overflow: hidden;
+}
+.quiz-progress {
+  display: flex; gap: 4px; margin-bottom: 32px;
+}
+.quiz-progress-dot {
+  flex: 1; height: 4px; border-radius: 4px;
+  background: var(--border); transition: background 0.4s;
+}
+.quiz-progress-dot.active { background: var(--orange); }
+.quiz-progress-dot.done { background: var(--amber); }
+
+.quiz-slide {
+  display: none; animation: quizFadeIn 0.35s ease;
+}
+.quiz-slide.active { display: block; }
+@keyframes quizFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.quiz-q-number {
+  font-size: 0.75rem; font-weight: 700; color: var(--orange);
+  text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px;
+}
+.quiz-question {
+  font-size: 1.2rem; font-weight: 700; color: #fff;
+  margin-bottom: 24px; line-height: 1.4;
+}
+.quiz-options { display: flex; flex-direction: column; gap: 10px; }
+.quiz-option {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 16px 18px;
+  font-size: 0.95rem; color: var(--text); text-align: left;
+  transition: border-color 0.2s, background 0.2s;
+  display: flex; align-items: center; gap: 12px;
+  min-height: 56px;
+}
+.quiz-option:hover { border-color: var(--orange); background: rgba(232, 122, 46, 0.04); }
+.quiz-option:focus-visible {
+  outline: 2px solid var(--orange); outline-offset: 2px; border-color: var(--orange);
+}
+.quiz-option.selected {
+  border-color: var(--orange); background: rgba(232, 122, 46, 0.08);
+}
+.quiz-option-marker {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2px solid var(--border); display: flex;
+  align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 700; color: var(--text-muted);
+  flex-shrink: 0; transition: all 0.2s;
+}
+.quiz-option.selected .quiz-option-marker {
+  border-color: var(--orange); background: var(--orange); color: #000;
+}
+.quiz-nav {
+  display: flex; justify-content: space-between; margin-top: 28px;
+}
+.quiz-btn {
+  padding: 12px 28px; border-radius: 100px;
+  font-size: 0.9rem; font-weight: 700; transition: all 0.2s;
+  min-height: 48px; display: inline-flex; align-items: center; justify-content: center;
+}
+.quiz-btn-back {
+  background: transparent; color: var(--text-dim); border: 1px solid var(--border);
+}
+.quiz-btn-back:hover { border-color: var(--text-dim); color: #fff; }
+.quiz-btn-back:focus-visible {
+  outline: 2px solid var(--orange); outline-offset: 2px; color: #fff;
+}
+.quiz-btn-next {
+  background: var(--forge-gradient); color: #000;
+}
+.quiz-btn-next:hover { transform: translateY(-1px); box-shadow: var(--forge-glow); }
+.quiz-btn-next:focus-visible {
+  outline: 2px solid #fff; outline-offset: 2px; transform: translateY(-1px);
+}
+.quiz-btn-next:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* Quiz Result */
+.quiz-result { display: none; animation: quizFadeIn 0.5s ease; }
+.quiz-result.active { display: block; }
+.result-header { text-align: center; margin-bottom: 32px; }
+.result-header h2 {
+  font-size: 1.6rem; font-weight: 800; color: #fff; margin-bottom: 8px;
+}
+.result-header p { color: var(--text-dim); font-size: 0.95rem; }
+.result-niche {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; margin-bottom: 16px;
+  position: relative; overflow: hidden;
+}
+.result-niche.primary { border-color: rgba(232, 122, 46, 0.4); }
+.result-niche.primary::before {
+  content: 'TOP MATCH'; position: absolute; top: 12px; right: 12px;
+  font-size: 0.65rem; font-weight: 800; letter-spacing: 1px;
+  color: #000; background: var(--forge-gradient);
+  padding: 3px 10px; border-radius: 100px;
+}
+.result-niche h3 { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.result-niche-earn {
+  font-size: 0.9rem; font-weight: 600; color: var(--orange); margin-bottom: 8px;
+}
+.result-niche p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; }
+.result-match {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.75rem; font-weight: 700; color: var(--amber);
+  margin-top: 8px;
+}
+
+/* Lead form */
+.lead-form { margin-top: 32px; }
+.lead-form h3 {
+  font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 4px;
+}
+.lead-form p { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 20px; }
+.form-group { margin-bottom: 14px; }
+.form-group label {
+  display: block; font-size: 0.8rem; font-weight: 600;
+  color: var(--text-dim); margin-bottom: 6px;
+}
+.form-group label .optional { font-weight: 400; color: var(--text-muted); }
+.form-input {
+  width: 100%; padding: 14px 16px; border-radius: var(--radius-sm);
+  background: var(--bg); border: 1px solid var(--border);
+  color: #fff; font-size: 0.95rem; font-family: inherit;
+  transition: border-color 0.2s; min-height: 48px;
+}
+.form-input:focus {
+  outline: 2px solid var(--orange); outline-offset: 1px; border-color: var(--orange);
+}
+.form-input::placeholder { color: var(--text-muted); }
+.form-submit {
+  width: 100%; padding: 14px; border-radius: 100px; margin-top: 8px;
+  background: var(--forge-gradient); color: #000;
+  font-size: 1rem; font-weight: 800; transition: all 0.2s;
+  min-height: 56px;
+}
+.form-submit:hover { transform: translateY(-1px); box-shadow: var(--forge-glow); }
+.form-submit:focus-visible {
+  outline: 3px solid #fff; outline-offset: 2px; transform: translateY(-1px);
+}
+.form-note {
+  font-size: 0.75rem; color: var(--text-muted); text-align: center;
+  margin-top: 12px; line-height: 1.5;
+}
+
+/* Quiz success */
+.quiz-success { display: none; text-align: center; animation: quizFadeIn 0.5s ease; }
+.quiz-success.active { display: block; }
+.success-icon {
+  width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 24px;
+  background: rgba(72, 187, 120, 0.1); border: 2px solid rgba(72, 187, 120, 0.3);
+  display: flex; align-items: center; justify-content: center; font-size: 2rem;
+}
+.success-title {
+  font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 8px;
+}
+.success-sub { color: var(--text-dim); font-size: 0.95rem; margin-bottom: 28px; line-height: 1.6; }
+.success-steps {
+  text-align: left; margin-bottom: 28px;
+}
+.success-step {
+  display: flex; align-items: flex-start; gap: 12px; padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.success-step:last-child { border-bottom: none; }
+.success-step-num {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  background: var(--amber-glow); display: flex;
+  align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 800; color: var(--orange);
+}
+.success-step p { font-size: 0.9rem; color: var(--text); }
+.copy-btn {
+  padding: 12px 28px; border-radius: 100px; font-size: 0.9rem; font-weight: 700;
+  background: transparent; color: var(--orange); border: 1px solid var(--orange);
+  transition: all 0.2s; min-height: 48px; display: inline-flex;
+  align-items: center; justify-content: center;
+}
+.copy-btn:hover { background: rgba(232, 122, 46, 0.08); }
+.copy-btn:focus-visible {
+  outline: 2px solid var(--orange); outline-offset: 2px; background: rgba(232, 122, 46, 0.08);
+}
+
+/* ── Social Proof ── */
+.proof { background: var(--bg-card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.proof-header { text-align: center; margin-bottom: 40px; }
+.proof-header .section-subtitle { margin: 0 auto; }
+.proof-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 20px; margin-bottom: 48px;
+}
+.proof-card {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  position: relative;
+}
+.proof-card::before {
+  content: 'COMING SOON'; position: absolute; top: 16px; right: 16px;
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 1px;
+  color: var(--text-muted); background: var(--bg-elevated);
+  padding: 3px 8px; border-radius: 100px;
+}
+.proof-quote {
+  font-size: 0.9rem; color: var(--text-dim); font-style: italic;
+  line-height: 1.6; margin-bottom: 16px; min-height: 60px;
+}
+.proof-author { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+.proof-bottom {
+  display: flex; justify-content: center; gap: 48px; padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+.proof-stat { text-align: center; }
+.proof-stat-val { font-size: 1.25rem; font-weight: 800; color: #fff; }
+.proof-stat-label {
+  font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;
+}
+@media (max-width: 768px) {
+  .proof-grid { grid-template-columns: 1fr; }
+  .proof-bottom { gap: 24px; flex-wrap: wrap; }
+}
+
+/* ── FAQ ── */
+.faq-header { text-align: center; margin-bottom: 40px; }
+.faq-header .section-subtitle { margin: 0 auto; }
+.faq-list { max-width: 720px; margin: 0 auto; }
+.faq-item {
+  border-bottom: 1px solid var(--border);
+}
+.faq-question {
+  width: 100%; background: none; padding: 20px 0;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 1rem; font-weight: 600; color: #fff; text-align: left;
+  transition: color 0.2s; gap: 16px; min-height: 48px;
+}
+.faq-question:hover { color: var(--orange); }
+.faq-question:focus-visible {
+  outline: 2px solid var(--orange); outline-offset: 4px; color: var(--orange);
+}
+.faq-chevron {
+  flex-shrink: 0; width: 20px; height: 20px;
+  transition: transform 0.3s;
+}
+.faq-item.open .faq-chevron { transform: rotate(180deg); }
+.faq-answer {
+  max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.35s ease;
+}
+.faq-item.open .faq-answer { max-height: 500px; }
+.faq-answer p {
+  font-size: 0.9rem; color: var(--text-dim); line-height: 1.7;
+  padding-bottom: 20px;
+}
+
+/* ── Footer ── */
+.footer {
+  padding: 48px 0 32px; border-top: 1px solid var(--border);
+}
+.footer-inner {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  flex-wrap: wrap; gap: 32px;
+}
+.footer-brand { max-width: 300px; }
+.footer-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.1rem; font-weight: 900; color: #fff;
+  letter-spacing: 1px; margin-bottom: 12px;
+}
+.footer-logo svg { width: 24px; height: 24px; }
+.footer-desc { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 16px; }
+.footer-email {
+  font-size: 0.85rem; color: var(--orange); font-weight: 500;
+}
+.footer-right { text-align: right; }
+.footer-socials { display: flex; gap: 12px; margin-bottom: 16px; justify-content: flex-end; }
+.footer-social {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.2s;
+}
+.footer-social:hover { border-color: var(--orange); }
+.footer-social svg { width: 18px; height: 18px; fill: var(--text-dim); }
+.footer-portfolio {
+  font-size: 0.8rem; color: var(--text-muted); font-weight: 500;
+}
+.footer-links {
+  display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.footer-links a {
+  font-size: 0.85rem; color: var(--text-dim); transition: color 0.2s;
+  padding: 4px 0;
+}
+.footer-links a:hover { color: var(--orange); }
+.footer-links a:focus-visible {
+  outline: 2px solid var(--orange); outline-offset: 2px; color: var(--orange);
+}
+.footer-bottom {
+  text-align: center; padding-top: 32px; margin-top: 32px;
+  border-top: 1px solid var(--border);
+  font-size: 0.75rem; color: var(--text-muted);
+}
+
+@media (max-width: 640px) {
+  .footer-inner { flex-direction: column; align-items: center; text-align: center; }
+  .footer-right { text-align: center; }
+  .footer-socials { justify-content: center; }
+}
+
+/* ── Accessibility Toolbar ── */
+.a11y-toolbar {
+  position: fixed; bottom: 20px; right: 20px; z-index: 200;
+  display: flex; gap: 8px; align-items: center;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 100px; padding: 8px 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+.a11y-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--text); font-weight: 700; font-size: 0.85rem;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.2s; font-family: inherit;
+}
+.a11y-btn:hover, .a11y-btn.active { border-color: var(--orange); color: var(--orange); }
+.a11y-btn:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<!-- Skip to content -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ── Navigation ── -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="url(#anvil-g)"/>
+        <defs><linearGradient id="anvil-g" x1="3" y1="2" x2="25" y2="26"><stop stop-color="#e87a2e"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs>
+      </svg>
+      ANVIL
+    </a>
+    <ul class="nav-links">
+      <li><a href="#problem">The Problem</a></li>
+      <li><a href="#solution">Solution</a></li>
+      <li><a href="#how">How It Works</a></li>
+      <li><a href="#quiz">Career Quiz</a></li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/learn.html">Learn</a></li>
+    </ul>
+    <a href="#quiz" class="nav-cta">Take the Quiz</a>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#problem" onclick="closeMobile()">The Problem</a>
+  <a href="#solution" onclick="closeMobile()">Solution</a>
+  <a href="#how" onclick="closeMobile()">How It Works</a>
+  <a href="#quiz" onclick="closeMobile()">Career Quiz</a>
+  <a href="/about.html" onclick="closeMobile()">About</a>
+  <a href="/learn.html" onclick="closeMobile()">Learn</a>
+</div>
+
+<!-- ── Hero ── -->
+<main id="main-content">
+<section class="hero section" id="hero">
+  <div class="container hero-content">
+    <div class="hero-eyebrow">Free for displaced workers</div>
+    <h1>Your Job Didn't Disappear.<br><span>It Evolved.</span></h1>
+    <p class="hero-sub">Free 7-day sprint turns laid-off workers into AI-powered specialists earning $3K-8K/month in boring niches nobody else wants.</p>
+    <a href="#quiz" class="hero-cta">
+      Find Your AI Career in 3 Minutes
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+    </a>
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-number"><span>50M</span></div>
+        <div class="stat-label">Jobs at Risk</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number"><span>7</span>-Day</div>
+        <div class="stat-label">Transformation</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">$<span>0</span></div>
+        <div class="stat-label">Cost to You</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number"><span>2,400</span>+</div>
+        <div class="stat-label">Boring Niches</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Problem ── -->
+<section class="problem section" id="problem">
+  <div class="container">
+    <div class="section-label">The Problem</div>
+    <div class="section-title">The system wasn't built for this moment.</div>
+    <div class="section-subtitle">You're not unemployable. The tools meant to help you are outdated, overpriced, or irrelevant.</div>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="problem-icon">&#128465;</div>
+        <h3>Job boards are broken</h3>
+        <p>Indeed has a 2.4/5 rating. LinkedIn sits at 1.2/5. Both are flooded with ghost postings and algorithmic dead ends.</p>
+        <span class="problem-stat">Indeed: 2.4/5 &middot; LinkedIn: 1.2/5</span>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">&#128176;</div>
+        <h3>Career coaches cost a fortune</h3>
+        <p>$200-400/hr for advice that boils down to "update your resume and network more." Most displaced workers can't afford a single session.</p>
+        <span class="problem-stat">$300/hr average &middot; out of reach</span>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">&#9203;</div>
+        <h3>Boot camps take too long</h3>
+        <p>6-12 months learning skills that AI is actively replacing. By graduation, the landscape has shifted again. You can't wait that long.</p>
+        <span class="problem-stat">6+ months &middot; skills already outdated</span>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">&#128200;</div>
+        <h3>Entry-level is disappearing</h3>
+        <p>Entry-level job postings are down 15% year-over-year. The traditional career ladder is being pulled up. A new path is needed.</p>
+        <span class="problem-stat">-15% YoY entry-level postings</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Solution ── -->
+<section class="solution section" id="solution">
+  <div class="container">
+    <div class="solution-header">
+      <div class="section-label">The Solution</div>
+      <div class="section-title">Don't compete with AI.<br>Become the human layer on top of it.</div>
+      <div class="section-subtitle">AI handles 70-90% of the work. You add the judgment, empathy, and accountability that no algorithm can.</div>
+    </div>
+    <p class="solution-statement">We've identified <em>7 boring, essential niches</em> where human oversight is legally or ethically required&mdash;and demand is surging while supply is near zero.</p>
+    <div class="niche-grid">
+      <div class="niche-card">
+        <div class="niche-icon">&#127973;</div>
+        <div>
+          <div class="niche-name">Benefits Navigation</div>
+          <div class="niche-detail">Guide people through SSDI, SNAP, Medicaid. AI finds eligibility, you handle the calls.</div>
+          <div class="niche-earn">$3K-6K/mo</div>
+          <div class="ai-badge">AI does 80% of research</div>
+        </div>
+      </div>
+      <div class="niche-card">
+        <div class="niche-icon">&#129658;</div>
+        <div>
+          <div class="niche-name">Medical Billing Advocacy</div>
+          <div class="niche-detail">Dispute errors, negotiate bills. AI scans for mistakes, you fight for the patient.</div>
+          <div class="niche-earn">$4K-8K/mo</div>
+          <div class="ai-badge">AI does 85% of analysis</div>
+        </div>
+      </div>
+      <div class="niche-card">
+        <div class="niche-icon">&#128221;</div>
+        <div>
+          <div class="niche-name">Small Biz Compliance</div>
+          <div class="niche-detail">Keep small businesses legal. AI tracks regulations, you make sure they're followed.</div>
+          <div class="niche-earn">$3K-7K/mo</div>
+          <div class="ai-badge">AI does 75% of tracking</div>
+        </div>
+      </div>
+      <div class="niche-card">
+        <div class="niche-icon">&#128220;</div>
+        <div>
+          <div class="niche-name">Estate Document Prep</div>
+          <div class="niche-detail">Wills, trusts, POA docs. AI drafts, you verify details and walk families through it.</div>
+          <div class="niche-earn">$3K-6K/mo</div>
+          <div class="ai-badge">AI does 70% of drafting</div>
+        </div>
+      </div>
+      <div class="niche-card">
+        <div class="niche-icon">&#127919;</div>
+        <div>
+          <div class="niche-name">Grant Writing</div>
+          <div class="niche-detail">Win funding for nonprofits. AI drafts proposals, you add the human story and relationships.</div>
+          <div class="niche-earn">$4K-8K/mo</div>
+          <div class="ai-badge">AI does 80% of drafting</div>
+        </div>
+      </div>
+      <div class="niche-card">
+        <div class="niche-icon">&#128737;</div>
+        <div>
+          <div class="niche-name">Insurance Claims Help</div>
+          <div class="niche-detail">Navigate denials and appeals. AI identifies errors, you advocate for fair outcomes.</div>
+          <div class="niche-earn">$3K-7K/mo</div>
+          <div class="ai-badge">AI does 85% of review</div>
+        </div>
+      </div>
+      <div class="niche-card">
+        <div class="niche-icon">&#128178;</div>
+        <div>
+          <div class="niche-name">Debt Negotiation</div>
+          <div class="niche-detail">Settle debts for less. AI analyzes terms, you negotiate the human conversation.</div>
+          <div class="niche-earn">$3K-6K/mo</div>
+          <div class="ai-badge">AI does 70% of prep</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Pipeline ── -->
+<section class="pipeline section" id="how">
+  <div class="container">
+    <div class="pipeline-header">
+      <div class="section-label">How It Works</div>
+      <div class="section-title">From displaced to earning in 30 days.</div>
+      <div class="section-subtitle">No theory. No fluff. A concrete sprint with real milestones and real income at the end.</div>
+    </div>
+    <div class="pipeline-steps">
+      <div class="step">
+        <div class="step-badge">&#9889;</div>
+        <div class="step-day">Day 0</div>
+        <h3>Immediate Triage</h3>
+        <p>We find every benefit, program, and safety net you qualify for right now. Money you're leaving on the table.</p>
+      </div>
+      <div class="step">
+        <div class="step-badge">&#128218;</div>
+        <div class="step-day">Days 1&ndash;7</div>
+        <h3>AI Skills Sprint</h3>
+        <p>Learn your niche, your AI tools, and your first workflow. Hands-on, project-based. Not lectures.</p>
+      </div>
+      <div class="step">
+        <div class="step-badge">&#129309;</div>
+        <div class="step-day">Days 10&ndash;14</div>
+        <h3>First Paying Client</h3>
+        <p>We walk you through finding and landing your first client. Real work, real pay, real confidence.</p>
+      </div>
+      <div class="step">
+        <div class="step-badge">&#128640;</div>
+        <div class="step-day">Day 30</div>
+        <h3>Sustainable Income</h3>
+        <p>$1K-3K/month part-time. Scale up from there. You now have a skill that gets more valuable as AI improves.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Quiz ── -->
+<section class="quiz-section section" id="quiz">
+  <div class="container">
+    <div class="quiz-header">
+      <div class="section-label">Career Quiz</div>
+      <div class="section-title">Find your niche in 3 minutes.</div>
+      <div class="section-subtitle">Answer 8 quick questions. We'll match you to the boring, essential niche where your background gives you an unfair advantage.</div>
+    </div>
+    <div class="quiz-container">
+      <div class="quiz-card" id="quizCard">
+        <!-- Progress -->
+        <div class="quiz-progress" id="quizProgress"></div>
+
+        <!-- Questions rendered by JS -->
+        <div id="quizSlides"></div>
+
+        <!-- Results -->
+        <div class="quiz-result" id="quizResult">
+          <div class="result-header">
+            <h2>Your AI Career Matches</h2>
+            <p>Based on your answers, here are the niches where you'd thrive:</p>
+          </div>
+          <div id="resultNiches"></div>
+          <div class="lead-form" id="leadForm">
+            <h3>Get your personalized AI career roadmap</h3>
+            <p>We'll send a detailed breakdown of your niche, the exact AI tools to learn, and how to land your first client.</p>
+            <div class="form-group">
+              <label for="leadName">Full name</label>
+              <input type="text" id="leadName" name="name" class="form-input" placeholder="Your name" required>
+            </div>
+            <div class="form-group">
+              <label for="leadEmail">Email address</label>
+              <input type="email" id="leadEmail" name="email" class="form-input" placeholder="you@email.com" required>
+            </div>
+            <div class="form-group">
+              <label for="leadPhone">Phone <span class="optional">(optional)</span></label>
+              <input type="tel" id="leadPhone" name="phone" class="form-input" placeholder="(555) 000-0000">
+            </div>
+            <button class="form-submit" id="formSubmit" type="button">Get My Roadmap</button>
+            <p class="form-note">No spam. No selling your data. Just your career roadmap.</p>
+          </div>
+        </div>
+
+        <!-- Success -->
+        <div class="quiz-success" id="quizSuccess">
+          <div class="success-icon">&#10003;</div>
+          <div class="success-title" id="successTitle">You're in. Let's build this.</div>
+          <div class="success-sub" id="successSub">Here's your personalized next step:</div>
+
+          <!-- Personalized niche breakdown -->
+          <div id="successNicheInfo" style="text-align:left; margin-bottom: 24px;">
+            <div style="background: var(--bg); border: 1px solid rgba(232,122,46,0.3); border-radius: var(--radius); padding: 20px; margin-bottom: 16px;">
+              <div style="font-size: 0.75rem; font-weight: 700; color: var(--orange); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Your Top Match</div>
+              <div id="successTopNiche" style="font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 4px;"></div>
+              <div id="successTopEarn" style="font-size: 0.9rem; color: var(--orange); margin-bottom: 8px;"></div>
+              <div id="successTopDesc" style="font-size: 0.85rem; color: var(--text-dim); line-height: 1.6;"></div>
+            </div>
+          </div>
+
+          <!-- Start Sprint CTA -->
+          <a href="/learn.html" style="display: inline-flex; align-items: center; gap: 10px; background: var(--forge-gradient); color: #000; font-size: 1.05rem; font-weight: 800; padding: 16px 36px; border-radius: 100px; text-decoration: none; margin-bottom: 24px; min-height: 56px; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 30px rgba(232,122,46,0.35)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+            Start Your 7-Day Sprint NOW
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+          </a>
+
+          <!-- Share section -->
+          <div style="margin-bottom: 24px;">
+            <div style="font-size: 0.9rem; font-weight: 600; color: #fff; margin-bottom: 12px;">Share your results &amp; help someone else:</div>
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+              <button class="copy-btn" id="shareBtn" style="min-width: 180px;">Share Results Link</button>
+              <button class="copy-btn" id="copyBtn" style="min-width: 180px;">Copy to Clipboard</button>
+            </div>
+            <!-- Referral tracker -->
+            <div id="referralTracker" style="margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 12px;">
+              <span style="font-size: 0.85rem; color: var(--text-dim);">Share with 3 friends:</span>
+              <div style="display: flex; gap: 6px;">
+                <div class="ref-circle" style="width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--text-muted);">1</div>
+                <div class="ref-circle" style="width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--text-muted);">2</div>
+                <div class="ref-circle" style="width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--text-muted);">3</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="success-steps">
+            <div class="success-step">
+              <div class="success-step-num">1</div>
+              <p><strong>Start Day 1 now</strong> — Your 7-day sprint is ready. 2-3 hours/day, completely free.</p>
+            </div>
+            <div class="success-step">
+              <div class="success-step-num">2</div>
+              <p><strong>Share with friends</strong> — Know someone who lost their job? Send them your results link.</p>
+            </div>
+            <div class="success-step">
+              <div class="success-step-num">3</div>
+              <p><strong>Earning by Day 14</strong> — The average graduate lands their first paying client within 2 weeks.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Social Proof ── -->
+<section class="proof section" id="proof">
+  <div class="container">
+    <div class="proof-header">
+      <div class="section-label">Social Proof</div>
+      <div class="section-title">We're just getting started.</div>
+      <div class="section-subtitle">ANVIL is new, and we're honest about that. Here's what we bring to the table.</div>
+    </div>
+    <div class="proof-grid">
+      <div class="proof-card">
+        <p class="proof-quote">"80% of hospital bills contain errors. AI catches them in minutes. We train you to do this as a paid service."</p>
+        <p class="proof-author">&mdash; Benefits Navigation Track</p>
+      </div>
+      <div class="proof-card">
+        <p class="proof-quote">"68 million Americans are eligible for benefits they never claim. That's $68B/year left on the table. We fix that."</p>
+        <p class="proof-author">&mdash; Medical Billing Track</p>
+      </div>
+      <div class="proof-card">
+        <p class="proof-quote">"Career bootcamps charge $15K and take 6 months. ANVIL is free and gets you earning in 2 weeks. We built it that way on purpose."</p>
+        <p class="proof-author">&mdash; The ANVIL Mission</p>
+      </div>
+    </div>
+    <div class="proof-bottom">
+      <div class="proof-stat">
+        <div class="proof-stat-val">6</div>
+        <div class="proof-stat-label">AI products built</div>
+      </div>
+      <div class="proof-stat">
+        <div class="proof-stat-val">144K+</div>
+        <div class="proof-stat-label">Lines of code</div>
+      </div>
+      <div class="proof-stat">
+        <div class="proof-stat-val">2,600+</div>
+        <div class="proof-stat-label">Tests passing</div>
+      </div>
+      <div class="proof-stat">
+        <div class="proof-stat-val">176+</div>
+        <div class="proof-stat-label">API endpoints</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="faq-header">
+      <div class="section-label">FAQ</div>
+      <div class="section-title">Straight answers.</div>
+      <div class="section-subtitle">No hedging, no fine print. Here's what you need to know.</div>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question">
+          Is this really free?
+          <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="faq-answer"><p>Yes. Always free for displaced workers. No credit card, no trial period, no bait-and-switch. We make money from employer placement fees and government workforce development contracts&mdash;not from you.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">
+          How do you make money?
+          <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="faq-answer"><p>Employer placements and government contracts. When we train great AI-augmented specialists, employers want to hire them. Government workforce programs pay for retraining outcomes. Your success is literally our business model.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">
+          Do I need tech skills?
+          <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="faq-answer"><p>No. If you can use email and a web browser, you have enough. The AI tools we teach are designed to be used by normal people, not programmers. Your human skills&mdash;empathy, judgment, communication&mdash;are what matter.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">
+          How fast can I start earning?
+          <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="faq-answer"><p>Most participants land their first paying client within 10-14 days. By day 30, the target is $1K-3K/month part-time. These aren't projections&mdash;it's the math of what these services charge and how AI speeds up delivery.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">
+          What if AI replaces these niches too?
+          <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="faq-answer"><p>These niches require human judgment, empathy, and legal accountability. A chatbot can't sign a will, negotiate with a debt collector in good faith, or sit with a family making end-of-life decisions. As AI gets better, you get more productive&mdash;not replaced.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+</main>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <svg viewBox="0 0 28 28" fill="none"><path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="url(#anvil-g2)"/><defs><linearGradient id="anvil-g2" x1="3" y1="2" x2="25" y2="26"><stop stop-color="#e87a2e"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs></svg>
+          ANVIL
+        </div>
+        <p class="footer-desc">AI Navigation &amp; Vocational Integration Layer. Turning displacement into reinvention.</p>
+        <a href="mailto:hello@getanvil.co" class="footer-email">hello@getanvil.co</a>
+      </div>
+      <div class="footer-right">
+        <div class="footer-socials">
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Social channels launching this week</p>
+        </div>
+        
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-links">
+        <a href="/about.html">About</a>
+        <a href="/terms.html">Terms of Service</a>
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/disclaimer.html">Disclaimer</a>
+        <a href="/accessibility.html">Accessibility</a>
+      </div>
+      <div>&copy; 2026 ANVIL. All rights reserved.</div>
+    </div>
+  </div>
+</footer>
+
+<!-- Accessibility Toolbar -->
+<div class="a11y-toolbar" role="toolbar" aria-label="Accessibility settings">
+  <button class="a11y-btn" id="fontBtn" title="Font size" aria-label="Toggle font size">A</button>
+  <button class="a11y-btn" id="contrastBtn" title="High contrast" aria-label="Toggle high contrast">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 010 20V2z" fill="currentColor"/></svg>
+  </button>
+</div>
+
+<script>
+/* ── Navigation ── */
+const nav = document.getElementById('nav');
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 20);
+});
+
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+  document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+});
+
+function closeMobile() {
+  hamburger.classList.remove('open');
+  mobileMenu.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* ── FAQ ── */
+document.querySelectorAll('.faq-question').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item = btn.parentElement;
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!wasOpen) item.classList.add('open');
+  });
+});
+
+/* ── Quiz Data ── */
+const NICHES = [
+  { id: 'benefits', name: 'Benefits Navigation', earn: '$3K-6K/mo', desc: 'Guide people through SSDI, SNAP, Medicaid, and other programs. AI researches eligibility, you make the calls and walk people through applications.', icon: '\u{1F3E5}' },
+  { id: 'medical', name: 'Medical Billing Advocacy', earn: '$4K-8K/mo', desc: 'Find and dispute billing errors, negotiate with providers. AI scans for mistakes in medical bills, you advocate for fair charges.', icon: '\u{1F9EA}' },
+  { id: 'compliance', name: 'Small Biz Compliance', earn: '$3K-7K/mo', desc: 'Help small businesses stay on the right side of regulations. AI tracks changing rules, you make sure they are followed.', icon: '\u{1F4DD}' },
+  { id: 'estate', name: 'Estate Document Prep', earn: '$3K-6K/mo', desc: 'Prepare wills, trusts, and power of attorney documents. AI drafts, you verify details and guide families through the process.', icon: '\u{1F4DC}' },
+  { id: 'grants', name: 'Grant Writing', earn: '$4K-8K/mo', desc: 'Win funding for nonprofits and small orgs. AI drafts proposals, you add the human narrative and build funder relationships.', icon: '\u{1F3AF}' },
+  { id: 'insurance', name: 'Insurance Claims Help', earn: '$3K-7K/mo', desc: 'Navigate denied claims and appeals processes. AI identifies patterns and errors, you advocate for fair outcomes.', icon: '\u{1F6E1}' },
+  { id: 'debt', name: 'Debt Negotiation', earn: '$3K-6K/mo', desc: 'Negotiate with creditors to reduce or restructure debts. AI analyzes terms and options, you handle the human conversation.', icon: '\u{1F4B2}' }
+];
+
+const QUESTIONS = [
+  {
+    q: 'What kind of work did you do most recently?',
+    options: [
+      { text: 'Customer service, call center, or support', scores: { benefits: 4, insurance: 3, debt: 3, medical: 2, compliance: 1, estate: 1, grants: 1 } },
+      { text: 'Office admin, data entry, or back-office', scores: { compliance: 4, medical: 3, estate: 3, benefits: 2, grants: 2, insurance: 1, debt: 1 } },
+      { text: 'Sales, marketing, or business development', scores: { debt: 4, grants: 3, compliance: 2, insurance: 2, benefits: 1, medical: 1, estate: 1 } },
+      { text: 'Healthcare, social work, or education', scores: { benefits: 4, medical: 4, estate: 2, insurance: 2, grants: 2, compliance: 1, debt: 1 } },
+      { text: 'Something else entirely', scores: { benefits: 2, medical: 2, compliance: 2, estate: 2, grants: 2, insurance: 2, debt: 2 } }
+    ]
+  },
+  {
+    q: 'How comfortable are you making phone calls to strangers?',
+    options: [
+      { text: 'Love it — I can talk to anyone', scores: { debt: 4, insurance: 4, benefits: 3, medical: 2, compliance: 1, estate: 1, grants: 1 } },
+      { text: 'Fine with it if I have a script or purpose', scores: { benefits: 3, insurance: 3, debt: 3, medical: 2, grants: 2, estate: 1, compliance: 1 } },
+      { text: 'I\'d rather communicate in writing', scores: { grants: 4, compliance: 4, estate: 3, medical: 3, benefits: 1, insurance: 1, debt: 1 } },
+      { text: 'Phone calls make me anxious', scores: { compliance: 4, estate: 4, grants: 3, medical: 2, benefits: 1, insurance: 1, debt: 1 } }
+    ]
+  },
+  {
+    q: 'Rate your writing ability:',
+    options: [
+      { text: 'Strong — I can write clearly and persuasively', scores: { grants: 5, compliance: 3, estate: 3, medical: 2, insurance: 2, benefits: 1, debt: 1 } },
+      { text: 'Decent — I can get my point across', scores: { grants: 3, compliance: 3, estate: 3, medical: 2, insurance: 2, benefits: 2, debt: 2 } },
+      { text: 'Not my strength — I\'m better in conversation', scores: { debt: 4, benefits: 4, insurance: 3, medical: 2, compliance: 1, estate: 1, grants: 1 } }
+    ]
+  },
+  {
+    q: 'A client is stressed and confused about their situation. Your instinct is to:',
+    options: [
+      { text: 'Listen carefully, validate their feelings, then explain options', scores: { benefits: 5, medical: 4, estate: 3, insurance: 2, debt: 2, grants: 1, compliance: 1 } },
+      { text: 'Cut to the solution — they need answers, not hugs', scores: { debt: 4, compliance: 4, insurance: 3, medical: 2, grants: 2, benefits: 1, estate: 1 } },
+      { text: 'Research everything first so I can give them the full picture', scores: { compliance: 4, grants: 4, estate: 3, medical: 3, insurance: 2, benefits: 2, debt: 1 } }
+    ]
+  },
+  {
+    q: 'How do you feel about detailed, repetitive tasks?',
+    options: [
+      { text: 'I\'m meticulous — details are my thing', scores: { medical: 5, compliance: 4, estate: 4, insurance: 3, grants: 2, benefits: 1, debt: 1 } },
+      { text: 'I can handle them if the payoff is clear', scores: { insurance: 3, medical: 3, compliance: 3, estate: 3, grants: 3, benefits: 2, debt: 2 } },
+      { text: 'I prefer variety and human interaction', scores: { benefits: 4, debt: 4, grants: 3, insurance: 2, medical: 1, compliance: 1, estate: 1 } }
+    ]
+  },
+  {
+    q: 'How comfortable are you with technology?',
+    options: [
+      { text: 'Very — I pick up new tools quickly', scores: { compliance: 3, grants: 3, medical: 3, insurance: 2, estate: 2, benefits: 2, debt: 2 } },
+      { text: 'Average — I can learn with guidance', scores: { benefits: 3, debt: 3, estate: 3, insurance: 3, medical: 2, grants: 2, compliance: 2 } },
+      { text: 'Not great — but I\'m willing to learn', scores: { benefits: 4, debt: 3, estate: 2, insurance: 2, medical: 1, grants: 1, compliance: 1 } }
+    ]
+  },
+  {
+    q: 'Which work style appeals to you most?',
+    options: [
+      { text: 'Helping individuals one-on-one', scores: { benefits: 5, medical: 3, debt: 3, estate: 3, insurance: 2, grants: 1, compliance: 1 } },
+      { text: 'Working with businesses and organizations', scores: { compliance: 5, grants: 4, insurance: 2, medical: 1, estate: 1, benefits: 1, debt: 1 } },
+      { text: 'Fighting for people who got a raw deal', scores: { insurance: 5, debt: 4, medical: 4, benefits: 3, estate: 1, grants: 1, compliance: 1 } },
+      { text: 'Handling important documents and processes', scores: { estate: 5, compliance: 4, grants: 3, medical: 3, insurance: 2, benefits: 1, debt: 1 } }
+    ]
+  },
+  {
+    q: 'What monthly income would change your life right now?',
+    options: [
+      { text: '$1K-2K/month to cover basics', scores: { benefits: 4, debt: 3, estate: 2, insurance: 2, medical: 1, compliance: 1, grants: 1 } },
+      { text: '$3K-5K/month for real stability', scores: { medical: 3, insurance: 3, compliance: 3, grants: 3, debt: 3, benefits: 2, estate: 2 } },
+      { text: '$5K-8K/month — I want to build something', scores: { grants: 4, medical: 4, compliance: 4, insurance: 3, debt: 2, estate: 2, benefits: 1 } },
+      { text: 'Whatever I can get — I just need to start', scores: { benefits: 4, debt: 4, estate: 3, insurance: 3, medical: 2, compliance: 2, grants: 2 } }
+    ]
+  }
+];
+
+/* ── Quiz Engine ── */
+let currentQ = 0;
+let answers = [];
+const slidesEl = document.getElementById('quizSlides');
+const progressEl = document.getElementById('quizProgress');
+const resultEl = document.getElementById('quizResult');
+const successEl = document.getElementById('quizSuccess');
+const resultNichesEl = document.getElementById('resultNiches');
+
+function initQuiz() {
+  trackEvent('quiz_start');
+  // Build progress dots
+  progressEl.innerHTML = QUESTIONS.map((_, i) =>
+    `<div class="quiz-progress-dot" data-i="${i}"></div>`
+  ).join('');
+
+  // Build slides
+  slidesEl.innerHTML = QUESTIONS.map((q, qi) => `
+    <div class="quiz-slide${qi === 0 ? ' active' : ''}" data-qi="${qi}">
+      <div class="quiz-q-number">Question ${qi + 1} of ${QUESTIONS.length}</div>
+      <div class="quiz-question">${q.q}</div>
+      <div class="quiz-options">
+        ${q.options.map((o, oi) => `
+          <button class="quiz-option" data-qi="${qi}" data-oi="${oi}">
+            <span class="quiz-option-marker">${String.fromCharCode(65 + oi)}</span>
+            ${o.text}
+          </button>
+        `).join('')}
+      </div>
+      <div class="quiz-nav">
+        <button class="quiz-btn quiz-btn-back" ${qi === 0 ? 'style="visibility:hidden"' : ''} onclick="prevQ()">Back</button>
+        <button class="quiz-btn quiz-btn-next" disabled onclick="nextQ()">
+          ${qi === QUESTIONS.length - 1 ? 'See My Results' : 'Next'}
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  // Option click handlers
+  document.querySelectorAll('.quiz-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const qi = parseInt(btn.dataset.qi);
+      const oi = parseInt(btn.dataset.oi);
+      answers[qi] = oi;
+      // Update UI
+      const slide = btn.closest('.quiz-slide');
+      slide.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+      btn.classList.add('selected');
+      slide.querySelector('.quiz-btn-next').disabled = false;
+    });
+  });
+
+  updateProgress();
+}
+
+function updateProgress() {
+  document.querySelectorAll('.quiz-progress-dot').forEach((dot, i) => {
+    dot.classList.remove('active', 'done');
+    if (i === currentQ) dot.classList.add('active');
+    else if (i < currentQ || answers[i] !== undefined) dot.classList.add('done');
+  });
+}
+
+function showSlide(i) {
+  document.querySelectorAll('.quiz-slide').forEach(s => s.classList.remove('active'));
+  const target = document.querySelector(`.quiz-slide[data-qi="${i}"]`);
+  if (target) target.classList.add('active');
+  // Restore selection if going back
+  if (answers[i] !== undefined) {
+    const opts = target.querySelectorAll('.quiz-option');
+    opts.forEach(o => o.classList.remove('selected'));
+    opts[answers[i]].classList.add('selected');
+    target.querySelector('.quiz-btn-next').disabled = false;
+  }
+  updateProgress();
+}
+
+function nextQ() {
+  if (answers[currentQ] === undefined) return;
+  if (currentQ < QUESTIONS.length - 1) {
+    currentQ++;
+    showSlide(currentQ);
+  } else {
+    showResults();
+  }
+}
+
+function prevQ() {
+  if (currentQ > 0) {
+    currentQ--;
+    showSlide(currentQ);
+  }
+}
+
+function showResults() {
+  // Tally scores
+  const scores = {};
+  NICHES.forEach(n => scores[n.id] = 0);
+  answers.forEach((oi, qi) => {
+    const s = QUESTIONS[qi].options[oi].scores;
+    for (const k in s) scores[k] += s[k];
+  });
+
+  // Sort
+  const ranked = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  const maxScore = ranked[0][1];
+
+  // Show top 2
+  const top2 = ranked.slice(0, 2);
+  resultNichesEl.innerHTML = top2.map((r, i) => {
+    const niche = NICHES.find(n => n.id === r[0]);
+    const pct = Math.round((r[1] / maxScore) * 100);
+    return `
+      <div class="result-niche ${i === 0 ? 'primary' : ''}">
+        <h3>${niche.icon} ${niche.name}</h3>
+        <div class="result-niche-earn">${niche.earn} earning potential</div>
+        <p>${niche.desc}</p>
+        <div class="result-match">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+          ${pct}% match based on your answers
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Store results
+  window._quizResults = { scores, ranked, top2, answers: answers.map((oi, qi) => QUESTIONS[qi].options[oi].text) };
+
+  trackEvent('quiz_complete', { topNiche: NICHES.find(n => n.id === top2[0][0]).name });
+
+  // Hide slides, show results
+  slidesEl.style.display = 'none';
+  progressEl.style.display = 'none';
+  resultEl.classList.add('active');
+}
+
+/* ── Lead Form ── */
+document.getElementById('formSubmit').addEventListener('click', async () => {
+  const btn = document.getElementById('formSubmit');
+  const nameInput = document.getElementById('leadName');
+  const emailInput = document.getElementById('leadEmail');
+  const name = nameInput.value.trim();
+  const email = emailInput.value.trim();
+  const phone = document.getElementById('leadPhone').value.trim();
+
+  // Reset
+  nameInput.style.borderColor = '';
+  emailInput.style.borderColor = '';
+
+  if (!name) {
+    nameInput.style.borderColor = '#dc3c3c';
+    nameInput.placeholder = 'Name is required';
+    return;
+  }
+  if (!email) {
+    emailInput.style.borderColor = '#dc3c3c';
+    emailInput.placeholder = 'Email is required';
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+    emailInput.style.borderColor = '#dc3c3c';
+    emailInput.placeholder = 'Enter a valid email';
+    return;
+  }
+
+  const r = window._quizResults;
+  const topNiche = NICHES.find(n => n.id === r.top2[0][0]);
+  const secondNiche = NICHES.find(n => n.id === r.top2[1][0]);
+
+  const submission = {
+    name, email, phone,
+    topNiche: topNiche.name,
+    secondNiche: secondNiche.name,
+    answers: r.answers,
+    recommendedNiches: [topNiche.id, secondNiche.id],
+    referredBy: localStorage.getItem('anvil_referred_by') || '',
+    utmSource: localStorage.getItem('anvil_utm_source') || '',
+    utmMedium: localStorage.getItem('anvil_utm_medium') || '',
+    utmCampaign: localStorage.getItem('anvil_utm_campaign') || ''
+  };
+
+  // Submit to server
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+
+  try {
+    const response = await fetch('/api/quiz-submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(submission)
+    });
+    const result = await response.json();
+
+    if (!response.ok) throw new Error(result.error || 'Submission failed');
+
+    // Save locally as backup
+    submission.id = result.id;
+    submission.timestamp = new Date().toISOString();
+    const existing = JSON.parse(localStorage.getItem('anvil_leads') || '[]');
+    existing.push(submission);
+    localStorage.setItem('anvil_leads', JSON.stringify(existing));
+    window._lastSubmission = submission;
+
+    // Show success
+    resultEl.classList.remove('active');
+    successEl.classList.add('active');
+    trackEvent('form_submit', { niche: topNiche.name });
+
+    // Populate personalized niche info
+    document.getElementById('successTopNiche').textContent = topNiche.icon + ' ' + topNiche.name;
+    document.getElementById('successTopEarn').textContent = topNiche.earn + ' earning potential';
+    document.getElementById('successTopDesc').textContent = topNiche.desc;
+
+    // Store quiz results for learn.html
+    localStorage.setItem('anvil_quiz_results', JSON.stringify({
+      topNiche: topNiche.id,
+      topNicheName: topNiche.name,
+      name: submission.name,
+      referralCode: result.referralCode || submission.id
+    }));
+
+    // Update referral tracker
+    const refCode = localStorage.getItem('anvil_referred_by');
+    if (refCode) {
+      fetch('/api/referrals/status/' + encodeURIComponent(refCode))
+        .then(r => r.json())
+        .then(data => {
+          const circles = document.querySelectorAll('.ref-circle');
+          const count = Math.min(data.count || 0, 3);
+          circles.forEach((c, i) => {
+            if (i < count) {
+              c.style.borderColor = 'var(--orange)';
+              c.style.background = 'rgba(232,122,46,0.15)';
+              c.style.color = 'var(--orange)';
+            }
+          });
+        }).catch(() => {});
+    }
+  } catch (err) {
+    console.error('Submission error:', err);
+    // Fallback: save locally even if server fails
+    submission.timestamp = new Date().toISOString();
+    submission.id = 'local-' + Date.now();
+    const existing = JSON.parse(localStorage.getItem('anvil_leads') || '[]');
+    existing.push(submission);
+    localStorage.setItem('anvil_leads', JSON.stringify(existing));
+    window._lastSubmission = submission;
+
+    // Still show success — don't punish user for server issues
+    resultEl.classList.remove('active');
+    successEl.classList.add('active');
+    trackEvent('form_submit', { niche: topNiche.name, offline: true });
+
+    // Populate personalized niche info (fallback)
+    document.getElementById('successTopNiche').textContent = topNiche.icon + ' ' + topNiche.name;
+    document.getElementById('successTopEarn').textContent = topNiche.earn + ' earning potential';
+    document.getElementById('successTopDesc').textContent = topNiche.desc;
+
+    // Store quiz results for learn.html (fallback)
+    localStorage.setItem('anvil_quiz_results', JSON.stringify({
+      topNiche: topNiche.id,
+      topNicheName: topNiche.name,
+      name: submission.name,
+      referralCode: submission.id
+    }));
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Get My Roadmap';
+  }
+});
+
+/* ── Copy & Share ── */
+document.getElementById('copyBtn').addEventListener('click', () => {
+  const d = window._lastSubmission;
+  if (!d) return;
+  const text = `ANVIL Career Match Results\n` +
+    `Name: ${d.name}\nEmail: ${d.email}${d.phone ? '\nPhone: ' + d.phone : ''}\n` +
+    `Top Match: ${d.topNiche}\nSecond Match: ${d.secondNiche}\n` +
+    `Date: ${d.timestamp}\n\nAnswers:\n${d.answers.map((a, i) => `${i + 1}. ${a}`).join('\n')}`;
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy to Clipboard', 2000);
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy to Clipboard', 2000);
+  });
+});
+
+// Share button (uses navigator.share or clipboard fallback)
+document.getElementById('shareBtn').addEventListener('click', () => {
+  const quizData = JSON.parse(localStorage.getItem('anvil_quiz_results') || '{}');
+  const shareUrl = window.location.origin + '/?ref=' + (quizData.referralCode || '');
+
+  if (navigator.share) {
+    navigator.share({
+      title: 'ANVIL - Find Your AI Career',
+      text: 'I just found my AI career match! Take the free quiz:',
+      url: shareUrl
+    }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      const btn = document.getElementById('shareBtn');
+      btn.textContent = 'Link Copied!';
+      setTimeout(() => btn.textContent = 'Share Results Link', 2000);
+    }).catch(() => {});
+  }
+});
+
+/* ── Form input reset border on focus ── */
+document.querySelectorAll('.form-input').forEach(input => {
+  input.addEventListener('focus', () => {
+    input.style.borderColor = '';
+  });
+});
+
+/* ── Init ── */
+initQuiz();
+
+/* ── Referral & UTM Capture ── */
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get('ref');
+  const utmSource = params.get('utm_source') || '';
+  const utmMedium = params.get('utm_medium') || '';
+  const utmCampaign = params.get('utm_campaign') || '';
+
+  if (ref) {
+    localStorage.setItem('anvil_referred_by', ref);
+    // Track referral visit
+    fetch('/api/referrals/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ referralCode: ref, referredPage: window.location.pathname })
+    }).catch(() => {});
+  }
+
+  if (utmSource) localStorage.setItem('anvil_utm_source', utmSource);
+  if (utmMedium) localStorage.setItem('anvil_utm_medium', utmMedium);
+  if (utmCampaign) localStorage.setItem('anvil_utm_campaign', utmCampaign);
+})();
+
+/* ── Analytics Events ── */
+function trackEvent(event, data) {
+  fetch('/api/analytics/event', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ event, page: window.location.pathname, data: data || {} })
+  }).catch(() => {});
+}
+
+/* ── Accessibility Toolbar ── */
+(function() {
+  const scales = [1, 1.15, 1.3];
+  const labels = ['A', 'A+', 'A++'];
+  let scaleIdx = parseInt(localStorage.getItem('anvil_font_scale_idx') || '0');
+  const fontBtn = document.getElementById('fontBtn');
+  const contrastBtn = document.getElementById('contrastBtn');
+
+  function applyScale() {
+    document.documentElement.style.setProperty('--font-scale', scales[scaleIdx]);
+    fontBtn.textContent = labels[scaleIdx];
+    fontBtn.classList.toggle('active', scaleIdx > 0);
+    localStorage.setItem('anvil_font_scale_idx', scaleIdx);
+  }
+
+  fontBtn.addEventListener('click', () => {
+    scaleIdx = (scaleIdx + 1) % scales.length;
+    applyScale();
+  });
+
+  // High contrast
+  let highContrast = localStorage.getItem('anvil_high_contrast') === 'true';
+  function applyContrast() {
+    document.body.classList.toggle('high-contrast', highContrast);
+    contrastBtn.classList.toggle('active', highContrast);
+    localStorage.setItem('anvil_high_contrast', highContrast);
+  }
+
+  contrastBtn.addEventListener('click', () => {
+    highContrast = !highContrast;
+    applyContrast();
+  });
+
+  // Apply saved settings on load
+  applyScale();
+  applyContrast();
+})();
+
+/* ── Service Worker Registration ── */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {
+      // Silent fail — not critical
+    });
+  });
+}
+</script>
+</body>
+</html>

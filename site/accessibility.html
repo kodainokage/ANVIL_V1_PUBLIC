@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accessibility Statement - ANVIL</title>
+<meta name="description" content="ANVIL Accessibility Statement. Our commitment to making the ANVIL training platform accessible to everyone.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M14 2L3 26h6l5-12 5 12h6L14 2z' fill='%23e87a2e'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#e87a2e">
+<style>
+/* ── Reset & Base ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  background: #0a0a0a;
+  color: #e0e0e0;
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a { color: #e87a2e; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+:root {
+  --bg: #0a0a0a;
+  --bg-card: #141414;
+  --bg-elevated: #1a1a1a;
+  --border: #2a2a2a;
+  --text: #e0e0e0;
+  --text-dim: #888;
+  --text-muted: #666;
+  --orange: #e87a2e;
+  --orange-light: #f09040;
+  --amber: #f5a623;
+  --forge-gradient: linear-gradient(135deg, #e87a2e, #f5a623);
+  --radius: 12px;
+  --max-w: 800px;
+}
+
+/* ── Navigation ── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner {
+  max-width: 1140px; margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.25rem; font-weight: 900; color: #fff;
+  letter-spacing: 1px; text-decoration: none;
+}
+.nav-logo svg { width: 28px; height: 28px; }
+.nav-links { display: flex; gap: 24px; list-style: none; }
+.nav-links a {
+  font-size: 0.875rem; font-weight: 500; color: var(--text-dim);
+  transition: color 0.2s; text-decoration: none;
+}
+.nav-links a:hover { color: #fff; text-decoration: none; }
+
+.hamburger {
+  display: none; background: none; border: none; padding: 12px;
+  flex-direction: column; gap: 5px; cursor: pointer;
+  min-width: 44px; min-height: 44px; align-items: center; justify-content: center;
+}
+.hamburger span {
+  display: block; width: 22px; height: 2px; background: #fff;
+  border-radius: 2px; transition: all 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.mobile-menu {
+  display: none; position: fixed; top: 64px; left: 0; right: 0; bottom: 0;
+  background: rgba(10, 10, 10, 0.97); z-index: 99;
+  flex-direction: column; align-items: center; justify-content: center; gap: 32px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  font-size: 1.25rem; font-weight: 600; color: var(--text-dim);
+  transition: color 0.2s; text-decoration: none;
+}
+.mobile-menu a:hover { color: #fff; }
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+}
+
+/* ── Content ── */
+.legal-page {
+  max-width: var(--max-w); margin: 0 auto; padding: 100px 24px 80px;
+}
+.legal-updated {
+  font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;
+  text-transform: uppercase; letter-spacing: 1px; font-weight: 600;
+}
+.legal-page h1 {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 900; color: #fff; margin-bottom: 8px; line-height: 1.15;
+}
+.legal-page .legal-intro {
+  font-size: 1rem; color: var(--text-dim); margin-bottom: 40px;
+  line-height: 1.7; border-bottom: 1px solid var(--border); padding-bottom: 32px;
+}
+.legal-page h2 {
+  font-size: 1.3rem; font-weight: 700; color: #fff;
+  margin-top: 40px; margin-bottom: 12px;
+  padding-top: 24px; border-top: 1px solid var(--border);
+}
+.legal-page h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+.legal-page h3 {
+  font-size: 1.05rem; font-weight: 600; color: #ddd;
+  margin-top: 24px; margin-bottom: 8px;
+}
+.legal-page p {
+  font-size: 0.95rem; color: var(--text); line-height: 1.8;
+  margin-bottom: 14px;
+}
+.legal-page ul, .legal-page ol {
+  margin-bottom: 14px; padding-left: 24px;
+}
+.legal-page li {
+  font-size: 0.95rem; color: var(--text); line-height: 1.8;
+  margin-bottom: 6px;
+}
+.legal-page strong { color: #fff; }
+.legal-page .highlight-box {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-left: 3px solid var(--orange); border-radius: 8px;
+  padding: 20px 24px; margin: 20px 0;
+}
+.legal-page .highlight-box p { margin-bottom: 0; }
+.legal-page .status-badge {
+  display: inline-block; font-size: 0.75rem; font-weight: 700;
+  padding: 4px 12px; border-radius: 100px; margin-left: 8px;
+  vertical-align: middle;
+}
+.legal-page .status-done {
+  background: rgba(72, 187, 120, 0.1); color: #48bb78;
+  border: 1px solid rgba(72, 187, 120, 0.2);
+}
+.legal-page .status-progress {
+  background: rgba(245, 166, 35, 0.1); color: #f5a623;
+  border: 1px solid rgba(245, 166, 35, 0.2);
+}
+.legal-page .status-planned {
+  background: rgba(136, 136, 136, 0.1); color: #888;
+  border: 1px solid rgba(136, 136, 136, 0.2);
+}
+.legal-page table {
+  width: 100%; border-collapse: collapse; margin: 16px 0;
+  font-size: 0.9rem;
+}
+.legal-page th, .legal-page td {
+  text-align: left; padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.legal-page th {
+  color: #fff; font-weight: 600; background: var(--bg-card);
+  font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.legal-page td { color: var(--text); }
+
+/* ── Footer ── */
+.footer {
+  padding: 48px 0 32px; border-top: 1px solid var(--border);
+}
+.footer-inner {
+  max-width: 1140px; margin: 0 auto; padding: 0 24px;
+  display: flex; justify-content: space-between; align-items: flex-start;
+  flex-wrap: wrap; gap: 32px;
+}
+.footer-brand { max-width: 300px; }
+.footer-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.1rem; font-weight: 900; color: #fff;
+  letter-spacing: 1px; margin-bottom: 12px; text-decoration: none;
+}
+.footer-logo svg { width: 24px; height: 24px; }
+.footer-desc { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 16px; }
+.footer-email { font-size: 0.85rem; color: var(--orange); font-weight: 500; }
+.footer-right { text-align: right; }
+.footer-links { display: flex; gap: 24px; list-style: none; margin-bottom: 16px; justify-content: flex-end; }
+.footer-links a { font-size: 0.8rem; color: var(--text-dim); text-decoration: none; }
+.footer-links a:hover { color: #fff; text-decoration: none; }
+.footer-portfolio { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+.footer-bottom {
+  max-width: 1140px; margin: 0 auto; padding: 0 24px;
+  text-align: center; padding-top: 32px; margin-top: 32px;
+  border-top: 1px solid var(--border);
+  font-size: 0.75rem; color: var(--text-muted);
+}
+@media (max-width: 640px) {
+  .footer-inner { flex-direction: column; align-items: center; text-align: center; }
+  .footer-right { text-align: center; }
+  .footer-links { justify-content: center; }
+  .legal-page table { font-size: 0.8rem; }
+  .legal-page th, .legal-page td { padding: 8px 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="url(#anvil-g)"/>
+        <defs><linearGradient id="anvil-g" x1="3" y1="2" x2="25" y2="26"><stop stop-color="#e87a2e"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs>
+      </svg>
+      ANVIL
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/terms.html">Terms</a></li>
+      <li><a href="/privacy.html">Privacy</a></li>
+      <li><a href="/disclaimer.html">Disclaimer</a></li>
+      <li><a href="/accessibility.html">Accessibility</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="/" onclick="closeMobile()">Home</a>
+  <a href="/terms.html" onclick="closeMobile()">Terms</a>
+  <a href="/privacy.html" onclick="closeMobile()">Privacy</a>
+  <a href="/disclaimer.html" onclick="closeMobile()">Disclaimer</a>
+  <a href="/accessibility.html" onclick="closeMobile()">Accessibility</a>
+</div>
+
+<!-- ── Content ── -->
+<main class="legal-page">
+  <div class="legal-updated">Last updated: March 2, 2026</div>
+  <h1>Accessibility Statement</h1>
+  <p class="legal-intro">ANVIL is committed to making our training platform accessible to everyone, including people with disabilities. We believe that AI-powered career transformation should be available to all, regardless of ability. This statement describes our accessibility efforts, known issues, and how to get help.</p>
+
+  <h2>1. Our Commitment</h2>
+  <p>ANVIL strives to conform to the <strong>Web Content Accessibility Guidelines (WCAG) 2.1 Level AA</strong> standard. WCAG 2.1 AA is the widely accepted standard for web accessibility, and meeting it means our platform should be usable by people with a wide range of disabilities, including:</p>
+  <ul>
+    <li>Visual impairments (blindness, low vision, color blindness)</li>
+    <li>Hearing impairments (deafness, hard of hearing)</li>
+    <li>Motor impairments (limited fine motor control, inability to use a mouse)</li>
+    <li>Cognitive and learning disabilities (dyslexia, attention disorders, memory difficulties)</li>
+  </ul>
+  <p>Accessibility is not a one-time project. It is an ongoing practice that we integrate into our design and development process.</p>
+
+  <h2>2. What We Have Done</h2>
+  <p>Here is what we have implemented to make ANVIL accessible:</p>
+
+  <h3>Design and Visual</h3>
+  <ul>
+    <li><strong>Color contrast:</strong> Text and interactive elements meet WCAG AA contrast ratios (minimum 4.5:1 for normal text, 3:1 for large text). <span class="status-badge status-done">Done</span></li>
+    <li><strong>Responsive design:</strong> The site works on all screen sizes from 320px width and up, including mobile devices, tablets, and desktops. <span class="status-badge status-done">Done</span></li>
+    <li><strong>System fonts:</strong> We use your device's default system fonts, which respect your operating system's font size and accessibility settings. <span class="status-badge status-done">Done</span></li>
+    <li><strong>Reduced motion:</strong> Users who have enabled "Reduce Motion" in their operating system settings will see minimal or no animations. <span class="status-badge status-done">Done</span></li>
+    <li><strong>No color-only information:</strong> We do not convey information through color alone. Status indicators, selections, and errors use text labels and/or icons in addition to color. <span class="status-badge status-done">Done</span></li>
+  </ul>
+
+  <h3>Navigation and Interaction</h3>
+  <ul>
+    <li><strong>Keyboard navigation:</strong> All interactive elements (links, buttons, form fields, quiz options) are reachable and operable using the keyboard alone. <span class="status-badge status-done">Done</span></li>
+    <li><strong>Focus indicators:</strong> Visible focus outlines appear on interactive elements when navigating with a keyboard. <span class="status-badge status-done">Done</span></li>
+    <li><strong>Skip navigation link:</strong> A "Skip to content" link is available on the homepage for keyboard users to bypass the navigation menu. <span class="status-badge status-done">Done</span></li>
+    <li><strong>Touch targets:</strong> All buttons and interactive elements meet the minimum 44x44 pixel touch target size for mobile users. <span class="status-badge status-done">Done</span></li>
+    <li><strong>Logical tab order:</strong> The tab order follows the visual layout of the page. <span class="status-badge status-done">Done</span></li>
+  </ul>
+
+  <h3>Content and Semantics</h3>
+  <ul>
+    <li><strong>Semantic HTML:</strong> We use proper HTML elements (headings, lists, nav, main, footer) so screen readers can understand the page structure. <span class="status-badge status-done">Done</span></li>
+    <li><strong>Heading hierarchy:</strong> Pages use a logical heading structure (h1, h2, h3) without skipping levels. <span class="status-badge status-done">Done</span></li>
+    <li><strong>Form labels:</strong> All form inputs have associated labels that screen readers can announce. <span class="status-badge status-done">Done</span></li>
+    <li><strong>Language attribute:</strong> The page language is declared in the HTML lang attribute. <span class="status-badge status-done">Done</span></li>
+    <li><strong>Descriptive link text:</strong> Links describe their destination rather than using generic text like "click here." <span class="status-badge status-done">Done</span></li>
+  </ul>
+
+  <h2>3. Known Issues and Remediation</h2>
+  <p>We are aware of the following accessibility issues and are working to resolve them:</p>
+
+  <table>
+    <thead>
+      <tr><th>Issue</th><th>Impact</th><th>Status</th><th>Target Date</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Quiz slide transitions may not announce to screen readers</td>
+        <td>Screen reader users may not know when quiz content changes</td>
+        <td><span class="status-badge status-progress">In Progress</span></td>
+        <td>Q2 2026</td>
+      </tr>
+      <tr>
+        <td>Quiz results page needs ARIA live region</td>
+        <td>Screen reader users may not hear their quiz results automatically</td>
+        <td><span class="status-badge status-progress">In Progress</span></td>
+        <td>Q2 2026</td>
+      </tr>
+      <tr>
+        <td>FAQ accordion needs ARIA expanded states</td>
+        <td>Screen reader users may not know if an FAQ answer is open or closed</td>
+        <td><span class="status-badge status-planned">Planned</span></td>
+        <td>Q2 2026</td>
+      </tr>
+      <tr>
+        <td>Mobile menu needs focus trapping</td>
+        <td>Keyboard users may tab behind the open mobile menu</td>
+        <td><span class="status-badge status-planned">Planned</span></td>
+        <td>Q2 2026</td>
+      </tr>
+      <tr>
+        <td>Error messages in lead form need ARIA alert role</td>
+        <td>Screen reader users may not hear form validation errors</td>
+        <td><span class="status-badge status-planned">Planned</span></td>
+        <td>Q2 2026</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>We are committed to resolving these issues. When new issues are identified, they will be added to this table with a target remediation date.</p>
+
+  <h2>4. How to Report Issues</h2>
+  <p>If you encounter an accessibility barrier on ANVIL, we want to know about it. Please contact us with:</p>
+  <ul>
+    <li>A description of the problem you experienced</li>
+    <li>The page or feature where the issue occurred</li>
+    <li>The assistive technology you were using (e.g., screen reader name and version, magnification software)</li>
+    <li>Your browser and operating system</li>
+    <li>Any steps to reproduce the issue</li>
+  </ul>
+  <p>Contact us at:</p>
+  <p>
+    <strong>ANVIL Accessibility</strong><br>
+    Email: <a href="mailto:hello@getanvil.co">hello@getanvil.co</a><br>
+    Subject line: "Accessibility Issue"
+  </p>
+  <p>We aim to respond to accessibility reports within <strong>5 business days</strong> and to provide a fix or workaround within <strong>30 days</strong>.</p>
+
+  <h2>5. Alternative Formats</h2>
+  <p>If you need any ANVIL content in an alternative format, we will do our best to accommodate your request. Available formats include:</p>
+  <ul>
+    <li><strong>Plain text:</strong> Any page content can be provided as a plain text document.</li>
+    <li><strong>Large print:</strong> Documents can be provided in larger font sizes upon request.</li>
+    <li><strong>Screen reader-optimized:</strong> If our standard content does not work well with your screen reader, contact us and we will provide an optimized version.</li>
+    <li><strong>Phone walkthrough:</strong> If you cannot access the career quiz or other interactive features, contact us and we will walk you through the process over the phone.</li>
+  </ul>
+  <p>To request an alternative format, email us at <a href="mailto:hello@getanvil.co">hello@getanvil.co</a> with the subject line "Alternative Format Request."</p>
+
+  <h2>6. Assistive Technology Compatibility</h2>
+  <p>ANVIL is designed to work with common assistive technologies, including:</p>
+  <ul>
+    <li><strong>Screen readers:</strong> VoiceOver (macOS/iOS), NVDA (Windows), JAWS (Windows), TalkBack (Android)</li>
+    <li><strong>Voice control:</strong> Dragon NaturallySpeaking, Voice Control (macOS/iOS)</li>
+    <li><strong>Magnification:</strong> ZoomText, built-in browser zoom (up to 400%)</li>
+    <li><strong>Switch devices:</strong> Compatible with standard switch access</li>
+    <li><strong>Keyboard-only navigation:</strong> Full keyboard operability without a mouse</li>
+  </ul>
+  <p>If you are using assistive technology that does not work well with ANVIL, please let us know so we can investigate and improve compatibility.</p>
+
+  <h2>7. Testing and Evaluation</h2>
+  <p>Our accessibility efforts include:</p>
+  <ul>
+    <li><strong>Automated testing:</strong> We use automated accessibility checking tools to catch common issues during development.</li>
+    <li><strong>Manual testing:</strong> We manually test with keyboard navigation and screen readers.</li>
+    <li><strong>Browser testing:</strong> We test across Chrome, Firefox, Safari, and Edge on both desktop and mobile.</li>
+    <li><strong>Ongoing review:</strong> Accessibility is reviewed with each significant update to the platform.</li>
+  </ul>
+
+  <h2>8. Legal Compliance</h2>
+  <p>ANVIL aims to comply with:</p>
+  <ul>
+    <li><strong>Americans with Disabilities Act (ADA):</strong> Title III requirements for public accommodations</li>
+    <li><strong>Section 508 of the Rehabilitation Act:</strong> Applicable if ANVIL receives federal funding through WIOA or other programs</li>
+    <li><strong>WCAG 2.1 Level AA:</strong> The internationally recognized standard for web accessibility</li>
+  </ul>
+  <p>If you are a WIOA-funded participant and encounter accessibility barriers that prevent you from participating in the program, contact us immediately and we will provide reasonable accommodations.</p>
+
+  <h2>9. Continuous Improvement</h2>
+  <p>ANVIL is a young platform and we are continuously improving. Our accessibility roadmap includes:</p>
+  <ul>
+    <li>Completing ARIA implementation for all interactive components (Q2 2026)</li>
+    <li>Conducting a third-party accessibility audit (Q3 2026)</li>
+    <li>Adding closed captions to any video content (when video content is created)</li>
+    <li>Implementing a user preference system for font size, contrast, and animation settings</li>
+    <li>Regularly training our team on accessibility best practices</li>
+  </ul>
+
+  <h2>10. Contact</h2>
+  <p>For any accessibility questions, concerns, or feedback:</p>
+  <p>
+    <strong>ANVIL Accessibility</strong><br>
+    Email: <a href="mailto:hello@getanvil.co">hello@getanvil.co</a><br>
+    Subject line: "Accessibility"
+  </p>
+  <p>We take accessibility seriously because ANVIL exists to help displaced workers -- and disability disproportionately affects the communities we serve. If something on our platform is not accessible, it is a bug and we will fix it.</p>
+</main>
+
+<!-- ── Footer ── -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="/" class="footer-logo">
+        <svg viewBox="0 0 28 28" fill="none"><path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="url(#anvil-g2)"/><defs><linearGradient id="anvil-g2" x1="3" y1="2" x2="25" y2="26"><stop stop-color="#e87a2e"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs></svg>
+        ANVIL
+      </a>
+      <p class="footer-desc">AI Navigation &amp; Vocational Integration Layer. Turning displacement into reinvention.</p>
+      <a href="mailto:hello@getanvil.co" class="footer-email">hello@getanvil.co</a>
+    </div>
+    <div class="footer-right">
+      <ul class="footer-links">
+        <li><a href="/terms.html">Terms</a></li>
+        <li><a href="/privacy.html">Privacy</a></li>
+        <li><a href="/disclaimer.html">Disclaimer</a></li>
+        <li><a href="/accessibility.html">Accessibility</a></li>
+      </ul>
+      
+    </div>
+  </div>
+  <div class="footer-bottom">&copy; 2026 ANVIL. All rights reserved.</div>
+</footer>
+
+<script>
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+  document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+});
+function closeMobile() {
+  hamburger.classList.remove('open');
+  mobileMenu.classList.remove('open');
+  document.body.style.overflow = '';
+}
+</script>
+</body>
+</html>

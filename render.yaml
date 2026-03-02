@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: anvil
+    runtime: node
+    # repo: https://github.com/YOUR_USERNAME/ANVIL_PUBLIC
+    branch: main
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: ALLOWED_ORIGIN
+        value: https://anvil.onrender.com
+      - key: API_KEY
+        generateValue: true
+      - key: COMMUNITY_DISCORD
+        value: ""
+      - key: COMMUNITY_SIGNAL
+        value: ""

@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANVIL - Admin Dashboard</title>
+<meta name="description" content="ANVIL Admin Dashboard — manage submissions, analytics, referrals, and curriculum progress.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M14 2L3 26h6l5-12 5 12h6L14 2z' fill='%23e87a2e'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#e87a2e">
+<meta name="robots" content="noindex, nofollow">
+<style>
+/* ── Reset & Base ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  background: #0a0a0a;
+  color: #e0e0e0;
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: inherit; border: none; }
+input, select { font-family: inherit; }
+
+/* Skip to content */
+.skip-link {
+  position: absolute; left: -9999px; top: 10px; z-index: 9999;
+  background: var(--orange); color: #000; padding: 12px 20px;
+  border-radius: 4px; font-weight: 700; font-size: 0.95rem;
+}
+.skip-link:focus { left: 10px; outline: 3px solid #fff; outline-offset: 2px; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Colors ── */
+:root {
+  --bg: #0a0a0a;
+  --bg-card: #141414;
+  --bg-elevated: #1a1a1a;
+  --border: #2a2a2a;
+  --text: #e0e0e0;
+  --text-dim: #888;
+  --text-muted: #666;
+  --orange: #e87a2e;
+  --orange-light: #f09040;
+  --amber: #f5a623;
+  --amber-glow: rgba(245, 166, 35, 0.15);
+  --ember: #c45e1a;
+  --forge-gradient: linear-gradient(135deg, #e87a2e, #f5a623);
+  --forge-glow: 0 0 30px rgba(232, 122, 46, 0.2);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --max-w: 1140px;
+  --green: #48bb78;
+  --red: #dc3c3c;
+}
+
+/* ── Utility ── */
+.container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+.hidden { display: none !important; }
+
+/* Focus visible */
+*:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+/* ── Navigation ── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner {
+  max-width: var(--max-w); margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.25rem; font-weight: 900; color: #fff;
+  letter-spacing: 1px;
+}
+.nav-logo svg { width: 28px; height: 28px; }
+.nav-label {
+  font-size: 0.8rem; font-weight: 600; color: var(--text-dim);
+  padding: 4px 12px; background: var(--bg-elevated);
+  border-radius: 100px; border: 1px solid var(--border);
+  margin-left: 8px;
+}
+.nav-links { display: flex; gap: 20px; list-style: none; align-items: center; }
+.nav-links a {
+  font-size: 0.875rem; font-weight: 500; color: var(--text-dim);
+  transition: color 0.2s; padding: 4px 0; min-height: 44px;
+  display: inline-flex; align-items: center;
+}
+.nav-links a:hover { color: #fff; }
+
+/* Hamburger */
+.hamburger {
+  display: none; background: none; border: none; padding: 12px;
+  flex-direction: column; gap: 5px; cursor: pointer;
+  min-width: 44px; min-height: 44px; align-items: center; justify-content: center;
+}
+.hamburger span {
+  display: block; width: 22px; height: 2px; background: #fff;
+  border-radius: 2px; transition: all 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.mobile-menu {
+  display: none; position: fixed; top: 64px; left: 0; right: 0; bottom: 0;
+  background: rgba(10, 10, 10, 0.97); z-index: 99; backdrop-filter: blur(8px);
+  flex-direction: column; align-items: center; justify-content: center; gap: 24px;
+  padding: 24px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  font-size: 1.25rem; font-weight: 600; color: var(--text-dim);
+  transition: color 0.2s; min-height: 44px; display: flex; align-items: center;
+  padding: 8px 16px; border-radius: 8px;
+}
+.mobile-menu a:hover { color: #fff; background: rgba(232, 122, 46, 0.08); }
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+}
+
+/* ── API Key Gate ── */
+.gate-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.gate-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 48px 40px;
+  max-width: 440px; width: 100%; text-align: center;
+}
+.gate-card h1 {
+  font-size: 1.5rem; font-weight: 800; color: #fff;
+  margin-bottom: 8px;
+}
+.gate-card p {
+  font-size: 0.9rem; color: var(--text-dim); margin-bottom: 28px;
+}
+.gate-card .gate-logo {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  margin-bottom: 24px;
+}
+.gate-card .gate-logo svg { width: 36px; height: 36px; }
+.gate-card .gate-logo span {
+  font-size: 1.5rem; font-weight: 900; color: #fff; letter-spacing: 1px;
+}
+.gate-input {
+  width: 100%; padding: 14px 16px; border-radius: var(--radius-sm);
+  background: var(--bg); border: 1px solid var(--border);
+  color: #fff; font-size: 0.95rem;
+  transition: border-color 0.2s; min-height: 48px;
+}
+.gate-input:focus {
+  outline: none; border-color: var(--orange);
+}
+.gate-input::placeholder { color: var(--text-muted); }
+.gate-btn {
+  width: 100%; padding: 14px; border-radius: 100px; margin-top: 16px;
+  background: var(--forge-gradient); color: #000;
+  font-size: 1rem; font-weight: 800; transition: all 0.2s;
+  min-height: 48px;
+}
+.gate-btn:hover { transform: translateY(-1px); box-shadow: var(--forge-glow); }
+.gate-error {
+  color: var(--red); font-size: 0.85rem; margin-top: 12px;
+  min-height: 20px;
+}
+
+/* ── Dashboard Layout ── */
+.dashboard { padding-top: 88px; padding-bottom: 60px; }
+
+/* ── Top Bar ── */
+.top-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px; margin-bottom: 32px;
+}
+.top-bar-actions {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.btn {
+  padding: 10px 20px; border-radius: 100px;
+  font-size: 0.8rem; font-weight: 700; transition: all 0.2s;
+  min-height: 44px; display: inline-flex; align-items: center;
+  justify-content: center; gap: 6px; white-space: nowrap;
+}
+.btn-primary {
+  background: var(--forge-gradient); color: #000;
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: var(--forge-glow); }
+.btn-secondary {
+  background: transparent; color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { border-color: var(--text-dim); color: #fff; }
+.btn-danger {
+  background: transparent; color: var(--red);
+  border: 1px solid rgba(220, 60, 60, 0.3);
+}
+.btn-danger:hover { border-color: var(--red); background: rgba(220, 60, 60, 0.08); }
+.btn-sm {
+  padding: 6px 14px; font-size: 0.75rem; min-height: 36px;
+}
+.auto-refresh-badge {
+  font-size: 0.75rem; font-weight: 600; color: var(--text-muted);
+  padding: 6px 14px; background: var(--bg-elevated);
+  border-radius: 100px; border: 1px solid var(--border);
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 36px;
+}
+.auto-refresh-badge .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green); display: inline-block;
+}
+
+/* ── Stat Cards ── */
+.stat-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 16px; margin-bottom: 32px;
+}
+.stat-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  transition: border-color 0.3s;
+}
+.stat-card:hover { border-color: #3a3a3a; }
+.stat-card-number {
+  font-size: 2rem; font-weight: 800; color: #fff;
+  margin-bottom: 4px; line-height: 1.2;
+}
+.stat-card-label {
+  font-size: 0.8rem; color: var(--text-dim); font-weight: 500;
+}
+.stat-card-sub {
+  font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;
+}
+@media (max-width: 768px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .stat-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Section Card ── */
+.section-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 28px;
+  margin-bottom: 24px;
+}
+.section-card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+}
+.section-card-title {
+  font-size: 1.1rem; font-weight: 700; color: #fff;
+}
+
+/* ── Submissions Table ── */
+.table-controls {
+  display: flex; align-items: center; gap: 12px;
+  flex-wrap: wrap; margin-bottom: 16px;
+}
+.table-search {
+  flex: 1; min-width: 180px; padding: 10px 14px;
+  border-radius: var(--radius-sm); background: var(--bg);
+  border: 1px solid var(--border); color: #fff; font-size: 0.85rem;
+  min-height: 44px;
+}
+.table-search:focus { outline: none; border-color: var(--orange); }
+.table-search::placeholder { color: var(--text-muted); }
+.table-select {
+  padding: 10px 14px; border-radius: var(--radius-sm);
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--text-dim); font-size: 0.85rem; min-height: 44px;
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20' fill='%23888'%3E%3Cpath d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+  padding-right: 32px; cursor: pointer;
+}
+.table-select:focus { outline: none; border-color: var(--orange); }
+.date-input {
+  padding: 10px 14px; border-radius: var(--radius-sm);
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--text-dim); font-size: 0.85rem; min-height: 44px;
+}
+.date-input:focus { outline: none; border-color: var(--orange); }
+
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table {
+  width: 100%; border-collapse: collapse; font-size: 0.85rem;
+}
+thead th {
+  text-align: left; padding: 12px 14px;
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; user-select: none; white-space: nowrap;
+  min-height: 44px;
+}
+thead th:hover { color: var(--text-dim); }
+thead th .sort-arrow {
+  display: inline-block; margin-left: 4px; font-size: 0.65rem;
+  color: var(--orange); opacity: 0;
+}
+thead th.sorted .sort-arrow { opacity: 1; }
+tbody tr {
+  border-bottom: 1px solid var(--border); cursor: pointer;
+  transition: background 0.15s;
+}
+tbody tr:hover { background: var(--bg-elevated); }
+tbody td {
+  padding: 14px; color: var(--text-dim);
+  white-space: nowrap; max-width: 200px;
+  overflow: hidden; text-overflow: ellipsis;
+}
+tbody td.name-cell { color: #fff; font-weight: 600; }
+.niche-badge {
+  display: inline-block; font-size: 0.7rem; font-weight: 700;
+  color: var(--amber); background: var(--amber-glow);
+  padding: 3px 10px; border-radius: 100px;
+}
+.expanded-row {
+  display: none; background: var(--bg-elevated);
+}
+.expanded-row.open { display: table-row; }
+.expanded-row td {
+  padding: 16px 14px; white-space: normal; max-width: none;
+}
+.expanded-content {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+.expanded-field label {
+  display: block; font-size: 0.7rem; font-weight: 700;
+  color: var(--text-muted); text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 2px;
+}
+.expanded-field span {
+  font-size: 0.85rem; color: var(--text);
+}
+
+/* Pagination */
+.pagination {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 16px; flex-wrap: wrap; gap: 12px;
+}
+.pagination-info {
+  font-size: 0.8rem; color: var(--text-muted);
+}
+.pagination-btns {
+  display: flex; gap: 8px;
+}
+
+/* ── Referral Leaderboard ── */
+.leaderboard-list { display: flex; flex-direction: column; gap: 10px; }
+.leaderboard-row {
+  display: flex; align-items: center; gap: 14px;
+}
+.leaderboard-rank {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--amber-glow); display: flex;
+  align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 800; color: var(--orange);
+  flex-shrink: 0;
+}
+.leaderboard-info { flex: 1; min-width: 0; }
+.leaderboard-code {
+  font-size: 0.85rem; font-weight: 600; color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.leaderboard-bar-wrap {
+  flex: 2; height: 24px; background: var(--bg);
+  border-radius: 4px; overflow: hidden; position: relative;
+  min-width: 100px;
+}
+.leaderboard-bar {
+  height: 100%; background: var(--forge-gradient);
+  border-radius: 4px; transition: width 0.5s ease;
+  min-width: 2px;
+}
+.leaderboard-count {
+  font-size: 0.8rem; font-weight: 700; color: var(--text-dim);
+  min-width: 36px; text-align: right;
+}
+
+/* ── Conversion Funnel ── */
+.funnel { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.funnel-stage {
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px 24px; text-align: center;
+  clip-path: polygon(5% 0%, 95% 0%, 100% 100%, 0% 100%);
+  transition: opacity 0.3s;
+  min-height: 56px;
+}
+.funnel-stage:nth-child(1) {
+  width: 100%; background: rgba(232, 122, 46, 0.25);
+}
+.funnel-stage:nth-child(2) {
+  width: 82%; background: rgba(232, 122, 46, 0.35);
+}
+.funnel-stage:nth-child(3) {
+  width: 64%; background: rgba(232, 122, 46, 0.5);
+}
+.funnel-stage:nth-child(4) {
+  width: 46%; background: rgba(232, 122, 46, 0.7);
+}
+.funnel-label {
+  font-size: 0.85rem; font-weight: 700; color: #fff;
+}
+.funnel-number {
+  font-size: 0.75rem; font-weight: 600; color: var(--text-dim);
+  margin-left: 8px;
+}
+.funnel-pct {
+  display: block; text-align: center; font-size: 0.7rem;
+  font-weight: 600; color: var(--text-muted); padding: 4px 0;
+}
+
+/* ── Curriculum Progress ── */
+.curriculum-chart { display: flex; flex-direction: column; gap: 10px; }
+.curriculum-row {
+  display: flex; align-items: center; gap: 14px;
+}
+.curriculum-day {
+  font-size: 0.8rem; font-weight: 700; color: var(--text-dim);
+  min-width: 56px;
+}
+.curriculum-bar-wrap {
+  flex: 1; height: 28px; background: var(--bg);
+  border-radius: 4px; overflow: hidden;
+}
+.curriculum-bar {
+  height: 100%; border-radius: 4px; transition: width 0.5s ease;
+  min-width: 2px;
+}
+.curriculum-count {
+  font-size: 0.8rem; font-weight: 700; color: var(--text-dim);
+  min-width: 36px; text-align: right;
+}
+
+/* ── Testimonials ── */
+.testimonial-row {
+  display: flex; align-items: center; gap: 14px; padding: 14px 0;
+  border-bottom: 1px solid var(--border); flex-wrap: wrap;
+}
+.testimonial-row:last-child { border-bottom: none; }
+.testimonial-info { flex: 1; min-width: 200px; }
+.testimonial-name {
+  font-size: 0.9rem; font-weight: 600; color: #fff;
+}
+.testimonial-text {
+  font-size: 0.8rem; color: var(--text-dim); margin-top: 2px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.testimonial-meta {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.stars { color: var(--amber); font-size: 0.9rem; letter-spacing: 1px; }
+.status-badge {
+  font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; padding: 3px 10px; border-radius: 100px;
+}
+.status-approved {
+  color: var(--green); background: rgba(72, 187, 120, 0.1);
+  border: 1px solid rgba(72, 187, 120, 0.2);
+}
+.status-pending {
+  color: var(--amber); background: var(--amber-glow);
+  border: 1px solid rgba(245, 166, 35, 0.2);
+}
+
+/* ── Two-column layout ── */
+.two-col {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+}
+@media (max-width: 768px) {
+  .two-col { grid-template-columns: 1fr; }
+}
+
+/* ── Footer ── */
+.footer {
+  padding: 32px 0; border-top: 1px solid var(--border);
+  text-align: center;
+}
+.footer-text {
+  font-size: 0.75rem; color: var(--text-muted);
+}
+.footer-logo-sm {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.85rem; font-weight: 900; color: var(--text-dim);
+  letter-spacing: 1px; margin-bottom: 8px;
+}
+.footer-logo-sm svg { width: 18px; height: 18px; }
+
+/* ── Loading State ── */
+.loading-spinner {
+  display: inline-block; width: 20px; height: 20px;
+  border: 2px solid var(--border); border-top-color: var(--orange);
+  border-radius: 50%; animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-overlay {
+  display: flex; align-items: center; justify-content: center;
+  padding: 48px; color: var(--text-muted); gap: 12px;
+  font-size: 0.9rem;
+}
+
+/* ── Empty State ── */
+.empty-state {
+  text-align: center; padding: 48px 24px; color: var(--text-muted);
+}
+.empty-state-icon { font-size: 2rem; margin-bottom: 12px; opacity: 0.5; }
+.empty-state-text { font-size: 0.9rem; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 300;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 14px 20px;
+  font-size: 0.85rem; color: var(--text);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  transform: translateY(100px); opacity: 0;
+  transition: transform 0.3s, opacity 0.3s;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-color: rgba(72, 187, 120, 0.3); }
+.toast.error { border-color: rgba(220, 60, 60, 0.3); }
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ── Navigation ── -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="url(#anvil-g)"/>
+        <defs><linearGradient id="anvil-g" x1="3" y1="2" x2="25" y2="26"><stop stop-color="#e87a2e"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs>
+      </svg>
+      ANVIL
+      <span class="nav-label">Admin</span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="/">Home</a></li>
+      <li><a href="/marketing.html">Marketing</a></li>
+      <li><a href="#" id="navSignOut" class="hidden" style="color:var(--red);">Sign Out</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="/">Home</a>
+  <a href="/marketing.html">Marketing</a>
+  <a href="#" id="mobileSignOut" class="hidden" style="color:var(--red);">Sign Out</a>
+</div>
+
+<!-- ── API Key Gate ── -->
+<div class="gate-overlay" id="gateOverlay">
+  <div class="gate-card">
+    <div class="gate-logo">
+      <svg viewBox="0 0 28 28" fill="none"><path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="url(#anvil-g2)"/><defs><linearGradient id="anvil-g2" x1="3" y1="2" x2="25" y2="26"><stop stop-color="#e87a2e"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs></svg>
+      <span>ANVIL</span>
+    </div>
+    <h1>Admin Dashboard</h1>
+    <p>Enter your API key to access the dashboard.</p>
+    <input type="password" class="gate-input" id="gateInput" placeholder="API key" autocomplete="off">
+    <button class="gate-btn" id="gateBtn">Enter</button>
+    <div class="gate-error" id="gateError"></div>
+  </div>
+</div>
+
+<!-- ── Dashboard ── -->
+<main id="main-content" class="dashboard container hidden" role="main">
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <h1 style="font-size:1.3rem;font-weight:800;color:#fff;">Dashboard</h1>
+    <div class="top-bar-actions">
+      <div class="auto-refresh-badge" id="autoRefreshBadge">
+        <span class="dot"></span>
+        Auto-refresh: <span id="countdownDisplay">60s</span>
+      </div>
+      <button class="btn btn-secondary btn-sm" id="refreshBtn" aria-label="Refresh data">
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/></svg>
+        Refresh
+      </button>
+      <button class="btn btn-secondary btn-sm" id="exportCsvBtn" aria-label="Export CSV">
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        Export CSV
+      </button>
+      <button class="btn btn-secondary btn-sm" id="backupBtn" aria-label="Backup all data">
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
+        Backup
+      </button>
+      <button class="btn btn-danger btn-sm" id="signOutBtn" aria-label="Sign out">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- Stat Cards -->
+  <div class="stat-grid" id="statGrid">
+    <div class="stat-card">
+      <div class="stat-card-number" id="statTotal">--</div>
+      <div class="stat-card-label">Total Submissions</div>
+      <div class="stat-card-sub">all time</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-number" id="statWeek">--</div>
+      <div class="stat-card-label">This Week</div>
+      <div class="stat-card-sub">last 7 days</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-number" id="statLearners">--</div>
+      <div class="stat-card-label">Active Learners</div>
+      <div class="stat-card-sub">curriculum in progress</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-number" id="statReferrals">--</div>
+      <div class="stat-card-label">Referral Count</div>
+      <div class="stat-card-sub">total referrals tracked</div>
+    </div>
+  </div>
+
+  <!-- Submissions Table -->
+  <div class="section-card" id="submissionsSection">
+    <div class="section-card-header">
+      <div class="section-card-title">Submissions</div>
+    </div>
+    <div class="table-controls">
+      <input type="text" class="table-search" id="searchInput" placeholder="Search by name or email..." aria-label="Search submissions">
+      <select class="table-select" id="nicheFilter" aria-label="Filter by niche">
+        <option value="">All Niches</option>
+        <option value="Benefits Navigation">Benefits Navigation</option>
+        <option value="Medical Billing Advocacy">Medical Billing</option>
+        <option value="Small Biz Compliance">Small Biz Compliance</option>
+        <option value="Estate Document Prep">Estate Doc Prep</option>
+        <option value="Grant Writing">Grant Writing</option>
+        <option value="Insurance Claims Help">Insurance Claims</option>
+        <option value="Debt Negotiation">Debt Negotiation</option>
+      </select>
+      <input type="date" class="date-input" id="dateStart" aria-label="Start date" title="Start date">
+      <input type="date" class="date-input" id="dateEnd" aria-label="End date" title="End date">
+    </div>
+    <div class="table-wrap">
+      <table id="submissionsTable">
+        <thead>
+          <tr>
+            <th data-col="date">Date <span class="sort-arrow">&#9660;</span></th>
+            <th data-col="name">Name <span class="sort-arrow">&#9660;</span></th>
+            <th data-col="email">Email <span class="sort-arrow">&#9660;</span></th>
+            <th data-col="topNiche">Top Niche <span class="sort-arrow">&#9660;</span></th>
+            <th data-col="referralCode">Referral Code <span class="sort-arrow">&#9660;</span></th>
+            <th data-col="referredBy">Referred By <span class="sort-arrow">&#9660;</span></th>
+            <th data-col="utmSource">UTM Source <span class="sort-arrow">&#9660;</span></th>
+          </tr>
+        </thead>
+        <tbody id="submissionsBody"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="pagination">
+      <div class="pagination-info" id="paginationInfo">Showing 0 of 0</div>
+      <div class="pagination-btns">
+        <button class="btn btn-secondary btn-sm" id="prevPageBtn" disabled>Prev</button>
+        <button class="btn btn-secondary btn-sm" id="nextPageBtn" disabled>Next</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Two-column: Referral Leaderboard + Conversion Funnel -->
+  <div class="two-col">
+    <div class="section-card" id="leaderboardSection">
+      <div class="section-card-header">
+        <div class="section-card-title">Referral Leaderboard</div>
+      </div>
+      <div class="leaderboard-list" id="leaderboardList">
+        <div class="loading-overlay"><span class="loading-spinner"></span> Loading...</div>
+      </div>
+    </div>
+    <div class="section-card" id="funnelSection">
+      <div class="section-card-header">
+        <div class="section-card-title">Conversion Funnel</div>
+      </div>
+      <div class="funnel" id="funnelChart">
+        <div class="loading-overlay"><span class="loading-spinner"></span> Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Curriculum Progress -->
+  <div class="section-card" id="curriculumSection">
+    <div class="section-card-header">
+      <div class="section-card-title">Curriculum Progress</div>
+    </div>
+    <div class="curriculum-chart" id="curriculumChart">
+      <div class="loading-overlay"><span class="loading-spinner"></span> Loading...</div>
+    </div>
+  </div>
+
+  <!-- Testimonials Management -->
+  <div class="section-card" id="testimonialsSection">
+    <div class="section-card-header">
+      <div class="section-card-title">Testimonials</div>
+    </div>
+    <div id="testimonialsList">
+      <div class="loading-overlay"><span class="loading-spinner"></span> Loading...</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Footer -->
+<footer class="footer hidden" id="footerEl">
+  <div class="container">
+    <div class="footer-logo-sm">
+      <svg viewBox="0 0 28 28" fill="none"><path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="url(#anvil-g3)"/><defs><linearGradient id="anvil-g3" x1="3" y1="2" x2="25" y2="26"><stop stop-color="#e87a2e"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs></svg>
+      ANVIL
+    </div>
+    <div class="footer-text">&copy; 2026 ANVIL Admin Dashboard. All rights reserved.</div>
+  </div>
+</footer>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── State ── */
+let apiKey = '';
+let submissions = [];
+let filteredSubmissions = [];
+let analytics = {};
+let referrals = [];
+let curriculumProgress = [];
+let testimonials = [];
+let currentPage = 1;
+const PAGE_SIZE = 25;
+let sortCol = 'date';
+let sortDir = 'desc';
+let autoRefreshTimer = null;
+let countdownTimer = null;
+let countdown = 60;
+let isUserInteracting = false;
+let interactionTimeout = null;
+
+/* ── Helpers ── */
+function getApiKey() {
+  return sessionStorage.getItem('anvil_api_key') || '';
+}
+
+function setApiKey(key) {
+  sessionStorage.setItem('anvil_api_key', key);
+  apiKey = key;
+}
+
+function clearApiKey() {
+  sessionStorage.removeItem('anvil_api_key');
+  apiKey = '';
+}
+
+function getHeaders() {
+  return {
+    'Authorization': 'Bearer ' + getApiKey(),
+    'Content-Type': 'application/json'
+  };
+}
+
+function showToast(msg, type) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast ' + (type || '');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '--';
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  } catch { return dateStr; }
+}
+
+function formatDateShort(dateStr) {
+  if (!dateStr) return '--';
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' });
+  } catch { return dateStr; }
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function starsHtml(rating) {
+  const n = Math.round(rating || 0);
+  let s = '';
+  for (let i = 0; i < 5; i++) {
+    s += i < n ? '\u2605' : '\u2606';
+  }
+  return s;
+}
+
+/* ── Gate ── */
+const gateOverlay = document.getElementById('gateOverlay');
+const gateInput = document.getElementById('gateInput');
+const gateBtn = document.getElementById('gateBtn');
+const gateError = document.getElementById('gateError');
+const dashboardEl = document.getElementById('main-content');
+const footerEl = document.getElementById('footerEl');
+
+async function attemptAuth(key) {
+  gateBtn.disabled = true;
+  gateBtn.textContent = 'Verifying...';
+  gateError.textContent = '';
+
+  try {
+    const res = await fetch('/api/submissions', {
+      headers: { 'Authorization': 'Bearer ' + key }
+    });
+    if (!res.ok) throw new Error('Unauthorized');
+    setApiKey(key);
+    showDashboard();
+  } catch (err) {
+    gateError.textContent = 'Invalid API key';
+    gateInput.style.borderColor = 'var(--red)';
+  } finally {
+    gateBtn.disabled = false;
+    gateBtn.textContent = 'Enter';
+  }
+}
+
+gateBtn.addEventListener('click', () => {
+  const key = gateInput.value.trim();
+  if (!key) {
+    gateError.textContent = 'Please enter an API key';
+    gateInput.style.borderColor = 'var(--red)';
+    return;
+  }
+  attemptAuth(key);
+});
+
+gateInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') gateBtn.click();
+});
+
+gateInput.addEventListener('focus', () => {
+  gateInput.style.borderColor = '';
+  gateError.textContent = '';
+});
+
+function showDashboard() {
+  gateOverlay.classList.add('hidden');
+  dashboardEl.classList.remove('hidden');
+  footerEl.classList.remove('hidden');
+  document.getElementById('navSignOut').classList.remove('hidden');
+  document.getElementById('mobileSignOut').classList.remove('hidden');
+  loadAllData();
+  startAutoRefresh();
+}
+
+function signOut() {
+  clearApiKey();
+  stopAutoRefresh();
+  dashboardEl.classList.add('hidden');
+  footerEl.classList.add('hidden');
+  document.getElementById('navSignOut').classList.add('hidden');
+  document.getElementById('mobileSignOut').classList.add('hidden');
+  gateOverlay.classList.remove('hidden');
+  gateInput.value = '';
+  gateError.textContent = '';
+}
+
+document.getElementById('signOutBtn').addEventListener('click', signOut);
+document.getElementById('navSignOut').addEventListener('click', (e) => { e.preventDefault(); signOut(); });
+document.getElementById('mobileSignOut').addEventListener('click', (e) => { e.preventDefault(); signOut(); });
+
+/* ── Check existing session ── */
+if (getApiKey()) {
+  apiKey = getApiKey();
+  attemptAuth(apiKey);
+}
+
+/* ── Data Loading ── */
+async function loadAllData() {
+  await Promise.all([
+    loadSubmissions(),
+    loadAnalytics(),
+    loadReferrals(),
+    loadCurriculumProgress(),
+    loadTestimonials()
+  ]);
+}
+
+async function loadSubmissions() {
+  try {
+    const res = await fetch('/api/submissions', { headers: getHeaders() });
+    if (!res.ok) throw new Error('Failed');
+    const data = await res.json();
+    submissions = Array.isArray(data) ? data : (data.submissions || []);
+    applyFilters();
+  } catch (err) {
+    submissions = [];
+    applyFilters();
+  }
+}
+
+async function loadAnalytics() {
+  try {
+    const res = await fetch('/api/admin/analytics', { headers: getHeaders() });
+    if (!res.ok) throw new Error('Failed');
+    analytics = await res.json();
+    renderStats();
+    renderFunnel();
+  } catch (err) {
+    analytics = {};
+    renderStats();
+    renderFunnel();
+  }
+}
+
+async function loadReferrals() {
+  try {
+    const res = await fetch('/api/admin/referrals', { headers: getHeaders() });
+    if (!res.ok) throw new Error('Failed');
+    const data = await res.json();
+    referrals = Array.isArray(data) ? data : (data.referrals || []);
+    renderLeaderboard();
+  } catch (err) {
+    referrals = [];
+    renderLeaderboard();
+  }
+}
+
+async function loadCurriculumProgress() {
+  try {
+    const res = await fetch('/api/admin/curriculum-progress', { headers: getHeaders() });
+    if (!res.ok) throw new Error('Failed');
+    const data = await res.json();
+    curriculumProgress = Array.isArray(data) ? data : (data.progress || []);
+    renderCurriculum();
+  } catch (err) {
+    curriculumProgress = [];
+    renderCurriculum();
+  }
+}
+
+async function loadTestimonials() {
+  try {
+    const res = await fetch('/api/admin/testimonials', { headers: getHeaders() });
+    if (!res.ok) throw new Error('Failed');
+    const data = await res.json();
+    testimonials = Array.isArray(data) ? data : (data.testimonials || []);
+    renderTestimonials();
+  } catch (err) {
+    testimonials = [];
+    renderTestimonials();
+  }
+}
+
+/* ── Stats Rendering ── */
+function renderStats() {
+  const total = analytics.totalSubmissions ?? submissions.length;
+  const week = analytics.thisWeek ?? countThisWeek();
+  const learners = analytics.activeLearners ?? 0;
+  const refs = analytics.totalReferrals ?? referrals.reduce((s, r) => s + (r.count || 0), 0);
+
+  document.getElementById('statTotal').textContent = total.toLocaleString();
+  document.getElementById('statWeek').textContent = week.toLocaleString();
+  document.getElementById('statLearners').textContent = learners.toLocaleString();
+  document.getElementById('statReferrals').textContent = refs.toLocaleString();
+}
+
+function countThisWeek() {
+  const now = new Date();
+  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  return submissions.filter(s => new Date(s.timestamp || s.date || s.createdAt) >= weekAgo).length;
+}
+
+/* ── Submissions Table ── */
+function applyFilters() {
+  const search = document.getElementById('searchInput').value.toLowerCase().trim();
+  const niche = document.getElementById('nicheFilter').value;
+  const dateStart = document.getElementById('dateStart').value;
+  const dateEnd = document.getElementById('dateEnd').value;
+
+  filteredSubmissions = submissions.filter(s => {
+    if (search) {
+      const name = (s.name || '').toLowerCase();
+      const email = (s.email || '').toLowerCase();
+      if (!name.includes(search) && !email.includes(search)) return false;
+    }
+    if (niche && (s.topNiche || '') !== niche) return false;
+    if (dateStart) {
+      const d = new Date(s.timestamp || s.date || s.createdAt);
+      if (d < new Date(dateStart)) return false;
+    }
+    if (dateEnd) {
+      const d = new Date(s.timestamp || s.date || s.createdAt);
+      const end = new Date(dateEnd);
+      end.setHours(23, 59, 59, 999);
+      if (d > end) return false;
+    }
+    return true;
+  });
+
+  applySorting();
+  currentPage = 1;
+  renderTable();
+}
+
+function applySorting() {
+  filteredSubmissions.sort((a, b) => {
+    let valA, valB;
+    if (sortCol === 'date') {
+      valA = new Date(a.timestamp || a.date || a.createdAt || 0).getTime();
+      valB = new Date(b.timestamp || b.date || b.createdAt || 0).getTime();
+    } else {
+      valA = ((a[sortCol] || '') + '').toLowerCase();
+      valB = ((b[sortCol] || '') + '').toLowerCase();
+    }
+    if (valA < valB) return sortDir === 'asc' ? -1 : 1;
+    if (valA > valB) return sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+}
+
+function renderTable() {
+  const tbody = document.getElementById('submissionsBody');
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const end = start + PAGE_SIZE;
+  const page = filteredSubmissions.slice(start, end);
+
+  if (page.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon">&#128203;</div><div class="empty-state-text">No submissions found</div></div></td></tr>';
+  } else {
+    tbody.innerHTML = page.map((s, i) => {
+      const idx = start + i;
+      const dateVal = s.timestamp || s.date || s.createdAt || '';
+      return `
+        <tr data-idx="${idx}" onclick="toggleRow(${idx})">
+          <td>${formatDate(dateVal)}</td>
+          <td class="name-cell">${escapeHtml(s.name)}</td>
+          <td>${escapeHtml(s.email)}</td>
+          <td><span class="niche-badge">${escapeHtml(s.topNiche || '--')}</span></td>
+          <td>${escapeHtml(s.referralCode || '--')}</td>
+          <td>${escapeHtml(s.referredBy || '--')}</td>
+          <td>${escapeHtml(s.utmSource || s.utm_source || '--')}</td>
+        </tr>
+        <tr class="expanded-row" id="expanded-${idx}">
+          <td colspan="7">
+            <div class="expanded-content">
+              <div class="expanded-field"><label>Full Name</label><span>${escapeHtml(s.name)}</span></div>
+              <div class="expanded-field"><label>Email</label><span>${escapeHtml(s.email)}</span></div>
+              <div class="expanded-field"><label>Phone</label><span>${escapeHtml(s.phone || '--')}</span></div>
+              <div class="expanded-field"><label>Top Niche</label><span>${escapeHtml(s.topNiche || '--')}</span></div>
+              <div class="expanded-field"><label>Second Niche</label><span>${escapeHtml(s.secondNiche || '--')}</span></div>
+              <div class="expanded-field"><label>Referral Code</label><span>${escapeHtml(s.referralCode || '--')}</span></div>
+              <div class="expanded-field"><label>Referred By</label><span>${escapeHtml(s.referredBy || '--')}</span></div>
+              <div class="expanded-field"><label>UTM Source</label><span>${escapeHtml(s.utmSource || s.utm_source || '--')}</span></div>
+              <div class="expanded-field"><label>UTM Medium</label><span>${escapeHtml(s.utmMedium || s.utm_medium || '--')}</span></div>
+              <div class="expanded-field"><label>UTM Campaign</label><span>${escapeHtml(s.utmCampaign || s.utm_campaign || '--')}</span></div>
+              <div class="expanded-field"><label>Submitted</label><span>${dateVal ? new Date(dateVal).toLocaleString() : '--'}</span></div>
+              <div class="expanded-field"><label>ID</label><span>${escapeHtml(s.id || s._id || '--')}</span></div>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // Pagination info
+  const total = filteredSubmissions.length;
+  const showing = Math.min(end, total);
+  document.getElementById('paginationInfo').textContent =
+    total === 0 ? 'No submissions' : `Showing ${start + 1}-${showing} of ${total}`;
+  document.getElementById('prevPageBtn').disabled = currentPage <= 1;
+  document.getElementById('nextPageBtn').disabled = end >= total;
+
+  // Sort header styling
+  document.querySelectorAll('#submissionsTable thead th').forEach(th => {
+    th.classList.toggle('sorted', th.dataset.col === sortCol);
+    const arrow = th.querySelector('.sort-arrow');
+    if (arrow) arrow.innerHTML = sortDir === 'asc' ? '&#9650;' : '&#9660;';
+  });
+}
+
+function toggleRow(idx) {
+  const el = document.getElementById('expanded-' + idx);
+  if (el) el.classList.toggle('open');
+}
+
+/* Sort handlers */
+document.querySelectorAll('#submissionsTable thead th').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.col;
+    if (!col) return;
+    if (sortCol === col) {
+      sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      sortCol = col;
+      sortDir = col === 'date' ? 'desc' : 'asc';
+    }
+    applySorting();
+    renderTable();
+  });
+});
+
+/* Filter handlers */
+document.getElementById('searchInput').addEventListener('input', debounce(applyFilters, 300));
+document.getElementById('nicheFilter').addEventListener('change', applyFilters);
+document.getElementById('dateStart').addEventListener('change', applyFilters);
+document.getElementById('dateEnd').addEventListener('change', applyFilters);
+
+/* Pagination handlers */
+document.getElementById('prevPageBtn').addEventListener('click', () => {
+  if (currentPage > 1) { currentPage--; renderTable(); }
+});
+document.getElementById('nextPageBtn').addEventListener('click', () => {
+  const maxPage = Math.ceil(filteredSubmissions.length / PAGE_SIZE);
+  if (currentPage < maxPage) { currentPage++; renderTable(); }
+});
+
+function debounce(fn, delay) {
+  let t;
+  return function() {
+    clearTimeout(t);
+    t = setTimeout(() => fn.apply(this, arguments), delay);
+  };
+}
+
+/* ── Referral Leaderboard ── */
+function renderLeaderboard() {
+  const el = document.getElementById('leaderboardList');
+  if (referrals.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#127942;</div><div class="empty-state-text">No referrals yet</div></div>';
+    return;
+  }
+
+  const top10 = referrals
+    .sort((a, b) => (b.count || 0) - (a.count || 0))
+    .slice(0, 10);
+  const maxCount = top10[0]?.count || 1;
+
+  el.innerHTML = top10.map((r, i) => `
+    <div class="leaderboard-row">
+      <div class="leaderboard-rank">${i + 1}</div>
+      <div class="leaderboard-info">
+        <div class="leaderboard-code">${escapeHtml(r.code || r.referralCode || 'Unknown')}</div>
+      </div>
+      <div class="leaderboard-bar-wrap">
+        <div class="leaderboard-bar" style="width:${Math.max(5, ((r.count || 0) / maxCount) * 100)}%"></div>
+      </div>
+      <div class="leaderboard-count">${(r.count || 0).toLocaleString()}</div>
+    </div>
+  `).join('');
+}
+
+/* ── Conversion Funnel ── */
+function renderFunnel() {
+  const el = document.getElementById('funnelChart');
+  const starts = analytics.quizStarts ?? 0;
+  const completions = analytics.quizCompletions ?? 0;
+  const formSubmissions = analytics.formSubmissions ?? submissions.length;
+  const enrolled = analytics.enrolledLearners ?? 0;
+
+  if (starts === 0 && completions === 0 && formSubmissions === 0 && enrolled === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#128200;</div><div class="empty-state-text">No funnel data yet</div></div>';
+    return;
+  }
+
+  const max = Math.max(starts, 1);
+  function pct(val, prev) {
+    if (!prev || prev === 0) return '';
+    return Math.round((val / prev) * 100) + '%';
+  }
+
+  el.innerHTML = `
+    <div class="funnel-stage" style="width:100%">
+      <span class="funnel-label">Quiz Starts</span>
+      <span class="funnel-number">${starts.toLocaleString()}</span>
+    </div>
+    <div class="funnel-pct">${pct(completions, starts)} completion</div>
+    <div class="funnel-stage" style="width:${Math.max(30, (completions / max) * 100)}%">
+      <span class="funnel-label">Completions</span>
+      <span class="funnel-number">${completions.toLocaleString()}</span>
+    </div>
+    <div class="funnel-pct">${pct(formSubmissions, completions)} submitted</div>
+    <div class="funnel-stage" style="width:${Math.max(20, (formSubmissions / max) * 100)}%">
+      <span class="funnel-label">Submissions</span>
+      <span class="funnel-number">${formSubmissions.toLocaleString()}</span>
+    </div>
+    <div class="funnel-pct">${pct(enrolled, formSubmissions)} enrolled</div>
+    <div class="funnel-stage" style="width:${Math.max(15, (enrolled / max) * 100)}%">
+      <span class="funnel-label">Enrolled</span>
+      <span class="funnel-number">${enrolled.toLocaleString()}</span>
+    </div>
+  `;
+}
+
+/* ── Curriculum Progress ── */
+function renderCurriculum() {
+  const el = document.getElementById('curriculumChart');
+  const dayLabels = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'];
+  const colors = [
+    '#e87a2e', '#ec8536', '#f0903e', '#f29b46',
+    '#f4a64e', '#f5b156', '#f5a623'
+  ];
+
+  if (curriculumProgress.length === 0) {
+    // Show placeholder bars
+    el.innerHTML = dayLabels.map((label, i) => `
+      <div class="curriculum-row">
+        <div class="curriculum-day">${label}</div>
+        <div class="curriculum-bar-wrap">
+          <div class="curriculum-bar" style="width:0%;background:${colors[i]}"></div>
+        </div>
+        <div class="curriculum-count">0</div>
+      </div>
+    `).join('');
+    return;
+  }
+
+  const maxVal = Math.max(...curriculumProgress.map(p => p.count || p.users || 0), 1);
+
+  el.innerHTML = curriculumProgress.slice(0, 7).map((p, i) => {
+    const count = p.count || p.users || 0;
+    const width = Math.max(3, (count / maxVal) * 100);
+    return `
+      <div class="curriculum-row">
+        <div class="curriculum-day">${dayLabels[i] || 'Day ' + (i + 1)}</div>
+        <div class="curriculum-bar-wrap">
+          <div class="curriculum-bar" style="width:${width}%;background:${colors[i] || colors[6]}"></div>
+        </div>
+        <div class="curriculum-count">${count.toLocaleString()}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ── Testimonials ── */
+function renderTestimonials() {
+  const el = document.getElementById('testimonialsList');
+
+  if (testimonials.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#128172;</div><div class="empty-state-text">No testimonials yet</div></div>';
+    return;
+  }
+
+  el.innerHTML = testimonials.map((t, i) => `
+    <div class="testimonial-row">
+      <div class="testimonial-info">
+        <div class="testimonial-name">${escapeHtml(t.name || 'Anonymous')}</div>
+        <div class="testimonial-text">${escapeHtml(t.text || t.content || '')}</div>
+      </div>
+      <div class="testimonial-meta">
+        <span class="niche-badge">${escapeHtml(t.niche || '--')}</span>
+        <span class="stars">${starsHtml(t.rating)}</span>
+        <span class="status-badge ${t.status === 'approved' ? 'status-approved' : 'status-pending'}">
+          ${escapeHtml(t.status || 'pending')}
+        </span>
+        ${t.status !== 'approved' ? `<button class="btn btn-primary btn-sm" onclick="approveTestimonial('${escapeHtml(t.id || t._id)}', ${i})">Approve</button>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+async function approveTestimonial(id, idx) {
+  try {
+    const res = await fetch('/api/admin/testimonials/' + encodeURIComponent(id) + '/approve', {
+      method: 'POST',
+      headers: getHeaders()
+    });
+    if (!res.ok) throw new Error('Failed');
+    testimonials[idx].status = 'approved';
+    renderTestimonials();
+    showToast('Testimonial approved', 'success');
+  } catch (err) {
+    showToast('Failed to approve testimonial', 'error');
+  }
+}
+
+/* ── Export CSV ── */
+document.getElementById('exportCsvBtn').addEventListener('click', async () => {
+  try {
+    const res = await fetch('/api/admin/export/csv', { headers: getHeaders() });
+    if (!res.ok) throw new Error('Failed');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'anvil-submissions-' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('CSV exported', 'success');
+  } catch (err) {
+    // Fallback: generate CSV client-side
+    const headers = ['Date', 'Name', 'Email', 'Top Niche', 'Second Niche', 'Phone', 'Referral Code', 'Referred By', 'UTM Source'];
+    const rows = submissions.map(s => [
+      s.timestamp || s.date || s.createdAt || '',
+      s.name || '', s.email || '', s.topNiche || '', s.secondNiche || '',
+      s.phone || '', s.referralCode || '', s.referredBy || '',
+      s.utmSource || s.utm_source || ''
+    ]);
+    const csv = [headers, ...rows].map(r => r.map(c => '"' + (c + '').replace(/"/g, '""') + '"').join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'anvil-submissions-' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('CSV exported (client-side)', 'success');
+  }
+});
+
+/* ── Backup ── */
+document.getElementById('backupBtn').addEventListener('click', async () => {
+  try {
+    const res = await fetch('/api/admin/backup', {
+      method: 'POST',
+      headers: getHeaders()
+    });
+    if (!res.ok) throw new Error('Failed');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'anvil-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Backup downloaded', 'success');
+  } catch (err) {
+    // Fallback: backup client-side data
+    const data = { submissions, analytics, referrals, curriculumProgress, testimonials, exportedAt: new Date().toISOString() };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'anvil-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Backup downloaded (client-side)', 'success');
+  }
+});
+
+/* ── Refresh ── */
+document.getElementById('refreshBtn').addEventListener('click', () => {
+  loadAllData();
+  resetCountdown();
+  showToast('Data refreshed', 'success');
+});
+
+/* ── Auto-Refresh ── */
+function startAutoRefresh() {
+  stopAutoRefresh();
+  countdown = 60;
+  updateCountdownDisplay();
+  countdownTimer = setInterval(() => {
+    if (isUserInteracting) return;
+    countdown--;
+    updateCountdownDisplay();
+    if (countdown <= 0) {
+      loadAllData();
+      resetCountdown();
+    }
+  }, 1000);
+}
+
+function stopAutoRefresh() {
+  if (countdownTimer) clearInterval(countdownTimer);
+  countdownTimer = null;
+}
+
+function resetCountdown() {
+  countdown = 60;
+  updateCountdownDisplay();
+}
+
+function updateCountdownDisplay() {
+  document.getElementById('countdownDisplay').textContent = countdown + 's';
+}
+
+// Pause auto-refresh on interaction
+['scroll', 'mousedown', 'keydown', 'touchstart'].forEach(evt => {
+  document.addEventListener(evt, () => {
+    isUserInteracting = true;
+    if (interactionTimeout) clearTimeout(interactionTimeout);
+    interactionTimeout = setTimeout(() => {
+      isUserInteracting = false;
+    }, 5000);
+  }, { passive: true });
+});
+
+/* ── Mobile Navigation ── */
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+  document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+});
+
+function closeMobile() {
+  hamburger.classList.remove('open');
+  mobileMenu.classList.remove('open');
+  document.body.style.overflow = '';
+}
+</script>
+</body>
+</html>

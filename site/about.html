@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About ANVIL - AI Navigation & Vocational Integration Layer</title>
+<meta name="description" content="Learn about ANVIL's mission to turn displaced workers into AI-augmented specialists. WIOA-aligned training for the future of work.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M14 2L3 26h6l5-12 5 12h6L14 2z' fill='%23e87a2e'/%3E%3C/svg%3E">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#e87a2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ANVIL">
+<style>
+/* ── Reset & Base ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  background: #0a0a0a;
+  color: #e0e0e0;
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: inherit; border: none; }
+
+:root {
+  --bg: #0a0a0a;
+  --bg-card: #141414;
+  --bg-elevated: #1a1a1a;
+  --border: #2a2a2a;
+  --text: #e0e0e0;
+  --text-dim: #888;
+  --text-muted: #666;
+  --orange: #e87a2e;
+  --orange-light: #f09040;
+  --amber: #f5a623;
+  --forge-gradient: linear-gradient(135deg, #e87a2e, #f5a623);
+  --max-w: 1200px;
+}
+
+.skip-link {
+  position: absolute; left: -9999px; top: 10px; z-index: 9999;
+  background: var(--orange); color: #000; padding: 12px 20px;
+  border-radius: 4px; font-weight: 700; font-size: 0.95rem;
+}
+.skip-link:focus {
+  left: 10px; outline: 3px solid #fff; outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+.section { padding: 80px 0; }
+@media (max-width: 768px) { .section { padding: 56px 0; } }
+
+/* ── Navigation ── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner {
+  max-width: var(--max-w); margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.25rem; font-weight: 900; color: #fff;
+  letter-spacing: 1px;
+}
+.nav-logo svg { width: 28px; height: 28px; }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a {
+  font-size: 0.875rem; font-weight: 500; color: var(--text-dim);
+  transition: color 0.2s; padding: 4px 0;
+}
+.nav-links a:hover { color: #fff; }
+.nav-links a:focus-visible {
+  outline: 2px solid var(--orange); outline-offset: 4px; border-radius: 2px; color: #fff;
+}
+.nav-cta {
+  background: var(--forge-gradient); color: #000; font-weight: 700;
+  font-size: 0.8rem; padding: 10px 20px; border-radius: 100px;
+  min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
+}
+.nav-cta:hover { transform: translateY(-1px); }
+.nav-cta:focus-visible {
+  outline: 3px solid #fff; outline-offset: 2px; transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .nav-links, .nav-cta { display: none; }
+}
+
+/* ── Content ── */
+main { padding-top: 64px; min-height: calc(100vh - 200px); }
+.page-header {
+  padding: 80px 0 60px; text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.page-title {
+  font-size: clamp(2rem, 5vw, 3rem); font-weight: 900;
+  color: #fff; margin-bottom: 16px;
+}
+.page-subtitle {
+  font-size: 1.1rem; color: var(--text-dim); max-width: 700px;
+  margin: 0 auto;
+}
+
+.content-section { padding: 60px 0; }
+.content-section h2 {
+  font-size: 1.8rem; font-weight: 800; color: #fff;
+  margin-bottom: 16px;
+}
+.content-section h3 {
+  font-size: 1.3rem; font-weight: 700; color: #fff;
+  margin: 32px 0 12px;
+}
+.content-section p {
+  font-size: 1rem; color: var(--text-dim); line-height: 1.8;
+  margin-bottom: 16px; max-width: 800px;
+}
+.content-section ul {
+  margin: 16px 0 16px 24px; color: var(--text-dim);
+}
+.content-section li {
+  margin-bottom: 8px; line-height: 1.7;
+}
+
+.highlight-box {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-left: 4px solid var(--orange);
+  padding: 24px; border-radius: 8px; margin: 24px 0;
+}
+.highlight-box strong { color: #fff; }
+
+.stats-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px; margin: 32px 0;
+}
+.stat-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  padding: 24px; border-radius: 8px; text-align: center;
+}
+.stat-value {
+  font-size: 2rem; font-weight: 900; color: var(--orange);
+  margin-bottom: 8px;
+}
+.stat-label {
+  font-size: 0.9rem; color: var(--text-dim);
+}
+
+/* ── Footer ── */
+.footer {
+  padding: 48px 0 32px; border-top: 1px solid var(--border);
+}
+.footer-inner {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  flex-wrap: wrap; gap: 32px;
+}
+.footer-brand { max-width: 300px; }
+.footer-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.1rem; font-weight: 900; color: #fff;
+  letter-spacing: 1px; margin-bottom: 12px;
+}
+.footer-logo svg { width: 24px; height: 24px; }
+.footer-desc { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 16px; }
+.footer-email {
+  font-size: 0.85rem; color: var(--orange); font-weight: 500;
+}
+.footer-email:focus-visible {
+  outline: 2px solid var(--orange); outline-offset: 2px;
+}
+.footer-right { text-align: right; }
+.footer-portfolio {
+  font-size: 0.8rem; color: var(--text-muted); font-weight: 500;
+}
+.footer-links {
+  display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.footer-links a {
+  font-size: 0.85rem; color: var(--text-dim); padding: 4px 0;
+}
+.footer-links a:hover { color: var(--orange); }
+.footer-links a:focus-visible {
+  outline: 2px solid var(--orange); outline-offset: 2px; color: var(--orange);
+}
+.footer-bottom {
+  text-align: center; padding-top: 32px; margin-top: 32px;
+  border-top: 1px solid var(--border);
+  font-size: 0.75rem; color: var(--text-muted);
+}
+
+@media (max-width: 640px) {
+  .footer-inner { flex-direction: column; align-items: center; text-align: center; }
+  .footer-right { text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ── Navigation ── -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="url(#anvil-g)"/>
+        <defs><linearGradient id="anvil-g" x1="3" y1="2" x2="25" y2="26"><stop stop-color="#e87a2e"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs>
+      </svg>
+      ANVIL
+    </a>
+    <ul class="nav-links">
+      <li><a href="/#problem">The Problem</a></li>
+      <li><a href="/#solution">Solution</a></li>
+      <li><a href="/#quiz">Career Quiz</a></li>
+      <li><a href="/about.html">About</a></li>
+    </ul>
+    <a href="/#quiz" class="nav-cta">Take the Quiz</a>
+  </div>
+</nav>
+
+<!-- ── Main Content ── -->
+<main id="main-content">
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">About ANVIL</h1>
+      <p class="page-subtitle">Building the bridge between AI disruption and meaningful work. Free training for displaced workers, funded by outcomes.</p>
+    </div>
+  </div>
+
+  <section class="content-section">
+    <div class="container">
+      <h2>Our Mission</h2>
+      <p>ANVIL exists because the current system fails displaced workers. Job boards are broken. Career coaches cost hundreds per hour. Boot camps take 6-12 months and teach skills AI is actively replacing.</p>
+      <p>We built a different path: a free, 7-day sprint that turns any displaced worker into an AI-augmented specialist in boring, essential niches where human judgment is legally or ethically required.</p>
+
+      <div class="highlight-box">
+        <p><strong>Core Principle:</strong> Don't compete with AI. Become the human layer on top of it. AI handles 70-90% of the work, you add the judgment, empathy, and accountability that no algorithm can.</p>
+      </div>
+
+      <h3>What We Teach</h3>
+      <p>We've identified 7 boring, essential niches where demand is surging and supply is near zero:</p>
+      <ul>
+        <li><strong>Benefits Navigation:</strong> Guide people through SSDI, SNAP, Medicaid (AI does 80% of research)</li>
+        <li><strong>Medical Billing Advocacy:</strong> Dispute errors, negotiate bills (AI does 85% of analysis)</li>
+        <li><strong>Small Business Compliance:</strong> Keep businesses legal (AI tracks regulations)</li>
+        <li><strong>Estate Document Prep:</strong> Wills, trusts, power of attorney (AI drafts, you verify)</li>
+        <li><strong>Grant Writing:</strong> Win funding for nonprofits (AI drafts, you add the story)</li>
+        <li><strong>Insurance Claims Help:</strong> Navigate denials and appeals (AI identifies errors)</li>
+        <li><strong>Debt Negotiation:</strong> Settle debts for less (AI analyzes, you negotiate)</li>
+      </ul>
+
+      <h2>WIOA Partnership Model</h2>
+      <p>ANVIL is designed to align with <strong>Workforce Innovation and Opportunity Act (WIOA)</strong> priorities: rapid retraining, outcome-based funding, and employment in high-demand sectors.</p>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">7 days</div>
+          <div class="stat-label">To job-ready skills</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">$0</div>
+          <div class="stat-label">Cost to participants</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">10-14 days</div>
+          <div class="stat-label">To first paying client</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">$3K-8K/mo</div>
+          <div class="stat-label">Target income range</div>
+        </div>
+      </div>
+
+      <h3>How We Fund This</h3>
+      <p>ANVIL is free for displaced workers because we make money from:</p>
+      <ul>
+        <li><strong>Employer Placement Fees:</strong> Companies pay to hire our graduates</li>
+        <li><strong>Government Workforce Contracts:</strong> WIOA-funded outcome-based training</li>
+        <li><strong>Partnership Revenue:</strong> Libraries, community colleges, nonprofits</li>
+      </ul>
+      <p>Your success is our business model. If you don't land work, we don't get paid.</p>
+
+      <h2>Who We Are</h2>
+      <p>We're a team of builders who've shipped multiple production-grade AI products. We know how to ship, and we know how to scale.</p>
+
+      <h3>Our Commitment</h3>
+      <p>We are radically transparent about where we are: ANVIL is <strong>new</strong>. We don't have testimonials yet. We don't have 10,000 graduates. What we have is:</p>
+      <ul>
+        <li>A proven training methodology (7-day sprint, project-based)</li>
+        <li>Validated demand in every niche we teach (50M+ jobs at risk, 2,400+ boring niches)</li>
+        <li>Zero cost to participants (always free for displaced workers)</li>
+        <li>A team that ships production software and understands AI deeply</li>
+      </ul>
+
+      <div class="highlight-box">
+        <p><strong>For Workforce Boards:</strong> We're seeking pilot partnerships with WIOA-funded programs. We handle curriculum, AI tools, and placement support. You provide participants and outcome tracking. Let's build this together.</p>
+        <p style="margin-top: 16px;"><strong>Contact:</strong> <a href="mailto:partnerships@getanvil.co" style="color: var(--orange); text-decoration: underline;">partnerships@getanvil.co</a></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ── Footer ── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <svg viewBox="0 0 28 28" fill="none"><path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="url(#anvil-g2)"/><defs><linearGradient id="anvil-g2" x1="3" y1="2" x2="25" y2="26"><stop stop-color="#e87a2e"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs></svg>
+          ANVIL
+        </div>
+        <p class="footer-desc">AI Navigation &amp; Vocational Integration Layer. Turning displacement into reinvention.</p>
+        <a href="mailto:hello@getanvil.co" class="footer-email">hello@getanvil.co</a>
+      </div>
+      <div class="footer-right">
+        
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-links">
+        <a href="/about.html">About</a>
+        <a href="/terms.html">Terms of Service</a>
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/disclaimer.html">Disclaimer</a>
+      </div>
+      <div>&copy; 2026 ANVIL. All rights reserved.</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
