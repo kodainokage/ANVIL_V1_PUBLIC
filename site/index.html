@@ -45,6 +45,47 @@ button { cursor: pointer; font-family: inherit; border: none; }
 img { max-width: 100%; display: block; }
 
 /* Skip to content link */
+/* ── Character Portraits ── */
+.character-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 32px auto 8px;
+  flex-wrap: wrap;
+}
+.character-row .portrait {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  overflow: visible;
+  transition: transform 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+.character-row .portrait:hover {
+  transform: scale(1.15);
+  border-color: var(--teal);
+}
+.character-row .portrait.forge-portrait {
+  border-color: var(--orange);
+  width: 64px; height: 64px;
+}
+.character-row .portrait.forge-portrait:hover {
+  border-color: var(--amber);
+}
+.character-row-label {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+@media (max-width: 640px) {
+  .character-row { gap: 8px; }
+  .character-row .portrait { width: 44px; height: 44px; }
+  .character-row .portrait.forge-portrait { width: 52px; height: 52px; }
+}
+
 .skip-link {
   position: absolute; left: -9999px; top: 10px; z-index: 9999;
   background: var(--orange); color: #000; padding: 12px 20px;
@@ -725,6 +766,181 @@ body.high-contrast a, body.high-contrast button { color: inherit; }
 </head>
 <body>
 
+<!-- Character SVG Symbol Sheet (hidden) -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <defs>
+    <linearGradient id="forge-metal" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8a9bae"/><stop offset="50%" stop-color="#6b7d8e"/><stop offset="100%" stop-color="#4a5a6a"/></linearGradient>
+    <radialGradient id="forge-eye-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#8eeae6"/><stop offset="70%" stop-color="#5bc0be"/><stop offset="100%" stop-color="#3a8a88"/></radialGradient>
+    <radialGradient id="forge-bottom-glow" cx="50%" cy="0%" r="80%"><stop offset="0%" stop-color="#f5a623" stop-opacity="0.6"/><stop offset="100%" stop-color="#f5a623" stop-opacity="0"/></radialGradient>
+  </defs>
+  <!-- Forge: Happy robot head -->
+  <symbol id="forge-head" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="46" fill="#1a2a3a"/>
+    <line x1="50" y1="14" x2="50" y2="4" stroke="#6b7d8e" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="50" cy="3" r="3.5" fill="#f5a623"/><circle cx="50" cy="2.5" r="1.5" fill="#ffd080" opacity="0.7"/>
+    <path d="M18,58 Q18,16 50,14 Q82,16 82,58 L82,72 Q82,82 72,82 L28,82 Q18,82 18,72 Z" fill="url(#forge-metal)" stroke="#5a6a7a" stroke-width="0.8"/>
+    <path d="M24,40 Q50,34 76,40" fill="none" stroke="#5a6a7a" stroke-width="2.5" stroke-linecap="round"/>
+    <ellipse cx="36" cy="52" rx="11" ry="11" fill="#2a3a4a"/><circle cx="36" cy="52" r="9" fill="url(#forge-eye-glow)"/><circle cx="33" cy="49" r="2.5" fill="white" opacity="0.85"/>
+    <ellipse cx="64" cy="52" rx="11" ry="11" fill="#2a3a4a"/><circle cx="64" cy="52" r="9" fill="url(#forge-eye-glow)"/><circle cx="61" cy="49" r="2.5" fill="white" opacity="0.85"/>
+    <path d="M35,68 Q50,80 65,68" stroke="#5bc0be" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+    <ellipse cx="50" cy="84" rx="28" ry="10" fill="url(#forge-bottom-glow)"/>
+  </symbol>
+  <!-- H1: Black woman, warm brown skin, natural afro, gold earrings -->
+  <symbol id="human-1" viewBox="0 0 100 100">
+    <clipPath id="cp1"><circle cx="50" cy="50" r="46"/></clipPath>
+    <g clip-path="url(#cp1)">
+      <circle cx="50" cy="50" r="46" fill="#4a3020"/>
+      <ellipse cx="50" cy="32" rx="42" ry="30" fill="#2a1a10"/>
+      <ellipse cx="18" cy="50" rx="5" ry="7" fill="#b08050"/>
+      <ellipse cx="82" cy="50" rx="5" ry="7" fill="#b08050"/>
+      <path d="M22,42 Q22,22 50,18 Q78,22 78,42 L78,56 Q78,68 66,76 Q58,82 50,82 Q42,82 34,76 Q22,68 22,56 Z" fill="#b08050"/>
+      <path d="M28,39 Q36,34 44,38" stroke="#2a1a10" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M56,38 Q64,34 72,39" stroke="#2a1a10" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="37" cy="46" rx="7" ry="5.5" fill="white"/><circle cx="39" cy="46" r="3.5" fill="#3a2210"/><circle cx="41" cy="44" r="1.4" fill="white" opacity="0.9"/>
+      <ellipse cx="63" cy="46" rx="7" ry="5.5" fill="white"/><circle cx="65" cy="46" r="3.5" fill="#3a2210"/><circle cx="67" cy="44" r="1.4" fill="white" opacity="0.9"/>
+      <path d="M48,57 Q50,60 52,57" stroke="#906838" stroke-width="1.2" fill="none"/>
+      <path d="M40,66 Q50,74 60,66" stroke="#7a4a38" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="20" cy="54" r="2.5" fill="#f5c040"/><circle cx="80" cy="54" r="2.5" fill="#f5c040"/>
+    </g>
+  </symbol>
+  <!-- H2: White man, light peach skin, brown hair + gray temples, green eyes -->
+  <symbol id="human-2" viewBox="0 0 100 100">
+    <clipPath id="cp2"><circle cx="50" cy="50" r="46"/></clipPath>
+    <g clip-path="url(#cp2)">
+      <circle cx="50" cy="50" r="46" fill="#e8d8c8"/>
+      <path d="M16,40 Q16,10 50,6 Q84,10 84,40 L82,32 Q78,12 50,8 Q22,12 18,32 Z" fill="#6a5040"/>
+      <path d="M16,36 Q16,28 20,20 L18,40 Z" fill="#9a9a9a"/>
+      <path d="M84,36 Q84,28 80,20 L82,40 Z" fill="#9a9a9a"/>
+      <ellipse cx="18" cy="50" rx="5" ry="7" fill="#f4d4b0"/>
+      <ellipse cx="82" cy="50" rx="5" ry="7" fill="#f4d4b0"/>
+      <path d="M22,42 Q22,22 50,18 Q78,22 78,42 L78,56 Q78,68 66,76 Q58,82 50,82 Q42,82 34,76 Q22,68 22,56 Z" fill="#f4d4b0"/>
+      <path d="M28,39 Q36,34 44,38" stroke="#6a5040" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M56,38 Q64,34 72,39" stroke="#6a5040" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="37" cy="46" rx="7" ry="5.5" fill="white"/><circle cx="39" cy="46" r="3.5" fill="#4a7a50"/><circle cx="41" cy="44" r="1.4" fill="white" opacity="0.9"/>
+      <ellipse cx="63" cy="46" rx="7" ry="5.5" fill="white"/><circle cx="65" cy="46" r="3.5" fill="#4a7a50"/><circle cx="67" cy="44" r="1.4" fill="white" opacity="0.9"/>
+      <path d="M48,57 Q50,60 52,57" stroke="#d4b090" stroke-width="1.2" fill="none"/>
+      <path d="M40,66 Q50,74 60,66" stroke="#c08068" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </g>
+  </symbol>
+  <!-- H3: Latina woman, golden-tan skin, wavy dark hair -->
+  <symbol id="human-3" viewBox="0 0 100 100">
+    <clipPath id="cp3"><circle cx="50" cy="50" r="46"/></clipPath>
+    <g clip-path="url(#cp3)">
+      <circle cx="50" cy="50" r="46" fill="#3a2818"/>
+      <path d="M10,48 Q8,10 50,6 Q92,10 90,48 Q88,40 82,34 Q72,12 50,8 Q28,12 18,34 Q12,40 10,48 Z" fill="#1a0e08"/>
+      <path d="M10,48 L12,74 Q14,58 18,48 Z" fill="#1a0e08"/>
+      <path d="M90,48 L88,74 Q86,58 82,48 Z" fill="#1a0e08"/>
+      <path d="M22,42 Q22,22 50,18 Q78,22 78,42 L78,56 Q78,68 66,76 Q58,82 50,82 Q42,82 34,76 Q22,68 22,56 Z" fill="#d4a87c"/>
+      <ellipse cx="34" cy="56" rx="6" ry="4" fill="#e0b890" opacity="0.3"/>
+      <ellipse cx="66" cy="56" rx="6" ry="4" fill="#e0b890" opacity="0.3"/>
+      <path d="M28,39 Q36,34 44,38" stroke="#1a0e08" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M56,38 Q64,34 72,39" stroke="#1a0e08" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="37" cy="46" rx="7" ry="5.5" fill="white"/><circle cx="39" cy="46" r="3.5" fill="#4a2a10"/><circle cx="41" cy="44" r="1.4" fill="white" opacity="0.9"/>
+      <ellipse cx="63" cy="46" rx="7" ry="5.5" fill="white"/><circle cx="65" cy="46" r="3.5" fill="#4a2a10"/><circle cx="67" cy="44" r="1.4" fill="white" opacity="0.9"/>
+      <path d="M48,57 Q50,60 52,57" stroke="#b89068" stroke-width="1.2" fill="none"/>
+      <path d="M38,66 Q50,76 62,66" stroke="#a06050" stroke-width="2" fill="#c07060" fill-opacity="0.15"/>
+    </g>
+  </symbol>
+  <!-- H4: South Asian man, olive-brown skin, glasses, mustache -->
+  <symbol id="human-4" viewBox="0 0 100 100">
+    <clipPath id="cp4"><circle cx="50" cy="50" r="46"/></clipPath>
+    <g clip-path="url(#cp4)">
+      <circle cx="50" cy="50" r="46" fill="#7a6850"/>
+      <path d="M16,40 Q16,10 50,6 Q84,10 84,40 L82,32 Q78,12 50,8 Q22,12 18,32 Z" fill="#4a4a4a"/>
+      <path d="M16,36 Q18,28 22,22" stroke="#8a8a8a" stroke-width="3" fill="none"/>
+      <path d="M84,36 Q82,28 78,22" stroke="#8a8a8a" stroke-width="3" fill="none"/>
+      <ellipse cx="18" cy="50" rx="5" ry="7" fill="#b09060"/>
+      <ellipse cx="82" cy="50" rx="5" ry="7" fill="#b09060"/>
+      <path d="M22,42 Q22,22 50,18 Q78,22 78,42 L78,56 Q78,68 66,76 Q58,82 50,82 Q42,82 34,76 Q22,68 22,56 Z" fill="#b09060"/>
+      <rect x="28" y="41" width="20" height="14" rx="7" fill="none" stroke="#bbb" stroke-width="1.8"/>
+      <rect x="52" y="41" width="20" height="14" rx="7" fill="none" stroke="#bbb" stroke-width="1.8"/>
+      <line x1="48" y1="48" x2="52" y2="48" stroke="#bbb" stroke-width="1.2"/>
+      <line x1="28" y1="46" x2="20" y2="44" stroke="#bbb" stroke-width="1"/>
+      <line x1="72" y1="46" x2="80" y2="44" stroke="#bbb" stroke-width="1"/>
+      <path d="M28,40 Q36,35 46,39" stroke="#4a4a4a" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M54,39 Q64,35 72,40" stroke="#4a4a4a" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="38" cy="47" rx="6" ry="4.5" fill="white"/><circle cx="40" cy="47" r="3" fill="#2a1a08"/><circle cx="41.5" cy="45.5" r="1.2" fill="white" opacity="0.9"/>
+      <ellipse cx="62" cy="47" rx="6" ry="4.5" fill="white"/><circle cx="64" cy="47" r="3" fill="#2a1a08"/><circle cx="65.5" cy="45.5" r="1.2" fill="white" opacity="0.9"/>
+      <path d="M48,57 Q50,60 52,57" stroke="#8a7050" stroke-width="1.2" fill="none"/>
+      <path d="M40,62 Q44,65 50,64 Q56,65 60,62" fill="#3a3a3a"/>
+      <path d="M42,68 Q50,74 58,68" stroke="#7a5a48" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    </g>
+  </symbol>
+  <!-- H5: East Asian woman, light golden skin, black bob -->
+  <symbol id="human-5" viewBox="0 0 100 100">
+    <clipPath id="cp5"><circle cx="50" cy="50" r="46"/></clipPath>
+    <g clip-path="url(#cp5)">
+      <circle cx="50" cy="50" r="46" fill="#1a1418"/>
+      <path d="M12,50 Q10,10 50,6 Q90,10 88,50 L88,66 Q86,56 82,48 Q78,12 50,8 Q22,12 18,48 Q14,56 12,66 Z" fill="#0a0808"/>
+      <path d="M22,42 Q22,22 50,18 Q78,22 78,42 L78,56 Q78,68 66,76 Q58,82 50,82 Q42,82 34,76 Q22,68 22,56 Z" fill="#f0d8a8"/>
+      <path d="M28,39 Q36,35 44,39" stroke="#0a0808" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M56,39 Q64,35 72,39" stroke="#0a0808" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="37" cy="46" rx="7" ry="5" fill="white"/><circle cx="39" cy="46" r="3.2" fill="#1a1008"/><circle cx="41" cy="44" r="1.3" fill="white" opacity="0.9"/>
+      <ellipse cx="63" cy="46" rx="7" ry="5" fill="white"/><circle cx="65" cy="46" r="3.2" fill="#1a1008"/><circle cx="67" cy="44" r="1.3" fill="white" opacity="0.9"/>
+      <path d="M48,57 Q50,59 52,57" stroke="#d8b890" stroke-width="1" fill="none"/>
+      <path d="M42,66 Q50,72 58,66" stroke="#c09078" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    </g>
+  </symbol>
+  <!-- H6: Middle Eastern man, olive skin, dark wavy hair, trimmed beard -->
+  <symbol id="human-6" viewBox="0 0 100 100">
+    <clipPath id="cp6"><circle cx="50" cy="50" r="46"/></clipPath>
+    <g clip-path="url(#cp6)">
+      <circle cx="50" cy="50" r="46" fill="#3a2818"/>
+      <path d="M14,40 Q12,6 50,4 Q88,6 86,40 L84,32 Q80,10 50,6 Q20,10 16,32 Z" fill="#1a1008"/>
+      <ellipse cx="18" cy="50" rx="5" ry="7" fill="#c8a878"/>
+      <ellipse cx="82" cy="50" rx="5" ry="7" fill="#c8a878"/>
+      <path d="M22,42 Q22,22 50,18 Q78,22 78,42 L78,56 Q78,68 66,76 Q58,82 50,82 Q42,82 34,76 Q22,68 22,56 Z" fill="#c8a878"/>
+      <path d="M28,64 Q28,78 50,84 Q72,78 72,64" fill="#1a1008" opacity="0.35"/>
+      <path d="M26,39 Q36,33 46,38" stroke="#1a1008" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M54,38 Q64,33 74,39" stroke="#1a1008" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="37" cy="46" rx="7" ry="5.5" fill="white"/><circle cx="39" cy="46" r="3.5" fill="#3a2008"/><circle cx="41" cy="44" r="1.4" fill="white" opacity="0.9"/>
+      <ellipse cx="63" cy="46" rx="7" ry="5.5" fill="white"/><circle cx="65" cy="46" r="3.5" fill="#3a2008"/><circle cx="67" cy="44" r="1.4" fill="white" opacity="0.9"/>
+      <path d="M48,57 Q50,60 52,57" stroke="#b08a58" stroke-width="1.2" fill="none"/>
+      <path d="M42,68 Q50,74 58,68" stroke="#a08060" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    </g>
+  </symbol>
+  <!-- H7: White woman, fair skin, auburn hair, freckles, green eyes -->
+  <symbol id="human-7" viewBox="0 0 100 100">
+    <clipPath id="cp7"><circle cx="50" cy="50" r="46"/></clipPath>
+    <g clip-path="url(#cp7)">
+      <circle cx="50" cy="50" r="46" fill="#7a3a18"/>
+      <path d="M10,48 Q8,8 50,4 Q92,8 90,48 Q88,40 82,34 Q76,10 50,6 Q24,10 18,34 Q12,40 10,48 Z" fill="#B06028"/>
+      <path d="M10,48 L10,76 Q14,62 18,50 Z" fill="#B06028"/>
+      <path d="M90,48 L90,76 Q86,62 82,50 Z" fill="#B06028"/>
+      <path d="M22,42 Q22,22 50,18 Q78,22 78,42 L78,56 Q78,68 66,76 Q58,82 50,82 Q42,82 34,76 Q22,68 22,56 Z" fill="#f8d8c0"/>
+      <circle cx="32" cy="54" r="1.2" fill="#e0a888" opacity="0.5"/><circle cx="36" cy="56" r="1" fill="#e0a888" opacity="0.45"/>
+      <circle cx="34" cy="52" r="0.8" fill="#e0a888" opacity="0.5"/><circle cx="64" cy="54" r="1.2" fill="#e0a888" opacity="0.5"/>
+      <circle cx="68" cy="56" r="1" fill="#e0a888" opacity="0.45"/><circle cx="66" cy="52" r="0.8" fill="#e0a888" opacity="0.5"/>
+      <path d="M28,39 Q36,34 44,38" stroke="#7a3a10" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M56,38 Q64,34 72,39" stroke="#7a3a10" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="37" cy="46" rx="7" ry="5.5" fill="white"/><circle cx="39" cy="46" r="3.5" fill="#4a8a5a"/><circle cx="41" cy="44" r="1.4" fill="white" opacity="0.9"/>
+      <ellipse cx="63" cy="46" rx="7" ry="5.5" fill="white"/><circle cx="65" cy="46" r="3.5" fill="#4a8a5a"/><circle cx="67" cy="44" r="1.4" fill="white" opacity="0.9"/>
+      <path d="M48,57 Q50,60 52,57" stroke="#e8b8a0" stroke-width="1" fill="none"/>
+      <path d="M38,66 Q50,76 62,66" stroke="#c07060" stroke-width="2" fill="#e8a0a0" fill-opacity="0.15"/>
+    </g>
+  </symbol>
+  <!-- H8: Black man, dark brown skin, short fade, strong jaw -->
+  <symbol id="human-8" viewBox="0 0 100 100">
+    <clipPath id="cp8"><circle cx="50" cy="50" r="46"/></clipPath>
+    <g clip-path="url(#cp8)">
+      <circle cx="50" cy="50" r="46" fill="#3a2010"/>
+      <path d="M16,40 Q14,8 50,6 Q86,8 84,40 L82,32 Q78,12 50,8 Q22,12 18,32 Z" fill="#1a1008"/>
+      <path d="M16,38 L14,44 Q14,36 16,34 Z" fill="#1a1008" opacity="0.4"/>
+      <path d="M84,38 L86,44 Q86,36 84,34 Z" fill="#1a1008" opacity="0.4"/>
+      <ellipse cx="18" cy="50" rx="5" ry="7" fill="#7a5030"/>
+      <ellipse cx="82" cy="50" rx="5" ry="7" fill="#7a5030"/>
+      <path d="M20,42 Q20,20 50,16 Q80,20 80,42 L80,56 Q80,68 68,76 Q58,82 50,82 Q42,82 32,76 Q20,68 20,56 Z" fill="#7a5030"/>
+      <path d="M28,39 Q36,34 46,38" stroke="#1a1008" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M54,38 Q64,34 72,39" stroke="#1a1008" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="37" cy="46" rx="7" ry="5.5" fill="white"/><circle cx="39" cy="46" r="3.5" fill="#1a1008"/><circle cx="41" cy="44" r="1.4" fill="white" opacity="0.9"/>
+      <ellipse cx="63" cy="46" rx="7" ry="5.5" fill="white"/><circle cx="65" cy="46" r="3.5" fill="#1a1008"/><circle cx="67" cy="44" r="1.4" fill="white" opacity="0.9"/>
+      <path d="M47,57 Q50,61 53,57" stroke="#5a3828" stroke-width="1.2" fill="none"/>
+      <path d="M38,66 Q50,76 62,66" stroke="#4a2a20" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M42,68 Q50,74 58,68" fill="white" opacity="0.3"/>
+    </g>
+  </symbol>
+</svg>
+
 <!-- Skip to content -->
 <a href="#main-content" class="skip-link">Skip to main content</a>
 
@@ -745,6 +961,7 @@ body.high-contrast a, body.high-contrast button { color: inherit; }
       <li><a href="#quiz">Career Quiz</a></li>
       <li><a href="/about.html">About</a></li>
       <li><a href="/learn.html">Learn</a></li>
+      <li><a href="/pulse" style="color:#5bc0be;">Pulse</a></li>
     </ul>
     <a href="#quiz" class="nav-cta">Take the Quiz</a>
     <button class="hamburger" id="hamburger" aria-label="Menu">
@@ -759,6 +976,7 @@ body.high-contrast a, body.high-contrast button { color: inherit; }
   <a href="#quiz" onclick="closeMobile()">Career Quiz</a>
   <a href="/about.html" onclick="closeMobile()">About</a>
   <a href="/learn.html" onclick="closeMobile()">Learn</a>
+  <a href="/pulse" onclick="closeMobile()" style="color:#5bc0be;">Pulse</a>
 </div>
 
 <!-- ── Hero ── -->
@@ -768,6 +986,18 @@ body.high-contrast a, body.high-contrast button { color: inherit; }
     <div class="hero-eyebrow">Free for displaced workers</div>
     <h1>Your Job Didn't Disappear.<br><span>It Evolved.</span></h1>
     <p class="hero-sub">Free 7-day sprint turns laid-off workers into AI-powered specialists earning $3K-8K/month in boring niches nobody else wants.</p>
+    <div class="character-row" aria-label="Diverse team of AI-powered specialists and Forge the robot assistant">
+      <svg class="portrait" viewBox="0 0 100 100"><use href="#human-1"/></svg>
+      <svg class="portrait" viewBox="0 0 100 100"><use href="#human-6"/></svg>
+      <svg class="portrait" viewBox="0 0 100 100"><use href="#human-5"/></svg>
+      <svg class="portrait" viewBox="0 0 100 100"><use href="#human-2"/></svg>
+      <svg class="portrait forge-portrait" viewBox="0 0 100 100"><use href="#forge-head"/></svg>
+      <svg class="portrait" viewBox="0 0 100 100"><use href="#human-8"/></svg>
+      <svg class="portrait" viewBox="0 0 100 100"><use href="#human-3"/></svg>
+      <svg class="portrait" viewBox="0 0 100 100"><use href="#human-7"/></svg>
+      <svg class="portrait" viewBox="0 0 100 100"><use href="#human-4"/></svg>
+    </div>
+    <div class="character-row-label">You + AI = Unstoppable</div>
     <a href="#quiz" class="hero-cta">
       Find Your AI Career in 3 Minutes
       <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
@@ -1622,7 +1852,9 @@ document.querySelectorAll('.form-input').forEach(input => {
 function getSessionId() {
   var sid = localStorage.getItem('anvil_session_id');
   if (!sid) {
-    sid = Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+    var arr = new Uint8Array(16);
+    (window.crypto || window.msCrypto).getRandomValues(arr);
+    sid = Array.from(arr, function(b) { return b.toString(16).padStart(2, '0'); }).join('');
     localStorage.setItem('anvil_session_id', sid);
   }
   return sid;

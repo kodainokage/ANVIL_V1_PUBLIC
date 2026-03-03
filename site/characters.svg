@@ -1,0 +1,231 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <defs>
+    <linearGradient id="forge-metal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8a9bae"/><stop offset="50%" stop-color="#6b7d8e"/><stop offset="100%" stop-color="#4a5a6a"/>
+    </linearGradient>
+    <radialGradient id="forge-eye-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#8eeae6"/><stop offset="70%" stop-color="#5bc0be"/><stop offset="100%" stop-color="#3a8a88"/>
+    </radialGradient>
+    <radialGradient id="forge-bottom-glow" cx="50%" cy="0%" r="80%">
+      <stop offset="0%" stop-color="#f5a623" stop-opacity="0.6"/><stop offset="100%" stop-color="#f5a623" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="skin-1" cx="45%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#b08a68"/><stop offset="100%" stop-color="#9B7554"/>
+    </radialGradient>
+    <radialGradient id="skin-2" cx="45%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#fde8cc"/><stop offset="100%" stop-color="#f8d8b4"/>
+    </radialGradient>
+    <radialGradient id="skin-3" cx="45%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#e4be94"/><stop offset="100%" stop-color="#d4aa7c"/>
+    </radialGradient>
+    <radialGradient id="skin-4" cx="45%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#b09878"/><stop offset="100%" stop-color="#9B8365"/>
+    </radialGradient>
+    <radialGradient id="skin-5" cx="45%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#f8e0b8"/><stop offset="100%" stop-color="#f0d0a0"/>
+    </radialGradient>
+    <radialGradient id="skin-6" cx="45%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#d4b488"/><stop offset="100%" stop-color="#c4a070"/>
+    </radialGradient>
+    <radialGradient id="skin-7" cx="45%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#fde0c8"/><stop offset="100%" stop-color="#f8d0b8"/>
+    </radialGradient>
+    <radialGradient id="skin-8" cx="45%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#7e5844"/><stop offset="100%" stop-color="#6B4534"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Forge: Robot mascot head -->
+  <symbol id="forge-head" viewBox="0 0 100 100">
+    <line x1="50" y1="18" x2="50" y2="6" stroke="#6b7d8e" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="50" cy="4" r="3.5" fill="#f5a623"/>
+    <circle cx="50" cy="3.5" r="1.5" fill="#ffd080" opacity="0.7"/>
+    <path d="M20,55 Q20,18 50,16 Q80,18 80,55 L80,70 Q80,78 72,78 L28,78 Q20,78 20,70 Z" fill="url(#forge-metal)" stroke="#5a6a7a" stroke-width="1"/>
+    <path d="M26,40 Q50,34 74,40" fill="none" stroke="#5a6a7a" stroke-width="2.5" stroke-linecap="round"/>
+    <ellipse cx="37" cy="50" rx="10" ry="10" fill="#2a3a4a"/>
+    <ellipse cx="63" cy="50" rx="10" ry="10" fill="#2a3a4a"/>
+    <circle cx="37" cy="50" r="8" fill="url(#forge-eye-glow)"/>
+    <circle cx="63" cy="50" r="8" fill="url(#forge-eye-glow)"/>
+    <circle cx="34" cy="47" r="2.5" fill="white" opacity="0.8"/>
+    <circle cx="60" cy="47" r="2.5" fill="white" opacity="0.8"/>
+    <rect x="38" y="65" width="24" height="3" rx="1.5" fill="#5bc0be" opacity="0.5"/>
+    <ellipse cx="50" cy="80" rx="28" ry="12" fill="url(#forge-bottom-glow)"/>
+  </symbol>
+
+  <!-- Human-1: Black woman, natural afro, determined -->
+  <symbol id="human-1" viewBox="0 0 100 100">
+    <clipPath id="cp1"><circle cx="50" cy="50" r="46"/></clipPath>
+    <g clip-path="url(#cp1)">
+      <circle cx="50" cy="50" r="46" fill="#1a1020"/>
+      <ellipse cx="50" cy="38" rx="40" ry="36" fill="#2a1a0e"/>
+      <ellipse cx="50" cy="54" rx="26" ry="30" fill="url(#skin-1)"/>
+      <path d="M34,42 Q39,39 44,41" stroke="#2a1a0e" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M56,41 Q61,39 66,42" stroke="#2a1a0e" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="39" cy="48" rx="5" ry="3.5" fill="white"/>
+      <circle cx="40" cy="48" r="2.5" fill="#3a2210"/><circle cx="41" cy="47" r="1" fill="white"/>
+      <ellipse cx="61" cy="48" rx="5" ry="3.5" fill="white"/>
+      <circle cx="62" cy="48" r="2.5" fill="#3a2210"/><circle cx="63" cy="47" r="1" fill="white"/>
+      <path d="M48,55 Q50,59 52,55" stroke="#886648" stroke-width="1" fill="none"/>
+      <path d="M42,64 Q46,66 50,66 Q54,66 58,64" stroke="#7a4a38" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <circle cx="24" cy="54" r="2" fill="#f5d060"/><circle cx="76" cy="54" r="2" fill="#f5d060"/>
+    </g>
+  </symbol>
+
+  <!-- Human-2: White man, 40s, gray temples, curious -->
+  <symbol id="human-2" viewBox="0 0 100 100">
+    <clipPath id="cp2"><circle cx="50" cy="50" r="46"/></clipPath>
+    <g clip-path="url(#cp2)">
+      <circle cx="50" cy="50" r="46" fill="#e8ddd0"/>
+      <path d="M18,42 Q18,14 50,12 Q82,14 82,42 L82,36 Q82,12 50,10 Q18,12 18,36 Z" fill="#5a4a3a"/>
+      <path d="M18,36 Q18,28 24,22 L22,40 Z" fill="#8a8a8a"/>
+      <path d="M82,36 Q82,28 76,22 L78,40 Z" fill="#8a8a8a"/>
+      <ellipse cx="50" cy="54" rx="27" ry="31" fill="url(#skin-2)"/>
+      <path d="M33,40 Q38,36 44,39" stroke="#5a4a3a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M56,39 Q62,36 67,40" stroke="#5a4a3a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <ellipse cx="39" cy="47" rx="5" ry="4" fill="white"/>
+      <circle cx="40" cy="47" r="2.5" fill="#4a7a5a"/><circle cx="41" cy="46" r="1" fill="white"/>
+      <ellipse cx="61" cy="47" rx="5" ry="4" fill="white"/>
+      <circle cx="62" cy="47" r="2.5" fill="#4a7a5a"/><circle cx="63" cy="46" r="1" fill="white"/>
+      <path d="M49,52 L48,57 Q50,59 52,57" stroke="#e0b898" stroke-width="1" fill="none"/>
+      <path d="M42,65 Q50,69 58,65" stroke="#c08068" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="23" cy="50" rx="4" ry="6" fill="url(#skin-2)"/>
+      <ellipse cx="77" cy="50" rx="4" ry="6" fill="url(#skin-2)"/>
+    </g>
+  </symbol>
+
+  <!-- Human-3: Latina woman, wavy dark hair, warm smile -->
+  <symbol id="human-3" viewBox="0 0 100 100">
+    <clipPath id="cp3"><circle cx="50" cy="50" r="46"/></clipPath>
+    <g clip-path="url(#cp3)">
+      <circle cx="50" cy="50" r="46" fill="#2a1a10"/>
+      <path d="M14,50 Q12,18 50,12 Q88,18 86,50 Q84,42 78,38 Q70,20 50,16 Q30,20 22,38 Q16,42 14,50 Z" fill="#1a0e08"/>
+      <path d="M14,50 Q14,60 18,70 L22,48 Z" fill="#1a0e08"/>
+      <path d="M86,50 Q86,60 82,70 L78,48 Z" fill="#1a0e08"/>
+      <ellipse cx="50" cy="54" rx="27" ry="30" fill="url(#skin-3)"/>
+      <path d="M34,41 Q39,38 44,40" stroke="#1a0e08" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M56,40 Q61,38 66,41" stroke="#1a0e08" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="39" cy="48" rx="5.5" ry="4" fill="white"/>
+      <circle cx="40" cy="48" r="2.8" fill="#4a2a10"/><circle cx="41" cy="47" r="1" fill="white"/>
+      <ellipse cx="61" cy="48" rx="5.5" ry="4" fill="white"/>
+      <circle cx="62" cy="48" r="2.8" fill="#4a2a10"/><circle cx="63" cy="47" r="1" fill="white"/>
+      <path d="M49,53 L47,58 Q50,60 53,58" stroke="#c09060" stroke-width="1" fill="none"/>
+      <path d="M40,64 Q45,70 50,70 Q55,70 60,64" stroke="#a06050" stroke-width="1.5" fill="#c07060" fill-opacity="0.3"/>
+    </g>
+  </symbol>
+
+  <!-- Human-4: South Asian man, 50s, glasses, mustache, dignified -->
+  <symbol id="human-4" viewBox="0 0 100 100">
+    <clipPath id="cp4"><circle cx="50" cy="50" r="46"/></clipPath>
+    <g clip-path="url(#cp4)">
+      <circle cx="50" cy="50" r="46" fill="#6a5a48"/>
+      <path d="M20,44 Q18,16 50,12 Q82,16 80,44 L78,36 Q76,18 50,15 Q24,18 22,36 Z" fill="#4a4a4a"/>
+      <path d="M20,40 L24,36 Q22,30 26,24" stroke="#8a8a8a" stroke-width="1.5" fill="none"/>
+      <path d="M80,40 L76,36 Q78,30 74,24" stroke="#8a8a8a" stroke-width="1.5" fill="none"/>
+      <ellipse cx="50" cy="54" rx="27" ry="31" fill="url(#skin-4)"/>
+      <circle cx="38" cy="48" r="9" fill="none" stroke="#888" stroke-width="1.2"/>
+      <circle cx="62" cy="48" r="9" fill="none" stroke="#888" stroke-width="1.2"/>
+      <line x1="47" y1="48" x2="53" y2="48" stroke="#888" stroke-width="1"/>
+      <path d="M30,39 Q36,36 46,39" stroke="#4a4a4a" stroke-width="1.8" fill="none"/>
+      <path d="M54,39 Q64,36 70,39" stroke="#4a4a4a" stroke-width="1.8" fill="none"/>
+      <ellipse cx="38" cy="48" rx="4.5" ry="3.5" fill="white"/>
+      <circle cx="39" cy="48" r="2.5" fill="#2a1a08"/><circle cx="40" cy="47" r="1" fill="white"/>
+      <ellipse cx="62" cy="48" rx="4.5" ry="3.5" fill="white"/>
+      <circle cx="63" cy="48" r="2.5" fill="#2a1a08"/><circle cx="64" cy="47" r="1" fill="white"/>
+      <path d="M49,53 L47,58 Q50,60 53,58" stroke="#8a7050" stroke-width="1" fill="none"/>
+      <path d="M40,63 Q44,66 50,64 Q56,66 60,63" fill="#3a3a3a"/>
+      <path d="M43,68 Q50,71 57,68" stroke="#7a5a48" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+      <ellipse cx="23" cy="50" rx="4" ry="6" fill="url(#skin-4)"/>
+      <ellipse cx="77" cy="50" rx="4" ry="6" fill="url(#skin-4)"/>
+    </g>
+  </symbol>
+
+  <!-- Human-5: East Asian woman, bob haircut, focused -->
+  <symbol id="human-5" viewBox="0 0 100 100">
+    <clipPath id="cp5"><circle cx="50" cy="50" r="46"/></clipPath>
+    <g clip-path="url(#cp5)">
+      <circle cx="50" cy="50" r="46" fill="#1a1418"/>
+      <path d="M16,54 Q14,16 50,12 Q86,16 84,54 L84,62 Q82,58 78,54 Q76,20 50,16 Q24,20 22,54 Q18,58 16,62 Z" fill="#0a0808"/>
+      <path d="M16,54 L16,66 Q18,60 22,56 Z" fill="#0a0808"/>
+      <path d="M84,54 L84,66 Q82,60 78,56 Z" fill="#0a0808"/>
+      <ellipse cx="50" cy="54" rx="27" ry="30" fill="url(#skin-5)"/>
+      <path d="M33,42 Q38,40 44,42" stroke="#0a0808" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M56,42 Q62,40 67,42" stroke="#0a0808" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <ellipse cx="39" cy="48" rx="5.5" ry="3.2" fill="white"/>
+      <circle cx="40" cy="48" r="2.5" fill="#1a1008"/><circle cx="41" cy="47" r="1" fill="white"/>
+      <ellipse cx="61" cy="48" rx="5.5" ry="3.2" fill="white"/>
+      <circle cx="62" cy="48" r="2.5" fill="#1a1008"/><circle cx="63" cy="47" r="1" fill="white"/>
+      <path d="M49,53 Q50,57 51,53" stroke="#dab888" stroke-width="1" fill="none"/>
+      <path d="M43,64 Q50,66 57,64" stroke="#c09078" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    </g>
+  </symbol>
+
+  <!-- Human-6: Middle Eastern man, trimmed beard, warm eyes -->
+  <symbol id="human-6" viewBox="0 0 100 100">
+    <clipPath id="cp6"><circle cx="50" cy="50" r="46"/></clipPath>
+    <g clip-path="url(#cp6)">
+      <circle cx="50" cy="50" r="46" fill="#2a2018"/>
+      <path d="M18,44 Q16,14 50,10 Q84,14 82,44 L80,36 Q78,18 50,14 Q22,18 20,36 Z" fill="#1a1008"/>
+      <ellipse cx="50" cy="54" rx="27" ry="31" fill="url(#skin-6)"/>
+      <path d="M32,40 Q38,36 45,39" stroke="#1a1008" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M55,39 Q62,36 68,40" stroke="#1a1008" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="39" cy="47" rx="5" ry="4" fill="white"/>
+      <circle cx="40" cy="47" r="2.8" fill="#3a2008"/><circle cx="41" cy="46" r="1" fill="white"/>
+      <ellipse cx="61" cy="47" rx="5" ry="4" fill="white"/>
+      <circle cx="62" cy="47" r="2.8" fill="#3a2008"/><circle cx="63" cy="46" r="1" fill="white"/>
+      <path d="M49,52 L47,58 Q50,60 53,58" stroke="#b08a58" stroke-width="1" fill="none"/>
+      <path d="M28,60 Q28,78 50,82 Q72,78 72,60" fill="#1a1008" opacity="0.5"/>
+      <path d="M30,62 Q30,76 50,80 Q70,76 70,62" fill="#1a1008" opacity="0.3"/>
+      <path d="M42,66 Q50,70 58,66" stroke="#a08060" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="23" cy="50" rx="4" ry="6" fill="url(#skin-6)"/>
+      <ellipse cx="77" cy="50" rx="4" ry="6" fill="url(#skin-6)"/>
+    </g>
+  </symbol>
+
+  <!-- Human-7: White woman, auburn hair, freckles, bright smile -->
+  <symbol id="human-7" viewBox="0 0 100 100">
+    <clipPath id="cp7"><circle cx="50" cy="50" r="46"/></clipPath>
+    <g clip-path="url(#cp7)">
+      <circle cx="50" cy="50" r="46" fill="#5a2a10"/>
+      <path d="M14,52 Q12,16 50,10 Q88,16 86,52 Q84,44 78,38 Q74,18 50,14 Q26,18 22,38 Q16,44 14,52 Z" fill="#8B4513"/>
+      <path d="M14,52 L14,72 Q18,62 22,54 Z" fill="#8B4513"/>
+      <path d="M86,52 L86,72 Q82,62 78,54 Z" fill="#8B4513"/>
+      <ellipse cx="50" cy="54" rx="27" ry="30" fill="url(#skin-7)"/>
+      <circle cx="36" cy="55" r="0.8" fill="#c8a080" opacity="0.5"/><circle cx="40" cy="57" r="0.7" fill="#c8a080" opacity="0.4"/>
+      <circle cx="34" cy="53" r="0.6" fill="#c8a080" opacity="0.5"/><circle cx="60" cy="55" r="0.8" fill="#c8a080" opacity="0.5"/>
+      <circle cx="64" cy="57" r="0.7" fill="#c8a080" opacity="0.4"/><circle cx="66" cy="53" r="0.6" fill="#c8a080" opacity="0.5"/>
+      <path d="M33,41 Q38,38 44,40" stroke="#7a3a10" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+      <path d="M56,40 Q62,38 67,41" stroke="#7a3a10" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+      <ellipse cx="39" cy="48" rx="5.5" ry="4" fill="white"/>
+      <circle cx="40" cy="48" r="2.8" fill="#4a8a5a"/><circle cx="41" cy="47" r="1" fill="white"/>
+      <ellipse cx="61" cy="48" rx="5.5" ry="4" fill="white"/>
+      <circle cx="62" cy="48" r="2.8" fill="#4a8a5a"/><circle cx="63" cy="47" r="1" fill="white"/>
+      <path d="M49,53 L48,57 Q50,59 52,57" stroke="#e8b8a0" stroke-width="1" fill="none"/>
+      <path d="M39,64 Q44,72 50,72 Q56,72 61,64" stroke="#c07060" stroke-width="1.5" fill="#e8a0a0" fill-opacity="0.3"/>
+      <path d="M42,66 Q50,68 58,66" fill="white" opacity="0.6"/>
+    </g>
+  </symbol>
+
+  <!-- Human-8: Black man, short fade, confident smile -->
+  <symbol id="human-8" viewBox="0 0 100 100">
+    <clipPath id="cp8"><circle cx="50" cy="50" r="46"/></clipPath>
+    <g clip-path="url(#cp8)">
+      <circle cx="50" cy="50" r="46" fill="#2a1808"/>
+      <path d="M22,42 Q20,18 50,14 Q80,18 78,42 L76,36 Q74,22 50,18 Q26,22 24,36 Z" fill="#1a1008"/>
+      <path d="M22,42 L20,46 Q20,38 22,36 Z" fill="#1a1008" opacity="0.5"/>
+      <path d="M78,42 L80,46 Q80,38 78,36 Z" fill="#1a1008" opacity="0.5"/>
+      <ellipse cx="50" cy="54" rx="28" ry="31" fill="url(#skin-8)"/>
+      <path d="M24,58 Q26,76 50,82 Q74,76 76,58" fill="none" stroke="#5a3828" stroke-width="0.5" opacity="0.3"/>
+      <path d="M32,40 Q38,37 45,40" stroke="#1a1008" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M55,40 Q62,37 68,40" stroke="#1a1008" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="39" cy="48" rx="5" ry="3.8" fill="white"/>
+      <circle cx="40" cy="48" r="2.5" fill="#1a1008"/><circle cx="41" cy="47" r="1" fill="white"/>
+      <ellipse cx="61" cy="48" rx="5" ry="3.8" fill="white"/>
+      <circle cx="62" cy="48" r="2.5" fill="#1a1008"/><circle cx="63" cy="47" r="1" fill="white"/>
+      <path d="M47,55 Q50,60 53,55" stroke="#5a4030" stroke-width="1.2" fill="none"/>
+      <path d="M40,66 Q45,72 50,72 Q55,72 60,66" stroke="#4a2a20" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M43,68 Q50,70 57,68" fill="white" opacity="0.5"/>
+      <ellipse cx="22" cy="50" rx="4" ry="6" fill="url(#skin-8)"/>
+      <ellipse cx="78" cy="50" rx="4" ry="6" fill="url(#skin-8)"/>
+    </g>
+  </symbol>
+</svg>

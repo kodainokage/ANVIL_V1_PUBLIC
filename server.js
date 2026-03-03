@@ -2,6 +2,8 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const https = require('https');
+const http = require('http');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -21,6 +23,7 @@ const TESTIMONIALS_FILE = path.join(DATA_DIR, 'testimonials.json');
 const GRADUATES_FILE = path.join(DATA_DIR, 'graduates.json');
 const PROGRESS_FILE = path.join(DATA_DIR, 'progress.json');
 const CURRICULUM_FILE = path.join(DATA_DIR, 'curriculum-progress.json');
+const PULSE_FILE = path.join(DATA_DIR, 'pulse-feed.json');
 
 // Community links
 const COMMUNITY_DISCORD = process.env.COMMUNITY_DISCORD || '';
@@ -72,24 +75,32 @@ function requireApiKey(req, res) {
 // Allowed origins for CORS
 const ALLOWED_ORIGINS = NODE_ENV === 'production'
   ? [process.env.ALLOWED_ORIGIN || 'https://anvil.onrender.com']
-  : ['http://localhost:10000', 'http://127.0.0.1:10000'];
+  : ['http://localhost:10000', 'http://127.0.0.1:10000', 'http://localhost:5000', 'http://127.0.0.1:5000', 'http://localhost:3000', 'http://127.0.0.1:3000'];
 
 // Rate limiting (in-memory, no extra dependency)
 const rateLimits = new Map();
 const RATE_WINDOW = 15 * 60 * 1000; // 15 minutes
-const RATE_MAX = 10; // max submissions per window per IP
+const RATE_MAX_WRITE = 10; // max write requests (POST) per window per IP
+const RATE_MAX_READ = 120; // max read requests (GET) per window per IP
 
-function rateLimit(req) {
+function rateLimit(req, res) {
   const ip = req.ip || req.connection.remoteAddress;
+  const isRead = req.method === 'GET';
+  const key = ip + (isRead ? ':r' : ':w');
+  const maxReqs = isRead ? RATE_MAX_READ : RATE_MAX_WRITE;
   const now = Date.now();
-  const entry = rateLimits.get(ip);
+  const entry = rateLimits.get(key);
 
   if (!entry || now - entry.windowStart > RATE_WINDOW) {
-    rateLimits.set(ip, { windowStart: now, count: 1 });
+    rateLimits.set(key, { windowStart: now, count: 1 });
     return true;
   }
 
-  if (entry.count >= RATE_MAX) return false;
+  if (entry.count >= maxReqs) {
+    const retryAfter = Math.ceil((RATE_WINDOW - (now - entry.windowStart)) / 1000);
+    if (res) res.setHeader('Retry-After', String(retryAfter));
+    return false;
+  }
   entry.count++;
   return true;
 }
@@ -119,18 +130,20 @@ app.use((req, res, next) => {
   const origin = req.headers.origin;
   const allowedOriginsList = ALLOWED_ORIGINS;
 
-  // Check if origin is allowed
-  if (origin && allowedOriginsList.includes(origin)) {
+  // In development, allow any origin (needed for IP-based access)
+  if (NODE_ENV !== 'production') {
+    res.header('Access-Control-Allow-Origin', origin || '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key');
+  } else if (origin && allowedOriginsList.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key');
   } else if (!origin) {
-    // No origin = same-origin request, allow with default
     res.header('Access-Control-Allow-Origin', allowedOriginsList[0]);
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key');
   } else {
-    // Origin not allowed - log and deny (don't set CORS headers)
     console.warn(`[CORS] Rejected request from unauthorized origin: ${origin}`);
   }
 
@@ -155,6 +168,9 @@ if (!fs.existsSync(SUBMISSIONS_FILE)) {
     fs.writeFileSync(f, '{}', 'utf8');
   }
 });
+if (!fs.existsSync(PULSE_FILE)) {
+  fs.writeFileSync(PULSE_FILE, '[]', 'utf8');
+}
 
 // Input sanitization
 function sanitize(str) {
@@ -181,7 +197,7 @@ function isValidEmail(email) {
 
 // Health check (rate limited to prevent enumeration)
 app.get('/health', (req, res) => {
-  if (!rateLimit(req)) {
+  if (!rateLimit(req, res)) {
     return res.status(429).json({
       success: false,
       error: 'Too many health check requests. Try again in 15 minutes.'
@@ -198,7 +214,7 @@ app.get('/health', (req, res) => {
 
 // Quiz submission — rate limited + validated
 app.post('/api/quiz-submit', (req, res) => {
-  if (!rateLimit(req)) {
+  if (!rateLimit(req, res)) {
     return res.status(429).json({
       success: false,
       error: 'Too many submissions. Try again in 15 minutes.'
@@ -220,13 +236,13 @@ app.post('/api/quiz-submit', (req, res) => {
     }
 
     const submission = {
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+      id: Date.now().toString(36) + crypto.randomBytes(4).toString('hex'),
       name: cleanName,
       email: cleanEmail,
       phone: sanitize(phone || ''),
       answers: Array.isArray(answers) ? answers.slice(0, 20).map(a => sanitize(String(a))) : [],
       recommendedNiches: Array.isArray(recommendedNiches) ? recommendedNiches.slice(0, 7).map(n => sanitize(String(n))) : [],
-      referralCode: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      referralCode: Date.now().toString(36) + crypto.randomBytes(3).toString('hex'),
       referredBy: sanitize(req.body.referredBy || ''),
       utmSource: sanitize(req.body.utmSource || ''),
       utmMedium: sanitize(req.body.utmMedium || ''),
@@ -235,20 +251,9 @@ app.post('/api/quiz-submit', (req, res) => {
       ip: req.ip || 'unknown'
     };
 
-    // Append-safe write: read, append, write with error handling
-    let submissions = [];
-    try {
-      const raw = fs.readFileSync(SUBMISSIONS_FILE, 'utf8');
-      submissions = JSON.parse(raw);
-      if (!Array.isArray(submissions)) submissions = [];
-    } catch (e) {
-      submissions = [];
-    }
-
+    const submissions = readJSON(SUBMISSIONS_FILE);
     submissions.push(submission);
-    const tmpFile = SUBMISSIONS_FILE + '.tmp';
-    fs.writeFileSync(tmpFile, JSON.stringify(submissions, null, 2), 'utf8');
-    fs.renameSync(tmpFile, SUBMISSIONS_FILE);
+    queueWrite(SUBMISSIONS_FILE, submissions);
 
     console.log(`[SUBMISSION] ${submission.id} | ${cleanName} <${cleanEmail}> | Niches: ${submission.recommendedNiches.join(', ') || 'none'}`);
 
@@ -336,7 +341,7 @@ app.get('/api/results/:id', (req, res) => {
 
 // --- Privacy-respecting analytics ---
 app.post('/api/analytics/event', (req, res) => {
-  if (!rateLimit(req)) {
+  if (!rateLimit(req, res)) {
     return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
   }
 
@@ -348,7 +353,7 @@ app.post('/api/analytics/event', (req, res) => {
     const entry = {
       event: sanitize(event || ''),
       page: sanitize(page || ''),
-      data: typeof data === 'object' && data !== null ? JSON.parse(JSON.stringify(data)) : {},
+      data: (() => { try { const s = JSON.stringify(data); return s && s.length < 2048 ? JSON.parse(s) : {}; } catch { return {}; } })(),
       fingerprint: hash,
       timestamp: new Date().toISOString()
     };
@@ -366,7 +371,7 @@ app.post('/api/analytics/event', (req, res) => {
 
 // --- Record referral visit ---
 app.post('/api/referrals/track', (req, res) => {
-  if (!rateLimit(req)) {
+  if (!rateLimit(req, res)) {
     return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
   }
 
@@ -436,7 +441,7 @@ app.get('/api/referrals/status/:code', (req, res) => {
 
 // --- Submit testimonial ---
 app.post('/api/testimonials', (req, res) => {
-  if (!rateLimit(req)) {
+  if (!rateLimit(req, res)) {
     return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
   }
 
@@ -458,7 +463,7 @@ app.post('/api/testimonials', (req, res) => {
     }
 
     const testimonial = {
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+      id: Date.now().toString(36) + crypto.randomBytes(4).toString('hex'),
       name: cleanName,
       text: cleanText,
       niche: cleanNiche,
@@ -493,7 +498,7 @@ app.get('/api/testimonials', (req, res) => {
 
 // --- Graduate directory opt-in ---
 app.post('/api/graduates', (req, res) => {
-  if (!rateLimit(req)) {
+  if (!rateLimit(req, res)) {
     return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
   }
 
@@ -505,7 +510,7 @@ app.post('/api/graduates', (req, res) => {
     }
 
     const graduate = {
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+      id: Date.now().toString(36) + crypto.randomBytes(4).toString('hex'),
       name: cleanName,
       niche: sanitize(niche || ''),
       city: sanitize(city || ''),
@@ -527,7 +532,7 @@ app.post('/api/graduates', (req, res) => {
 
 // --- Quiz progress persistence (server-side session) ---
 app.post('/api/quiz-progress', (req, res) => {
-  if (!rateLimit(req)) {
+  if (!rateLimit(req, res)) {
     return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
   }
 
@@ -569,7 +574,7 @@ app.post('/api/quiz-progress', (req, res) => {
 });
 
 app.get('/api/quiz-progress/:sessionId', (req, res) => {
-  if (!rateLimit(req)) {
+  if (!rateLimit(req, res)) {
     return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
   }
 
@@ -593,7 +598,7 @@ app.get('/api/quiz-progress/:sessionId', (req, res) => {
 
 // --- Curriculum progress persistence (server-side session) ---
 app.post('/api/curriculum/progress', (req, res) => {
-  if (!rateLimit(req)) {
+  if (!rateLimit(req, res)) {
     return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
   }
 
@@ -649,7 +654,7 @@ app.post('/api/curriculum/progress', (req, res) => {
 });
 
 app.get('/api/curriculum/progress/:sessionId', (req, res) => {
-  if (!rateLimit(req)) {
+  if (!rateLimit(req, res)) {
     return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
   }
 
@@ -750,18 +755,27 @@ app.get('/api/admin/export/csv', (req, res) => {
 
   try {
     const submissions = readJSON(SUBMISSIONS_FILE);
+    // CSV-safe: escape formula injection and quote fields with commas/quotes
+    function csvSafe(val) {
+      let s = String(val || '');
+      if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+      if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+        s = '"' + s.replace(/"/g, '""') + '"';
+      }
+      return s;
+    }
     const headers = 'id,name,email,phone,niches,date,referralCode,referredBy';
     const rows = submissions.map(s => {
       const niches = (s.recommendedNiches || []).join('; ');
       return [
-        s.id || '',
-        (s.name || '').replace(/,/g, ' '),
-        (s.email || '').replace(/,/g, ' '),
-        (s.phone || '').replace(/,/g, ' '),
-        niches.replace(/,/g, '; '),
-        s.submittedAt || '',
-        s.referralCode || '',
-        (s.referredBy || '').replace(/,/g, ' ')
+        csvSafe(s.id),
+        csvSafe(s.name),
+        csvSafe(s.email),
+        csvSafe(s.phone),
+        csvSafe(niches),
+        csvSafe(s.submittedAt),
+        csvSafe(s.referralCode),
+        csvSafe(s.referredBy)
       ].join(',');
     });
 
@@ -950,8 +964,204 @@ app.get('/robots.txt', (req, res) => {
   res.send(`User-agent: *\nAllow: /\n\nSitemap: ${baseUrl}/sitemap.xml\n`);
 });
 
+// --- ANVIL Pulse: AI News Terminal ---
+
+// Public: Get latest pulse updates (optionally filtered by niche)
+app.get('/api/pulse', (req, res) => {
+  if (!rateLimit(req, res)) {
+    return res.status(429).json({ success: false, error: 'Too many requests.' });
+  }
+  try {
+    const feed = readJSON(PULSE_FILE);
+    const niche = sanitize(req.query.niche || '');
+    const limit = Math.min(parseInt(req.query.limit, 10) || 20, 50);
+
+    let items = feed
+      .filter(p => p.published !== false)
+      .sort((a, b) => (b.publishedAt || '').localeCompare(a.publishedAt || ''));
+
+    if (niche) {
+      items = items.filter(p =>
+        (p.niches || []).includes(niche) || (p.niches || []).includes('all')
+      );
+    }
+
+    items = items.slice(0, limit);
+
+    res.json({ success: true, count: items.length, items });
+  } catch (err) {
+    console.error('[ERROR] Pulse feed failed:', err.message);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// Public: Get today's "One Thing to Learn" hint
+app.get('/api/pulse/daily-hint', (req, res) => {
+  if (!rateLimit(req, res)) {
+    return res.status(429).json({ success: false, error: 'Too many requests.' });
+  }
+  try {
+    const feed = readJSON(PULSE_FILE);
+    const niche = sanitize(req.query.niche || '');
+    const today = new Date().toISOString().slice(0, 10);
+
+    let hints = feed.filter(p =>
+      p.published !== false && p.type === 'hint' &&
+      (p.publishedAt || '').startsWith(today)
+    );
+
+    if (niche) {
+      hints = hints.filter(p =>
+        (p.niches || []).includes(niche) || (p.niches || []).includes('all')
+      );
+    }
+
+    // If no hint for today, return most recent hint
+    if (hints.length === 0) {
+      hints = feed
+        .filter(p => p.published !== false && p.type === 'hint')
+        .sort((a, b) => (b.publishedAt || '').localeCompare(a.publishedAt || ''));
+      if (niche) {
+        hints = hints.filter(p =>
+          (p.niches || []).includes(niche) || (p.niches || []).includes('all')
+        );
+      }
+    }
+
+    const hint = hints[0] || null;
+    res.json({ success: true, hint });
+  } catch (err) {
+    console.error('[ERROR] Daily hint failed:', err.message);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// Admin: Post a new pulse update
+app.post('/api/admin/pulse', (req, res) => {
+  if (!requireApiKey(req, res)) return;
+
+  try {
+    const { headline, summary, sourceUrl, sourceName, niches, type, tags } = req.body;
+    const cleanHeadline = sanitize(headline);
+    const cleanSummary = sanitize(summary).slice(0, 1000);
+
+    if (!cleanHeadline || cleanHeadline.length < 5) {
+      return res.status(400).json({ success: false, error: 'Headline is required (min 5 chars)' });
+    }
+    if (!cleanSummary || cleanSummary.length < 10) {
+      return res.status(400).json({ success: false, error: 'Summary is required (min 10 chars)' });
+    }
+
+    const entry = {
+      id: Date.now().toString(36) + crypto.randomBytes(4).toString('hex'),
+      headline: cleanHeadline,
+      summary: cleanSummary,
+      sourceUrl: sanitize(sourceUrl || ''),
+      sourceName: sanitize(sourceName || ''),
+      niches: Array.isArray(niches) ? niches.slice(0, 7).map(n => sanitize(String(n))) : ['all'],
+      type: ['update', 'hint', 'breaking', 'tool', 'opportunity'].includes(type) ? type : 'update',
+      tags: Array.isArray(tags) ? tags.slice(0, 10).map(t => sanitize(String(t))) : [],
+      published: true,
+      publishedAt: new Date().toISOString(),
+      verified: false
+    };
+
+    const feed = readJSON(PULSE_FILE);
+    feed.push(entry);
+    queueWrite(PULSE_FILE, feed);
+
+    console.log(`[PULSE] ${entry.id} | ${entry.type} | ${cleanHeadline.slice(0, 50)}`);
+    res.json({ success: true, id: entry.id });
+  } catch (err) {
+    console.error('[ERROR] Pulse post failed:', err.message);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// Admin: Verify a pulse update (marks source as checked)
+app.post('/api/admin/pulse/:id/verify', (req, res) => {
+  if (!requireApiKey(req, res)) return;
+
+  try {
+    const feed = readJSON(PULSE_FILE);
+    const idx = feed.findIndex(p => p.id === req.params.id);
+    if (idx === -1) {
+      return res.status(404).json({ success: false, error: 'Pulse item not found' });
+    }
+    feed[idx].verified = true;
+    feed[idx].verifiedAt = new Date().toISOString();
+    queueWrite(PULSE_FILE, feed);
+
+    console.log(`[PULSE VERIFIED] ${req.params.id}`);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('[ERROR] Pulse verify failed:', err.message);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// Admin: Get all pulse items (including unpublished)
+app.get('/api/admin/pulse', (req, res) => {
+  if (!requireApiKey(req, res)) return;
+  try {
+    const feed = readJSON(PULSE_FILE);
+    res.json({ success: true, count: feed.length, items: feed });
+  } catch (err) {
+    console.error('[ERROR] Admin pulse failed:', err.message);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// Manual pulse refresh endpoint (admin only)
+app.post('/api/admin/pulse/refresh', (req, res) => {
+  const key = req.headers['x-api-key'] || req.query.key;
+  if (key !== API_KEY) {
+    return res.status(401).json({ success: false, error: 'Unauthorized' });
+  }
+  refreshPulseFeed().then(() => {
+    const cache = fs.existsSync(PULSE_CACHE_FILE) ? JSON.parse(fs.readFileSync(PULSE_CACHE_FILE, 'utf8')) : {};
+    res.json({ success: true, message: 'Refresh complete', stats: cache });
+  }).catch(err => {
+    res.status(500).json({ success: false, error: err.message });
+  });
+});
+
+// Pulse feed status endpoint
+app.get('/api/pulse/status', (req, res) => {
+  try {
+    const cache = fs.existsSync(PULSE_CACHE_FILE) ? JSON.parse(fs.readFileSync(PULSE_CACHE_FILE, 'utf8')) : {};
+    const feed = readJSON(PULSE_FILE);
+    loadSourceState();
+    const sources = PULSE_SOURCES.map(s => {
+      const st = getSourceState(s.name);
+      return {
+        name: s.name,
+        niche: s.niche,
+        healthy: st.failCount < CIRCUIT_BREAKER_THRESHOLD,
+        failCount: st.failCount,
+        lastSuccess: st.lastSuccess ? new Date(st.lastSuccess).toISOString() : null,
+        cached304s: st.total304s || 0,
+        totalFetches: st.totalFetches || 0,
+        backoffActive: st.backoffUntil ? Date.now() < st.backoffUntil : false,
+      };
+    });
+    res.json({
+      success: true,
+      lastRefresh: cache.lastRefresh || null,
+      totalItems: feed.length,
+      verifiedCount: feed.filter(i => i.verified).length,
+      sourceCount: PULSE_SOURCES.length,
+      healthySources: sources.filter(s => s.healthy).length,
+      notModified: cache.notModified || 0,
+      sources,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Status unavailable' });
+  }
+});
+
 // Explicit HTML page routes (before wildcard)
-['/learn', '/certificate', '/admin', '/marketing'].forEach(route => {
+['/learn', '/certificate', '/admin', '/marketing', '/pulse'].forEach(route => {
   app.get(route, (req, res) => {
     res.sendFile(path.join(__dirname, 'site', route.slice(1) + '.html'));
   });
@@ -973,9 +1183,421 @@ app.get('*', (req, res) => {
   }
 });
 
+// Global error handlers to prevent crashes
+process.on('uncaughtException', (err) => {
+  console.error('[FATAL] Uncaught exception:', err.message);
+  console.error(err.stack);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('[WARN] Unhandled rejection:', reason);
+});
+
+// --- Pulse RSS Aggregator (zero external deps, anti-ban hardened) ---
+
+const PULSE_CACHE_FILE = path.join(DATA_DIR, 'pulse-cache.json');
+const PULSE_SOURCE_STATE_FILE = path.join(DATA_DIR, 'pulse-source-state.json');
+const PULSE_FETCH_INTERVAL = 2 * 60 * 60 * 1000; // 2 hours base
+const PULSE_JITTER_MAX = 15 * 60 * 1000; // up to 15 min random jitter
+const PULSE_DELAY_BETWEEN = 4000; // 4s between each source (polite)
+const PULSE_TIMEOUT = 15000; // 15s per request timeout
+const PULSE_MAX_ITEMS = 200; // max stored pulse items
+const CIRCUIT_BREAKER_THRESHOLD = 3; // failures before pausing source
+const CIRCUIT_BREAKER_COOLDOWN = 24 * 60 * 60 * 1000; // 24h pause on tripped circuit
+const BACKOFF_BASE = 60 * 1000; // 1 min base backoff
+
+// RSS sources — free, no API keys, reliable
+const PULSE_SOURCES = [
+  { url: 'https://techcrunch.com/category/artificial-intelligence/feed/', name: 'TechCrunch AI', niche: 'all' },
+  { url: 'https://feeds.arstechnica.com/arstechnica/technology-lab', name: 'Ars Technica', niche: 'all' },
+  { url: 'https://www.wired.com/feed/tag/ai/latest/rss', name: 'Wired AI', niche: 'all' },
+  { url: 'https://news.mit.edu/topic/mitartificial-intelligence2-rss.xml', name: 'MIT AI News', niche: 'all' },
+  { url: 'https://blog.google/technology/ai/rss/', name: 'Google AI Blog', niche: 'all' },
+  { url: 'https://www.healthcareitnews.com/feed', name: 'Healthcare IT News', niche: 'medical-billing' },
+  { url: 'https://www.fiercehealthcare.com/rss/xml', name: 'Fierce Healthcare', niche: 'medical-billing' },
+  { url: 'https://www.grants.gov/rss/GG_NewOppByCategory.xml', name: 'Grants.gov', niche: 'grant-writing' },
+  { url: 'https://www.federalregister.gov/documents/search.rss?conditions%5Btype%5D=NOTICE', name: 'Federal Register', niche: 'grant-writing' },
+  { url: 'https://www.accountingtoday.com/feed', name: 'Accounting Today', niche: 'bookkeeping' },
+  { url: 'https://www.cpapracticeadvisor.com/feed', name: 'CPA Practice Advisor', niche: 'bookkeeping' },
+  { url: 'https://www.insurancejournal.com/feed/', name: 'Insurance Journal', niche: 'insurance' },
+  { url: 'https://www.law.com/legaltechnews/feed/', name: 'Legal Tech News', niche: 'compliance' },
+  { url: 'https://www.housingwire.com/feed/', name: 'HousingWire', niche: 'real-estate' },
+];
+
+// --- Per-source state: ETags, Last-Modified, failures, backoff ---
+let sourceState = {};
+function loadSourceState() {
+  try {
+    if (fs.existsSync(PULSE_SOURCE_STATE_FILE)) {
+      sourceState = JSON.parse(fs.readFileSync(PULSE_SOURCE_STATE_FILE, 'utf8'));
+    }
+  } catch (e) { sourceState = {}; }
+}
+function saveSourceState() {
+  try { fs.writeFileSync(PULSE_SOURCE_STATE_FILE, JSON.stringify(sourceState, null, 2)); } catch (e) {}
+}
+function getSourceState(name) {
+  if (!sourceState[name]) {
+    sourceState[name] = {
+      etag: null,           // ETag from last response
+      lastModified: null,   // Last-Modified from last response
+      failCount: 0,         // consecutive failures
+      lastFail: null,       // timestamp of last failure
+      lastSuccess: null,    // timestamp of last success
+      backoffUntil: null,   // don't retry until this timestamp
+      totalFetches: 0,      // lifetime fetch count
+      total304s: 0,         // times we got 304 Not Modified (saved bandwidth)
+    };
+  }
+  return sourceState[name];
+}
+
+// --- Circuit breaker: should we skip this source? ---
+function isCircuitOpen(name) {
+  const state = getSourceState(name);
+  const now = Date.now();
+  // Backoff active (from 429/503 Retry-After)
+  if (state.backoffUntil && now < state.backoffUntil) {
+    const waitMins = Math.round((state.backoffUntil - now) / 60000);
+    console.log(`[PULSE] Skipping ${name} — backoff active (${waitMins}m remaining)`);
+    return true;
+  }
+  // Circuit breaker tripped (too many consecutive failures)
+  if (state.failCount >= CIRCUIT_BREAKER_THRESHOLD && state.lastFail) {
+    const elapsed = now - state.lastFail;
+    if (elapsed < CIRCUIT_BREAKER_COOLDOWN) {
+      const waitHrs = Math.round((CIRCUIT_BREAKER_COOLDOWN - elapsed) / 3600000 * 10) / 10;
+      console.log(`[PULSE] Skipping ${name} — circuit open (${state.failCount} failures, retry in ${waitHrs}h)`);
+      return true;
+    }
+    // Cooldown expired, allow a retry (half-open)
+    console.log(`[PULSE] Half-open circuit for ${name} — attempting retry`);
+  }
+  return false;
+}
+
+// --- Niche keyword classifier (no AI needed) ---
+const NICHE_KEYWORDS = {
+  'medical-billing': ['medical billing', 'cpt code', 'icd-10', 'cms', 'medicare', 'medicaid', 'health insurance', 'ehr', 'electronic health', 'claim', 'denial', 'prior auth', 'hipaa', 'health it', 'clinical'],
+  'grant-writing': ['grant', 'funding', 'nsf', 'nih', 'sam.gov', 'federal award', 'proposal', 'funder', 'nonprofit funding', 'foundation grant'],
+  'bookkeeping': ['bookkeeping', 'accounting', 'quickbooks', 'xero', 'accounts payable', 'receivable', 'ledger', 'tax prep', 'payroll', 'financial statement', 'cpa'],
+  'real-estate': ['real estate', 'property', 'mortgage', 'mls', 'broker', 'listing', 'housing', 'appraisal', 'home sale', 'rental', 'zoning'],
+  'compliance': ['compliance', 'regulation', 'audit', 'sox', 'gdpr', 'risk management', 'regulatory', 'enforcement', 'policy', 'governance'],
+  'insurance': ['insurance', 'underwriting', 'claim', 'premium', 'actuarial', 'policyholder', 'deductible', 'liability', 'coverage', 'appeal letter'],
+  'benefits': ['benefits', 'enrollment', 'cobra', '401k', 'pension', 'disability', 'leave', 'fmla', 'workers comp', 'employee benefit'],
+};
+
+function classifyNiches(title, description) {
+  const text = ((title || '') + ' ' + (description || '')).toLowerCase();
+  const matched = [];
+  for (const [niche, keywords] of Object.entries(NICHE_KEYWORDS)) {
+    for (const kw of keywords) {
+      if (text.includes(kw)) { matched.push(niche); break; }
+    }
+  }
+  if (/\b(artificial intelligence|ai-powered|machine learning|llm|gpt|chatgpt|claude|automation|automate)\b/i.test(text)) {
+    if (!matched.length) matched.push('all');
+  }
+  return matched.length ? matched : ['all'];
+}
+
+function classifyType(title, description) {
+  const text = ((title || '') + ' ' + (description || '')).toLowerCase();
+  if (/breaking|urgent|just in|launch|released|announces/i.test(text)) return 'breaking';
+  if (/tool|app|platform|software|open.?source|github/i.test(text)) return 'tool';
+  if (/opportunity|job|hiring|demand|salary|rate|earn/i.test(text)) return 'opportunity';
+  if (/tip|trick|how to|guide|tutorial|learn|hint/i.test(text)) return 'hint';
+  return 'update';
+}
+
+// --- Conditional fetch with ETag/If-Modified-Since support ---
+function fetchRSS(url, sourceName) {
+  return new Promise((resolve, reject) => {
+    const state = getSourceState(sourceName);
+    const mod = url.startsWith('https') ? https : http;
+    const headers = {
+      'User-Agent': 'ANVIL-Pulse/1.0 (RSS Reader; +https://anvil.onrender.com; feeds only)',
+      'Accept': 'application/rss+xml, application/xml, application/atom+xml, text/xml',
+      'Accept-Encoding': 'identity', // don't request gzip (simpler, avoids issues)
+      'Connection': 'close', // don't keep connections open
+    };
+    // Conditional request headers — saves bandwidth, shows good behavior
+    if (state.etag) headers['If-None-Match'] = state.etag;
+    if (state.lastModified) headers['If-Modified-Since'] = state.lastModified;
+
+    const req = mod.get(url, { headers, timeout: PULSE_TIMEOUT }, (res) => {
+      // Follow redirects (up to 3)
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        res.resume();
+        fetchRSS(res.headers.location, sourceName).then(resolve).catch(reject);
+        return;
+      }
+
+      // 304 Not Modified — content hasn't changed, no need to re-parse
+      if (res.statusCode === 304) {
+        res.resume();
+        state.total304s++;
+        resolve({ notModified: true, xml: null });
+        return;
+      }
+
+      // 429 Too Many Requests or 503 Service Unavailable — backoff
+      if (res.statusCode === 429 || res.statusCode === 503) {
+        res.resume();
+        const retryAfter = res.headers['retry-after'];
+        let backoffMs;
+        if (retryAfter) {
+          // Retry-After can be seconds or a date string
+          const parsed = parseInt(retryAfter, 10);
+          backoffMs = isNaN(parsed)
+            ? Math.max(0, new Date(retryAfter).getTime() - Date.now())
+            : parsed * 1000;
+        } else {
+          // Exponential backoff: 1min, 2min, 4min, 8min, up to 1 hour
+          backoffMs = Math.min(BACKOFF_BASE * Math.pow(2, state.failCount), 60 * 60 * 1000);
+        }
+        state.backoffUntil = Date.now() + backoffMs;
+        const waitMins = Math.round(backoffMs / 60000);
+        reject(new Error(`HTTP ${res.statusCode} — backing off ${waitMins}m`));
+        return;
+      }
+
+      if (res.statusCode !== 200) {
+        res.resume();
+        reject(new Error(`HTTP ${res.statusCode}`));
+        return;
+      }
+
+      // Store caching headers for next conditional request
+      if (res.headers['etag']) state.etag = res.headers['etag'];
+      if (res.headers['last-modified']) state.lastModified = res.headers['last-modified'];
+
+      const chunks = [];
+      let size = 0;
+      res.on('data', (chunk) => {
+        size += chunk.length;
+        if (size > 512 * 1024) {
+          res.destroy();
+          reject(new Error('Response too large'));
+          return;
+        }
+        chunks.push(chunk);
+      });
+      res.on('end', () => resolve({ notModified: false, xml: Buffer.concat(chunks).toString('utf8') }));
+      res.on('error', reject);
+    });
+    req.on('error', reject);
+    req.on('timeout', () => { req.destroy(); reject(new Error('Timeout')); });
+  });
+}
+
+// --- XML parsing (lightweight regex, no deps) ---
+function parseRSSItems(xml) {
+  const items = [];
+  const itemRegex = /<item[\s>]([\s\S]*?)<\/item>/gi;
+  const entryRegex = /<entry[\s>]([\s\S]*?)<\/entry>/gi;
+  const regex = itemRegex.test(xml) ? itemRegex : entryRegex;
+  regex.lastIndex = 0;
+
+  let match;
+  while ((match = regex.exec(xml)) !== null && items.length < 15) {
+    const block = match[1];
+    const title = extractTag(block, 'title');
+    const link = extractLink(block);
+    const desc = extractTag(block, 'description') || extractTag(block, 'summary') || extractTag(block, 'content');
+    const pubDate = extractTag(block, 'pubDate') || extractTag(block, 'published') || extractTag(block, 'updated');
+    if (title) {
+      items.push({
+        title: decodeEntities(title).slice(0, 200),
+        link: link || '',
+        description: decodeEntities(stripHTML(desc || '')).slice(0, 500),
+        pubDate: safeParseDate(pubDate),
+      });
+    }
+  }
+  return items;
+}
+
+function extractTag(xml, tag) {
+  const cdataRe = new RegExp('<' + tag + '[^>]*>\\s*<!\\[CDATA\\[([\\s\\S]*?)\\]\\]>\\s*<\\/' + tag + '>', 'i');
+  const cdataMatch = xml.match(cdataRe);
+  if (cdataMatch) return cdataMatch[1].trim();
+  const re = new RegExp('<' + tag + '[^>]*>([\\s\\S]*?)<\\/' + tag + '>', 'i');
+  const m = xml.match(re);
+  return m ? m[1].trim() : '';
+}
+
+function extractLink(block) {
+  const atomLink = block.match(/<link[^>]*href=["']([^"']+)["'][^>]*\/?>/i);
+  if (atomLink) return atomLink[1];
+  return extractTag(block, 'link') || '';
+}
+
+function stripHTML(str) { return str.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim(); }
+
+function safeParseDate(str) {
+  if (!str) return new Date().toISOString();
+  try {
+    const d = new Date(str.trim());
+    return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+  } catch (e) { return new Date().toISOString(); }
+}
+
+function decodeEntities(str) {
+  return str
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"').replace(/&#039;/g, "'").replace(/&#x27;/g, "'")
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n)))
+    .replace(/&nbsp;/g, ' ');
+}
+
+// --- Shuffle array (Fisher-Yates) to avoid hitting sources in same order ---
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// --- Main refresh with all protections ---
+async function refreshPulseFeed() {
+  console.log('[PULSE] Starting feed refresh...');
+  loadSourceState();
+  const existingFeed = readJSON(PULSE_FILE);
+  const existingIds = new Set(existingFeed.map(i => i.id));
+  const newItems = [];
+  let successCount = 0;
+  let failCount = 0;
+  let skippedCount = 0;
+  let notModifiedCount = 0;
+
+  // Shuffle order so we don't always hit the same server first
+  const shuffledSources = shuffle(PULSE_SOURCES);
+
+  for (const source of shuffledSources) {
+    const state = getSourceState(source.name);
+
+    // Circuit breaker check
+    if (isCircuitOpen(source.name)) {
+      skippedCount++;
+      continue;
+    }
+
+    try {
+      state.totalFetches++;
+      const result = await fetchRSS(source.url, source.name);
+
+      // 304 Not Modified — nothing new, don't re-parse
+      if (result.notModified) {
+        notModifiedCount++;
+        state.failCount = 0; // reset circuit breaker
+        state.lastSuccess = Date.now();
+        console.log(`[PULSE] 304 Not Modified: ${source.name} (saved bandwidth)`);
+        // Polite delay even on 304
+        await new Promise(r => setTimeout(r, PULSE_DELAY_BETWEEN + Math.random() * 2000));
+        continue;
+      }
+
+      const parsed = parseRSSItems(result.xml);
+
+      for (const item of parsed) {
+        const idBase = source.name + ':' + item.title;
+        const id = 'rss-' + crypto.createHash('md5').update(idBase).digest('hex').slice(0, 12);
+        if (existingIds.has(id)) continue;
+
+        const niches = classifyNiches(item.title, item.description);
+        if (niches.length === 1 && niches[0] === 'all' && source.niche !== 'all') {
+          const text = (item.title + ' ' + item.description).toLowerCase();
+          if (!/\b(ai|artificial intelligence|machine learning|automation|llm)\b/.test(text)) continue;
+        }
+
+        newItems.push({
+          id,
+          headline: item.title,
+          summary: item.description || item.title,
+          sourceUrl: item.link,
+          sourceName: source.name,
+          niches: source.niche === 'all' ? niches : [source.niche, ...niches.filter(n => n !== source.niche)],
+          type: classifyType(item.title, item.description),
+          tags: niches.filter(n => n !== 'all'),
+          published: true,
+          publishedAt: item.pubDate,
+          verified: false,
+          fetchedAt: new Date().toISOString(),
+        });
+        existingIds.add(id);
+      }
+
+      // Success — reset circuit breaker
+      state.failCount = 0;
+      state.lastSuccess = Date.now();
+      state.backoffUntil = null;
+      successCount++;
+      console.log(`[PULSE] Fetched ${parsed.length} items from ${source.name}`);
+    } catch (err) {
+      // Failure — increment circuit breaker
+      state.failCount++;
+      state.lastFail = Date.now();
+      failCount++;
+      console.log(`[PULSE] Failed ${source.name} (${state.failCount}/${CIRCUIT_BREAKER_THRESHOLD}): ${err.message}`);
+    }
+
+    // Polite delay between sources (randomized 4-7s)
+    const delay = PULSE_DELAY_BETWEEN + Math.floor(Math.random() * 3000);
+    await new Promise(r => setTimeout(r, delay));
+  }
+
+  if (newItems.length > 0) {
+    const merged = [...newItems, ...existingFeed]
+      .sort((a, b) => (b.publishedAt || '').localeCompare(a.publishedAt || ''))
+      .slice(0, PULSE_MAX_ITEMS);
+    queueWrite(PULSE_FILE, merged);
+    console.log(`[PULSE] Added ${newItems.length} new items. Total: ${merged.length}`);
+  }
+
+  // Save state for conditional requests & circuit breakers
+  saveSourceState();
+
+  const cacheData = {
+    lastRefresh: new Date().toISOString(),
+    sources: successCount,
+    failed: failCount,
+    skipped: skippedCount,
+    notModified: notModifiedCount,
+    newItems: newItems.length,
+    totalItems: existingFeed.length + newItems.length,
+  };
+  try { fs.writeFileSync(PULSE_CACHE_FILE, JSON.stringify(cacheData, null, 2)); } catch (e) {}
+
+  console.log(`[PULSE] Refresh complete: ${successCount} OK, ${notModifiedCount} cached, ${skippedCount} skipped, ${failCount} failed, ${newItems.length} new`);
+}
+
+// Schedule periodic refresh with jitter
+function schedulePulseRefresh() {
+  const jitter = Math.floor(Math.random() * PULSE_JITTER_MAX);
+  const nextRefresh = PULSE_FETCH_INTERVAL + jitter;
+  setTimeout(() => {
+    refreshPulseFeed().catch(err => {
+      console.error('[PULSE] Refresh error:', err.message);
+    }).finally(() => {
+      schedulePulseRefresh();
+    });
+  }, nextRefresh);
+  console.log(`[PULSE] Next refresh in ${Math.round(nextRefresh / 60000)} minutes`);
+}
+
 app.listen(PORT, () => {
   console.log(`[ANVIL] Server running on port ${PORT} (${NODE_ENV})`);
   console.log(`[ANVIL] Static files: ${path.join(__dirname, 'site')}`);
   console.log(`[ANVIL] Submissions: ${SUBMISSIONS_FILE}`);
   console.log(`[ANVIL] Health check: http://localhost:${PORT}/health`);
+  // Initial pulse refresh after 10s (let server stabilize), then schedule periodic
+  setTimeout(() => {
+    refreshPulseFeed().catch(err => {
+      console.error('[PULSE] Initial refresh error:', err.message);
+    }).finally(() => {
+      schedulePulseRefresh();
+    });
+  }, 10000);
 });

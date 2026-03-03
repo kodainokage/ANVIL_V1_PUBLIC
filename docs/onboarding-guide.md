@@ -10,7 +10,7 @@ You want to learn a new skill and start earning. Here's your path.
 
 ### Step 1: Take the Career Match Quiz (3 Minutes)
 
-**Go to:** anvil-training.org/quiz
+**Go to:** getanvil.co/quiz
 
 **What happens:**
 - 8 questions about your situation, skills, and goals
@@ -249,8 +249,7 @@ You want to add ANVIL to your ETPL (Eligible Training Provider List) and start r
 
 ### Step 1: Initial Contact (15-Minute Call)
 
-**Email us:** partnerships@anvil-training.org
-**Or call:** (512) 555-0199
+**Email us:** partnerships@getanvil.co
 
 **In the email, include:**
 - Your name and title
@@ -381,7 +380,7 @@ You want to serve your community by hosting ANVIL workshops or promoting ANVIL t
 
 ### Step 1: Contact Us About a Workshop
 
-**Email:** community@anvil-training.org
+**Email:** hello@getanvil.co
 **Subject: "Workshop interest from [Organization Name]"**
 
 **Include:**
@@ -495,7 +494,7 @@ Your company is laying off workers due to AI/automation and you want a better op
 
 ### Step 1: Contact Us About a Custom Program
 
-**Email:** employers@anvil-training.org
+**Email:** hello@getanvil.co
 **Subject: "Workforce transition inquiry from [Company Name]"**
 
 **Include:**
@@ -675,8 +674,7 @@ ANVIL provides a guide to these steps in your Month 3 materials.
 
 ### "What if I have more questions?"
 
-**Email:** support@anvil-training.org
-**Phone:** (512) 555-0199
+**Email:** hello@getanvil.co
 **Signal group:** Join after enrollment (peer support + instructors)
 
 **Response time:** 24 hours for email, 2-4 hours in Signal group during business hours.
@@ -685,13 +683,13 @@ ANVIL provides a guide to these steps in your Month 3 materials.
 
 ## Ready to Start?
 
-**Individuals:** Take the quiz at anvil-training.org/quiz
+**Individuals:** Take the quiz at getanvil.co
 
-**Workforce boards:** Email partnerships@anvil-training.org
+**Workforce boards:** Email partnerships@getanvil.co
 
-**Community partners:** Email community@anvil-training.org
+**Community partners:** Email hello@getanvil.co
 
-**Employers:** Email employers@anvil-training.org
+**Employers:** Email hello@getanvil.co
 
 ---
 

@@ -8,18 +8,18 @@ Different audiences need different messages. Here's how to talk about ANVIL in 3
 
 **For networking events, casual conversations, "So what do you do?"**
 
-> "I train people who lost their jobs to AI. In 7 days, they learn to use AI tools to become benefits navigators, medical billing advocates, or compliance specialists. They go from unemployed to earning $400-600 a month helping their neighbors find unclaimed money or fight overcharged bills. Last quarter, our people found $1.2 million for clients."
+> "I train people who lost their jobs to AI. In 7 days, they learn to use AI tools to become benefits navigators, medical billing advocates, or compliance specialists. They go from unemployed to earning $400-600 a month helping their neighbors find unclaimed money or fight overcharged bills. Americans leave $140 billion in unclaimed benefits on the table every year — our people go find it."
 
 **Key elements:**
 - Problem (job loss to AI)
 - Solution (7 days, AI-augmented specialist)
-- Proof ($1.2M found)
+- Market size ($140B unclaimed benefits)
 - Human impact (neighbors helping neighbors)
 
 **Follow-up questions you'll get:**
 - "How does it work?" → Hand them the product walkthrough or send them to the quiz
 - "Who pays for it?" → "Workforce development boards, or it's free for individuals"
-- "Are people actually making money?" → "Median is $520/month part-time within 90 days"
+- "What's the earning potential?" → "$400-600/month part-time within 90 days is the target"
 
 ---
 
@@ -116,15 +116,15 @@ Different audiences need different messages. Here's how to talk about ANVIL in 3
 > Day 6: Get your first free clients for portfolio building.
 > Day 7: Take the certification exam. Pass rate is 82%.
 >
-> Within 30 days, median earnings are $520 per month, part-time. Within 6 months, many go full-time at $2,000-3,500 per month.
+> Within 30 days, the target is $500+ per month, part-time. Within 6 months, many go full-time at $2,000-3,500 per month.
 >
-> But here's the real impact: Last quarter, our 347 trained specialists found $1.2 million for clients in their communities. That's unclaimed benefits, corrected medical bills, avoided compliance penalties. That's money that stayed in families' pockets instead of being lost to bureaucracy or billing errors.
+> Here's the real impact potential: Americans leave $140 billion in unclaimed benefits on the table every year. 80% of medical bills have errors. Small businesses pay $12 billion in avoidable fines. Every single one of our graduates walks into a market overflowing with demand.
 >
-> Our outcomes:
-> - 68% completion rate (vs 40% for traditional programs)
-> - 61% employment or self-employment within 90 days
-> - $2,400 cost per participant (vs $8K-15K for bootcamps)
-> - Recognized by 12 workforce boards in 3 states
+> Our program design targets:
+> - 68%+ completion rate (vs 40% for traditional programs)
+> - 60%+ employment or self-employment within 90 days
+> - ~$2,400 cost per participant (vs $8K-15K for bootcamps)
+> - WIOA-aligned and ETPL-ready
 >
 > We're not trying to create coders or data scientists. We're creating a new category of worker: the AI-augmented community specialist. Someone who uses powerful tools to serve their neighbors. Someone who went from displaced to essential in 7 days.
 >
@@ -187,17 +187,16 @@ THE OUTCOMES (Q1 2026):
 • Cost: $2,400 per participant (WIOA-eligible)
 
 THE CREDENTIAL:
-ANVIL certification (recognized by 12 workforce boards in TX, CA, FL)
+ANVIL certification (WIOA-aligned, ETPL-ready)
 
 THE ASK:
 15-minute call to see if ANVIL fits your ETPL.
 
 Available Tuesday or Thursday next week?
 
-— Sarah Chen
+— [Your Name]
 ANVIL Program Director
-(512) 555-0199
-anvil-training.org
+hello@getanvil.co
 ```
 
 ---
@@ -236,9 +235,9 @@ Tuesday or Thursday evening, 6-8pm
 
 Available in the next 3 weeks?
 
-— Sarah Chen
+— [Your Name]
 ANVIL Program Director
-(512) 555-0199
+hello@getanvil.co
 ```
 
 ---
@@ -262,9 +261,9 @@ in 7 days. They learn to use AI tools to serve their communities as benefits
 navigators, medical billing advocates, or compliance specialists.
 
 THE OUTCOMES:
-• 68% complete the program
-• 61% earning within 90 days
-• Median income: $520/month part-time (many go full-time)
+• 68%+ target completion rate
+• 60%+ earning within 90 days
+• $500+/month part-time target (many go full-time)
 • Your company gets credit for investing in their future
 
 THE COST:
@@ -278,9 +277,9 @@ THE ASK:
 
 Available this week?
 
-— Sarah Chen
+— [Your Name]
 ANVIL Program Director
-(512) 555-0199
+hello@getanvil.co
 ```
 
 ---

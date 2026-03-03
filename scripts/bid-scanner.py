@@ -41,7 +41,7 @@ CONFIG_PATH = SCRIPT_DIR / "bid-config.json"
 OUTPUT_DIR = PROJECT_DIR / "data" / "opportunities"
 TRACKER_PATH = PROJECT_DIR / "data" / "bid-tracker.json"
 
-USER_AGENT = "ANVIL-BidScanner/1.0 (workforce training provider; contact@anvil-training.org)"
+USER_AGENT = "ANVIL-BidScanner/1.0 (workforce training provider; hello@getanvil.co)"
 REQUEST_TIMEOUT = 30  # seconds
 
 # ---------------------------------------------------------------------------

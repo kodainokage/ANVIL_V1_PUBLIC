@@ -4,3 +4,5 @@ data/
 *.tmp
 *.log
 .DS_Store
+BRAND-DIRECTION.md
+STORE-LISTINGS.md

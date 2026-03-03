@@ -1067,7 +1067,7 @@ function renderTable() {
       const idx = start + i;
       const dateVal = s.timestamp || s.date || s.createdAt || '';
       return `
-        <tr data-idx="${idx}" onclick="toggleRow(${idx})">
+        <tr data-idx="${idx}">
           <td>${formatDate(dateVal)}</td>
           <td class="name-cell">${escapeHtml(s.name)}</td>
           <td>${escapeHtml(s.email)}</td>
@@ -1096,6 +1096,14 @@ function renderTable() {
         </tr>
       `;
     }).join('');
+
+    // Event delegation for row toggle
+    tbody.querySelectorAll('tr[data-idx]').forEach(tr => {
+      tr.addEventListener('click', () => {
+        const idx = parseInt(tr.getAttribute('data-idx'), 10);
+        if (!isNaN(idx)) toggleRow(idx);
+      });
+    });
   }
 
   // Pagination info
@@ -1288,10 +1296,20 @@ function renderTestimonials() {
         <span class="status-badge ${t.status === 'approved' ? 'status-approved' : 'status-pending'}">
           ${escapeHtml(t.status || 'pending')}
         </span>
-        ${t.status !== 'approved' ? `<button class="btn btn-primary btn-sm" onclick="approveTestimonial('${escapeHtml(t.id || t._id)}', ${i})">Approve</button>` : ''}
+        ${t.status !== 'approved' ? `<button class="btn btn-primary btn-sm" data-approve-id="${escapeHtml(t.id || t._id || '')}" data-approve-idx="${i}">Approve</button>` : ''}
       </div>
     </div>
   `).join('');
+
+  // Event delegation for approve buttons
+  el.querySelectorAll('[data-approve-id]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const tid = btn.getAttribute('data-approve-id');
+      const tidx = parseInt(btn.getAttribute('data-approve-idx'), 10);
+      if (tid && !isNaN(tidx)) approveTestimonial(tid, tidx);
+    });
+  });
 }
 
 async function approveTestimonial(id, idx) {

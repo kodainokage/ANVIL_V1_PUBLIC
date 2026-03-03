@@ -317,7 +317,7 @@ Top 5 locations by clients served:
 - You didn't just complete a training program. You transformed your lives and served your communities. [X] clients are better off because of you. That's real impact.
 
 **To our community:**
-- If you know someone who lost their job to AI, or needs extra income, or wants to serve their neighbors, send them to [anvil-training.org/quiz]. The next sprint starts [Date].
+- If you know someone who lost their job to AI, or needs extra income, or wants to serve their neighbors, send them to [getanvil.co/quiz]. The next sprint starts [Date].
 
 ---
 
@@ -326,12 +326,12 @@ Top 5 locations by clients served:
 **Questions about this report?**
 - Email: [your email]
 - Phone: [your phone]
-- Web: anvil-training.org
+- Web: getanvil.co
 
 **Want to partner with ANVIL?**
-- Workforce boards: partnerships@anvil-training.org
-- Community partners: community@anvil-training.org
-- Employers: employers@anvil-training.org
+- Workforce boards: partnerships@getanvil.co
+- Community partners: hello@getanvil.co
+- Employers: hello@getanvil.co
 
 ---
 

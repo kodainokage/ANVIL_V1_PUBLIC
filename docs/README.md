@@ -126,18 +126,16 @@ Complete template for quarterly/annual reports:
 
 ## Quick Reference
 
-### Key Numbers (Q1 2026 Actual)
+### Program Design Targets
 
-| Metric | Value |
-|--------|-------|
-| Workers trained | 347 |
-| Completion rate | 68% |
-| Certification rate | 82% (of completers) |
-| Employment rate (90 days) | 61% |
-| Median monthly earnings | $520 (part-time) |
-| Cost per participant | $2,400 (WIOA-funded) |
-| Community impact | $1,213,000 (found/saved for clients) |
-| Average value per client | $8,423 |
+| Metric | Target |
+|--------|--------|
+| Completion rate | 68%+ |
+| Certification rate | 80%+ (of completers) |
+| Employment rate (90 days) | 60%+ |
+| Median monthly earnings | $500+ (part-time) |
+| Cost per participant | ~$2,400 (WIOA-funded) |
+| Average value per client served | $8,000+ |
 
 ---
 
@@ -199,7 +197,7 @@ Complete template for quarterly/annual reports:
 
 **ANVIL's answer:** Stop competing with AI. Put AI in workers' hands. In 7 days, they become specialists serving their communities.
 
-**The proof:** 347 workers trained in Q1. 61% employed within 90 days. $1.2M found for clients. Median earnings $520/month part-time.
+**The model:** 7 days to certification. 60%+ employment within 90 days. $500+/month part-time. Every specialist generates thousands in value for their community.
 
 **The transformation:**
 - From replaced → using AI as a tool
@@ -213,15 +211,10 @@ Complete template for quarterly/annual reports:
 
 ## Contact
 
-**General inquiries:** info@anvil-training.org
-**Partnerships (workforce boards):** partnerships@anvil-training.org
-**Community partners (libraries, nonprofits):** community@anvil-training.org
-**Employers (workforce transition):** employers@anvil-training.org
-**Press/Media:** press@anvil-training.org
+**General:** hello@getanvil.co
+**Partnerships (workforce boards):** partnerships@getanvil.co
 
-**Phone:** (512) 555-0199
-**Web:** anvil-training.org
-**Take the quiz:** anvil-training.org/quiz
+**Web:** getanvil.co
 
 ---
 

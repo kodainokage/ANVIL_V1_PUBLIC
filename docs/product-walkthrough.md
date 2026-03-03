@@ -25,8 +25,8 @@ Subhead: "In 7 days, become the specialist your neighbors need."
 
 [Take the 8-Question Quiz →]
 
-Social proof: "347 workers trained this month"
-Real outcome: "$1.2M found for clients last quarter"
+Social proof: "Join hundreds of workers putting AI in their hands"
+Real outcome: "Graduates find thousands in unclaimed benefits for every client"
 ```
 
 She clicks "Take the Quiz."
@@ -206,7 +206,7 @@ You'll get a text reminder Sunday night.
 
 Questions? Reply to this email. Real human. I read every message.
 
-— Sarah Chen
+— [Program Director]
 ANVIL Program Director
 
 P.S. Check spam for our emails. Move us to Primary so you don't miss anything.
@@ -465,9 +465,9 @@ THE ASK:
 
 Available Tuesday or Thursday next week?
 
-— Sarah Chen
+— [Program Director]
 ANVIL Program Director
-(512) 555-0199
+hello@getanvil.co
 ```
 
 James replies: "Tuesday at 2pm works."
@@ -569,7 +569,7 @@ Tuesday or Thursday evening, 6-8pm (after work hours)
 
 Available in the next 3 weeks?
 
-— Sarah Chen
+— [Program Director]
 ANVIL Program Director
 ```
 
@@ -668,19 +668,17 @@ Maria finds Jessica $5,400 → Jessica tells friends → Maria gets 3 referrals 
 Board A funds ANVIL → Gets great outcomes → Presents at state conference → Boards B, C, D want in
 
 ### Loop 4: Community Impact → Media → Brand Awareness
-ANVIL-trained specialists find $1.2M for clients in Q1 → Local news covers it → "7-Day Program Helps Laid-Off Workers Fight Back Against AI" → Viral
+ANVIL-trained specialists find real money for real clients → Local news covers it → "7-Day Program Helps Laid-Off Workers Fight Back Against AI" → Viral
 
 ---
 
-## The Numbers (Q1 2026, Actual)
+## Program Design Targets
 
-- 347 workers trained
-- 68% completion rate (236 certified)
-- 61% employed/self-employed within 90 days (144 earning)
-- Median monthly earnings: $520 (part-time)
-- Total community impact: $1,213,000 found/saved for clients
-- Average per specialist: $8,423 found per client served
-- Cost per participant: $2,400 (WIOA-funded) or $0 (self-enrolled intro)
+- Completion rate target: 68%+
+- Employment/self-employment within 90 days: 60%+
+- Median monthly earnings target: $500+ (part-time)
+- Average value per client served: $8,000+ (benefits found, bills reduced, penalties avoided)
+- Cost per participant: ~$2,400 (WIOA-funded) or $0 (self-enrolled intro)
 
 ---
 
