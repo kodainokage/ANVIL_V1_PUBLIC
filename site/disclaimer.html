@@ -89,6 +89,24 @@ a:hover { text-decoration: underline; }
 }
 .mobile-menu a:hover { color: #fff; }
 
+/* Kids nav link — illuminated */
+.nav-kids {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: #ffd166 !important; font-weight: 700 !important;
+  background: rgba(255, 209, 102, 0.10);
+  padding: 6px 14px !important; border-radius: 100px;
+  border: 1px solid rgba(255, 209, 102, 0.30);
+  box-shadow: 0 0 12px rgba(255, 209, 102, 0.15), 0 0 4px rgba(255, 209, 102, 0.08);
+  transition: all 0.3s ease;
+  animation: kids-glow 3s ease-in-out infinite;
+}
+.nav-kids:hover { color: #fff !important; background: rgba(255, 209, 102, 0.18); box-shadow: 0 0 20px rgba(255, 209, 102, 0.25); transform: translateY(-1px); }
+.nav-kids svg { width: 16px; height: 16px; flex-shrink: 0; }
+@keyframes kids-glow {
+  0%, 100% { box-shadow: 0 0 12px rgba(255, 209, 102, 0.15), 0 0 4px rgba(255, 209, 102, 0.08); }
+  50% { box-shadow: 0 0 18px rgba(255, 209, 102, 0.25), 0 0 8px rgba(255, 209, 102, 0.15); }
+}
+
 @media (max-width: 768px) {
   .nav-links { display: none; }
   .hamburger { display: flex; }
@@ -217,6 +235,7 @@ a:hover { text-decoration: underline; }
       <li><a href="/privacy.html">Privacy</a></li>
       <li><a href="/disclaimer.html">Disclaimer</a></li>
       <li><a href="/accessibility.html">Accessibility</a></li>
+      <li><a href="/kids/" class="nav-kids"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M12 6v2"/><path d="M9 14l-4 6"/><path d="M15 14l4 6"/><path d="M12 8c-2.5 0-4.5 2-4.5 4.5 0 1.4.6 2.6 1.5 3.5h6c.9-.9 1.5-2.1 1.5-3.5C16.5 10 14.5 8 12 8z"/></svg>Kids</a></li>
     </ul>
     <button class="hamburger" id="hamburger" aria-label="Menu">
       <span></span><span></span><span></span>
@@ -456,7 +475,7 @@ a:hover { text-decoration: underline; }
         <li><a href="/disclaimer.html">Disclaimer</a></li>
         <li><a href="/accessibility.html">Accessibility</a></li>
       </ul>
-      
+      <div class="footer-portfolio">Part of the <strong>SYN Portfolio</strong></div>
     </div>
   </div>
   <div class="footer-bottom">&copy; 2026 ANVIL. All rights reserved.</div>

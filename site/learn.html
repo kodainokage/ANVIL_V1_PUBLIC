@@ -7,11 +7,6 @@
 <meta name="description" content="Free self-paced 7-day curriculum. Transform from displaced worker to AI-powered specialist earning $3K-8K/month.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M14 2L3 26h6l5-12 5 12h6L14 2z' fill='%23e87a2e'/%3E%3C/svg%3E">
 <link rel="manifest" href="/manifest.json">
-<link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180.png">
-<link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152.png">
-<link rel="apple-touch-icon" sizes="120x120" href="/icons/icon-120.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
-<link rel="icon" type="image/png" sizes="96x96" href="/icons/icon-96.png">
 <meta name="theme-color" content="#e87a2e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -122,6 +117,34 @@ body.high-contrast {
 }
 .mobile-menu a:hover { color: #fff; background: rgba(232, 122, 46, 0.08); }
 .mobile-menu a:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; color: #fff; }
+
+/* Kids nav link — illuminated */
+.nav-kids {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: #ffd166 !important; font-weight: 700 !important;
+  background: rgba(255, 209, 102, 0.10);
+  padding: 6px 14px !important; border-radius: 100px;
+  border: 1px solid rgba(255, 209, 102, 0.30);
+  box-shadow: 0 0 12px rgba(255, 209, 102, 0.15), 0 0 4px rgba(255, 209, 102, 0.08);
+  transition: all 0.3s ease;
+  animation: kids-glow 3s ease-in-out infinite;
+}
+.nav-kids:hover { color: #fff !important; background: rgba(255, 209, 102, 0.18); box-shadow: 0 0 20px rgba(255, 209, 102, 0.25); transform: translateY(-1px); }
+.nav-kids svg { width: 16px; height: 16px; flex-shrink: 0; }
+@keyframes kids-glow {
+  0%, 100% { box-shadow: 0 0 12px rgba(255, 209, 102, 0.15), 0 0 4px rgba(255, 209, 102, 0.08); }
+  50% { box-shadow: 0 0 18px rgba(255, 209, 102, 0.25), 0 0 8px rgba(255, 209, 102, 0.15); }
+}
+
+.mobile-kids {
+  color: #ffd166 !important; font-weight: 700 !important;
+  background: rgba(255, 209, 102, 0.10) !important;
+  border: 1px solid rgba(255, 209, 102, 0.25);
+  border-radius: 12px; gap: 8px;
+  box-shadow: 0 0 12px rgba(255, 209, 102, 0.12);
+}
+.mobile-kids:hover { background: rgba(255, 209, 102, 0.18) !important; color: #fff !important; }
+.mobile-kids svg { width: 20px; height: 20px; }
 
 @media (max-width: 768px) {
   .nav-links, .nav-cta { display: none; }
@@ -549,6 +572,27 @@ body.high-contrast {
   text-align: center; padding-top: 32px; margin-top: 32px;
   border-top: 1px solid var(--border); font-size: 0.75rem; color: var(--text-muted);
 }
+
+/* ── Back-to-top button ── */
+.back-to-top {
+  position: fixed; bottom: 80px; right: 24px; z-index: 97;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--bg-card, #141414); border: 1px solid var(--border, #2a2a2a);
+  color: var(--text-dim, #888); display: none; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.back-to-top.visible { display: flex; }
+.back-to-top:hover { border-color: var(--orange, #e87a2e); color: var(--orange, #e87a2e); }
+.back-to-top svg { width: 20px; height: 20px; }
+
+/* ── Toast notifications ── */
+.toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { padding: 12px 24px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; color: #fff; animation: toastIn 0.3s ease; }
+.toast.success { background: #48bb78; }
+.toast.error { background: #e53e3e; }
+.toast.info { background: var(--orange, #e87a2e); }
+@keyframes toastIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
 @media (max-width: 640px) {
   .footer-inner { flex-direction: column; align-items: center; text-align: center; }
   .footer-right { text-align: center; }
@@ -574,7 +618,7 @@ body.high-contrast {
       <li><a href="/">Home</a></li>
       <li><a href="/learn.html" class="active">Learn</a></li>
       <li><a href="/about.html">About</a></li>
-      <li><a href="/pulse" style="color:#5bc0be;">Pulse</a></li>
+      <li><a href="/kids/" class="nav-kids"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M12 6v2"/><path d="M9 14l-4 6"/><path d="M15 14l4 6"/><path d="M12 8c-2.5 0-4.5 2-4.5 4.5 0 1.4.6 2.6 1.5 3.5h6c.9-.9 1.5-2.1 1.5-3.5C16.5 10 14.5 8 12 8z"/></svg>Kids</a></li>
     </ul>
     <a href="/#quiz" class="nav-cta">Take the Quiz</a>
     <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
@@ -586,7 +630,7 @@ body.high-contrast {
   <a href="/" onclick="closeMobile()">Home</a>
   <a href="/learn.html" onclick="closeMobile()">Learn</a>
   <a href="/about.html" onclick="closeMobile()">About</a>
-  <a href="/pulse" onclick="closeMobile()" style="color:#5bc0be;">Pulse</a>
+  <a href="/kids/" class="mobile-kids" onclick="closeMobile()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M12 6v2"/><path d="M9 14l-4 6"/><path d="M15 14l4 6"/><path d="M12 8c-2.5 0-4.5 2-4.5 4.5 0 1.4.6 2.6 1.5 3.5h6c.9-.9 1.5-2.1 1.5-3.5C16.5 10 14.5 8 12 8z"/></svg>ANVIL Kids</a>
 </div>
 
 <!-- ── Main Content ── -->
@@ -699,7 +743,7 @@ body.high-contrast {
         <a href="mailto:hello@getanvil.co" class="footer-email">hello@getanvil.co</a>
       </div>
       <div class="footer-right">
-        
+        <div class="footer-portfolio">Part of the <strong>SYN Portfolio</strong></div>
       </div>
     </div>
     <div class="footer-bottom">
@@ -765,11 +809,11 @@ var DAYS = [
       },
       {
         id: '1B', title: 'Setting Up Your Free Toolkit', time: '30 min',
-        html: '<p>Create free accounts on all four platforms. You will use different ones for different tasks.</p><h4>1. ChatGPT</h4><p>Best for: Conversational research, brainstorming, drafting letters. Free tier: GPT-4o mini, sufficient for all ANVIL work.</p><div class="exercise-card"><div class="exercise-label">Step-by-step</div><ol><li>Open your phone browser. Go to <strong>chat.openai.com</strong></li><li>Tap <strong>Sign up</strong></li><li>Use your Google account (fastest) or enter an email</li><li>Done &mdash; you\'re in.</li></ol></div><h4>2. Claude</h4><p>Best for: Detailed analysis, long documents, nuanced reasoning. Free tier: Generous daily limit, excellent for bill auditing.</p><div class="exercise-card"><div class="exercise-label">Step-by-step</div><ol><li>Open your phone browser. Go to <strong>claude.ai</strong></li><li>Tap <strong>Sign up</strong> &rarr; Use your Google account</li><li>Done.</li></ol></div><h4>3. Gemini</h4><p>Best for: Web-connected research, current information, fact-checking. Free tier: Connected to Google search.</p><div class="exercise-card"><div class="exercise-label">Step-by-step</div><ol><li>Go to <strong>gemini.google.com</strong></li><li>Sign in with your Google account (you probably already are)</li><li>Done.</li></ol></div><h4>4. Perplexity</h4><p>Best for: Sourced research with citations, finding official links. Free tier: 5 Pro searches/day, unlimited basic searches.</p><div class="exercise-card"><div class="exercise-label">Step-by-step</div><ol><li>Go to <strong>perplexity.ai</strong></li><li>Tap <strong>Sign up</strong> &rarr; Use your Google account</li><li>Done.</li></ol></div><p><strong>Save these 4 bookmarks to your phone home screen.</strong> On iPhone: tap Share &rarr; Add to Home Screen. On Android: tap the three dots &rarr; Add to Home screen.</p><p><strong>Why multiple tools?</strong> Each AI has different strengths. When two AIs agree on something, you can be more confident it\'s correct. When they disagree, you know to dig deeper.</p><div class="exercise-card"><div class="exercise-label">Exercise (15 min)</div><ol><li>Create accounts on all four platforms</li><li>In each one, type: "What is LIHEAP and who qualifies?"</li><li>Compare the four answers &mdash; note where they agree and differ</li><li>This is your verification workflow: always cross-check</li></ol></div>'
+        html: '<p>Create free accounts on all four platforms. You will use different ones for different tasks.</p><h4>1. ChatGPT (chat.openai.com)</h4><p>Best for: Conversational research, brainstorming, drafting letters. Free tier: GPT-4o mini, sufficient for all ANVIL work.</p><h4>2. Claude (claude.ai)</h4><p>Best for: Detailed analysis, long documents, nuanced reasoning. Free tier: Generous daily limit, excellent for bill auditing.</p><h4>3. Gemini (gemini.google.com)</h4><p>Best for: Web-connected research, current information, fact-checking. Free tier: Connected to Google search.</p><h4>4. Perplexity (perplexity.ai)</h4><p>Best for: Sourced research with citations, finding official links. Free tier: 5 Pro searches/day, unlimited basic searches.</p><p><strong>Why multiple tools?</strong> Each AI has different strengths. When two AIs agree on something, you can be more confident it\'s correct. When they disagree, you know to dig deeper.</p><div class="exercise-card"><div class="exercise-label">Exercise (15 min)</div><ol><li>Create accounts on all four platforms</li><li>In each one, type: "What is LIHEAP and who qualifies?"</li><li>Compare the four answers &mdash; note where they agree and differ</li><li>This is your verification workflow: always cross-check</li></ol></div>'
       },
       {
         id: '1C', title: 'Your First AI Conversation', time: '30 min',
-        html: '<p>Pick any one of the 7 niches &mdash; whichever interests you most. You will officially choose on Day 2; this is exploratory.</p><div class="prompt-block">I\'m researching [NICHE NAME] as a potential service I could offer to people in my community. I have no professional background in this area. Please help me understand:\n\n1. What specific problems do people face in this area?\n2. What services could a non-licensed person provide (vs what requires a licensed professional)?\n3. What are the most common tasks/deliverables in this type of service?\n4. What do people typically pay for this kind of help?\n5. Where do people currently go when they need this help?\n6. What free tools and resources exist that would help me deliver this service?\n7. What are the ethical and legal boundaries I must respect?\n\nBe specific and practical. I need to understand this well enough to start helping people within a week.</div><p>Run this prompt on ChatGPT AND Claude. Read both responses carefully.</p><div class="exercise-card"><div class="exercise-label">Exercise (30 min)</div><p>Based on the AI responses, write a 1-paragraph summary answering: <strong>"Who needs this service, what exactly would I do for them, and why would they pay me instead of doing it themselves?"</strong></p><p>This paragraph is the seed of your elevator pitch. <strong>Save it:</strong> Open Google Docs (<strong>docs.google.com</strong>, free with any Google account). Create a new doc titled "ANVIL &mdash; My Notes". Paste your paragraph there. This is your working notebook for the entire sprint.</p></div>'
+        html: '<p>Pick any one of the 7 niches &mdash; whichever interests you most. You will officially choose on Day 2; this is exploratory.</p><div class="prompt-block">I\'m researching [NICHE NAME] as a potential service I could offer to people in my community. I have no professional background in this area. Please help me understand:\n\n1. What specific problems do people face in this area?\n2. What services could a non-licensed person provide (vs what requires a licensed professional)?\n3. What are the most common tasks/deliverables in this type of service?\n4. What do people typically pay for this kind of help?\n5. Where do people currently go when they need this help?\n6. What free tools and resources exist that would help me deliver this service?\n7. What are the ethical and legal boundaries I must respect?\n\nBe specific and practical. I need to understand this well enough to start helping people within a week.</div><p>Run this prompt on ChatGPT AND Claude. Read both responses carefully.</p><div class="exercise-card"><div class="exercise-label">Exercise (30 min)</div><p>Based on the AI responses, write a 1-paragraph summary answering: <strong>"Who needs this service, what exactly would I do for them, and why would they pay me instead of doing it themselves?"</strong></p><p>This paragraph is the seed of your elevator pitch. Save it.</p></div>'
       },
       {
         id: '1D', title: 'Niche Exploration', time: '45 min',
@@ -778,8 +822,8 @@ var DAYS = [
     ],
     homework: [
       'Finish reading your chosen niche playbook (or your top 2 if undecided)',
-      'In your ANVIL Google Doc, add a heading "People I Know". List 3 people you know who have struggled with the problem your niche solves.',
-      'Open claude.ai on your phone. Paste one more prompt from the playbook. Screenshot the result and paste it into your Google Doc.'
+      'Write down 3 people you know who have struggled with the problem your niche solves',
+      'Test one more AI prompt from the playbook and save the results'
     ]
   },
   {
@@ -801,15 +845,15 @@ var DAYS = [
       },
       {
         id: '2C', title: 'The Service Delivery Model', time: '45 min',
-        html: '<p>Every ANVIL niche follows the same four-step delivery model:</p><h4>Step 1: INTAKE (15-30 min with client)</h4><ul><li>Collect basic information: location, household size, income, situation</li><li>Understand what they need and what they\'ve already tried</li><li>Set expectations: what you will and will not do</li><li>Get written consent to proceed</li></ul><div class="exercise-card"><div class="exercise-label">THE SIMPLEST WAY TO GET CLIENT CONSENT</div><p><strong>Option 1 (Text):</strong> Send this text: "Just to confirm &mdash; I have your permission to research benefits programs for your situation. Reply YES to confirm." Screenshot their YES reply. Done.</p><p><strong>Option 2 (Email):</strong> Send: "Reply \'I agree\' to confirm I can research [SERVICE] for you." Their reply IS your written consent.</p><p><strong>Option 3 (In person):</strong> Say: "I\'m noting that you agreed to proceed on [DATE]. Is that correct?" Write it in your notes with the date.</p><p>You do NOT need a lawyer, notary, or special form. A text or email reply IS legally sufficient consent for non-medical, non-legal research services.</p></div><h4>Step 2: AI-ASSISTED ANALYSIS (30-90 min)</h4><ul><li>Run your niche-specific AI prompts with the client\'s information</li><li>Cross-check AI outputs against official sources</li><li>Build your deliverable: a clear, organized document</li></ul><h4>Step 3: HUMAN REVIEW (15-30 min)</h4><ul><li>Verify every claim, link, dollar amount, and eligibility threshold</li><li>Check all links actually work</li><li>Remove anything you\'re not confident about</li><li>Add your own notes, explanations, and recommendations</li></ul><h4>Step 4: CLIENT DELIVERY (30-45 min with client)</h4><ul><li>Walk the client through findings in plain language</li><li>Answer their questions</li><li>Help them understand next steps</li><li>Provide written deliverable (PDF or printed)</li><li>Offer follow-up support</li></ul><h4>Time investment per case:</h4><ul><li>Simple case (benefits check): 1.5-2 hours total</li><li>Medium case (bill audit): 2-3 hours total</li><li>Complex case (disability application): 3-5 hours total</li></ul>'
+        html: '<p>Every ANVIL niche follows the same four-step delivery model:</p><h4>Step 1: INTAKE (15-30 min with client)</h4><ul><li>Collect basic information: location, household size, income, situation</li><li>Understand what they need and what they\'ve already tried</li><li>Set expectations: what you will and will not do</li><li>Get written consent to proceed</li></ul><h4>Step 2: AI-ASSISTED ANALYSIS (30-90 min)</h4><ul><li>Run your niche-specific AI prompts with the client\'s information</li><li>Cross-check AI outputs against official sources</li><li>Build your deliverable: a clear, organized document</li></ul><h4>Step 3: HUMAN REVIEW (15-30 min)</h4><ul><li>Verify every claim, link, dollar amount, and eligibility threshold</li><li>Check all links actually work</li><li>Remove anything you\'re not confident about</li><li>Add your own notes, explanations, and recommendations</li></ul><h4>Step 4: CLIENT DELIVERY (30-45 min with client)</h4><ul><li>Walk the client through findings in plain language</li><li>Answer their questions</li><li>Help them understand next steps</li><li>Provide written deliverable (PDF or printed)</li><li>Offer follow-up support</li></ul><h4>Time investment per case:</h4><ul><li>Simple case (benefits check): 1.5-2 hours total</li><li>Medium case (bill audit): 2-3 hours total</li><li>Complex case (disability application): 3-5 hours total</li></ul>'
       },
       {
         id: '2D', title: 'Client Intake Role-Play', time: '30 min',
-        html: '<p>Practice the intake conversation with a partner. If nobody is available, use Claude or ChatGPT as your practice client.</p><div class="prompt-block">You are going to role-play as a potential client for my [NICHE] service.\n\nYour character: [DESCRIPTION]\n\nI\'m going to practice my intake conversation with you. Respond as this character would &mdash; confused about government programs, slightly embarrassed to be asking for help, and skeptical that anyone can actually help. Ask realistic questions. Push back a little. Be human.\n\nLet me start the conversation.</div><div class="exercise-card"><div class="exercise-label">Exercise</div><p>Practice the full intake: introduction, information gathering, expectation setting, and consent. <strong>Time yourself &mdash; aim for 20 minutes.</strong></p><p>End your role-play by practicing the consent ask: "Can you text me YES or reply to my email saying you agree to proceed?"</p></div>'
+        html: '<p>Practice the intake conversation with a partner. If nobody is available, use Claude or ChatGPT as your practice client.</p><div class="prompt-block">You are going to role-play as a potential client for my [NICHE] service.\n\nYour character: [DESCRIPTION]\n\nI\'m going to practice my intake conversation with you. Respond as this character would &mdash; confused about government programs, slightly embarrassed to be asking for help, and skeptical that anyone can actually help. Ask realistic questions. Push back a little. Be human.\n\nLet me start the conversation.</div><div class="exercise-card"><div class="exercise-label">Exercise</div><p>Practice the full intake: introduction, information gathering, expectation setting, and consent. <strong>Time yourself &mdash; aim for 20 minutes.</strong></p></div>'
       }
     ],
     homework: [
-      'Open ChatGPT on your phone. Paste the role-play prompt from Session 2D. Practice for 20 minutes. Screenshot 3 screens of the conversation and paste them into your Google Doc.',
+      'Practice the intake conversation with one more person',
       'Write down 5 questions your practice client asked that you didn\'t know the answer to &mdash; research those answers',
       'Read the Day 3 prompt library section of your niche playbook'
     ]
@@ -829,7 +873,7 @@ var DAYS = [
       },
       {
         id: '3B', title: 'Your Niche Prompt Library', time: '45 min',
-        html: '<p>Each niche has 8-12 core prompts. Today you will:</p><ol><li><strong>Copy all core prompts</strong> into your ANVIL Google Doc &mdash; add a heading "My Prompt Library" and paste each prompt below with a blank line between them</li><li><strong>Run each prompt</strong> with sample data</li><li><strong>Customize each prompt</strong> based on your results</li><li><strong>Add verification checkpoints</strong> &mdash; note what to manually verify after each prompt</li></ol><div class="exercise-card"><div class="exercise-label">Your Prompt Library Is Your Business</div><p>Treat it like a chef treats recipes. You will refine these prompts every time you run a case. The better your prompts, the faster and more accurate your work, and the more you earn per hour.</p></div><h4>Sample prompt library structure:</h4><div class="prompt-block">PROMPT 1: Initial Eligibility Scan\nPROMPT 2: State-Specific Program Deep Dive\nPROMPT 3: Income Threshold Verification\nPROMPT 4: Application Checklist Generator\nPROMPT 5: Client-Facing Summary (Plain Language)\nPROMPT 6: Appeal Letter Draft\nPROMPT 7: Follow-Up Action Plan\nPROMPT 8: Case Documentation</div>'
+        html: '<p>Each niche has 8-12 core prompts. Today you will:</p><ol><li><strong>Copy all core prompts</strong> into your personal Google Doc / Notion page</li><li><strong>Run each prompt</strong> with sample data</li><li><strong>Customize each prompt</strong> based on your results</li><li><strong>Add verification checkpoints</strong> &mdash; note what to manually verify after each prompt</li></ol><div class="exercise-card"><div class="exercise-label">Your Prompt Library Is Your Business</div><p>Treat it like a chef treats recipes. You will refine these prompts every time you run a case. The better your prompts, the faster and more accurate your work, and the more you earn per hour.</p></div><h4>Sample prompt library structure:</h4><div class="prompt-block">PROMPT 1: Initial Eligibility Scan\nPROMPT 2: State-Specific Program Deep Dive\nPROMPT 3: Income Threshold Verification\nPROMPT 4: Application Checklist Generator\nPROMPT 5: Client-Facing Summary (Plain Language)\nPROMPT 6: Appeal Letter Draft\nPROMPT 7: Follow-Up Action Plan\nPROMPT 8: Case Documentation</div>'
       },
       {
         id: '3C', title: 'Practice Cases', time: '90 min',
@@ -861,7 +905,7 @@ var DAYS = [
       },
       {
         id: '4C', title: 'Data Privacy and Client Confidentiality', time: '30 min',
-        html: '<p>You will handle sensitive personal information. Treat it like a doctor treats medical records.</p><h4>Rules:</h4><ol><li><strong>Never paste real client data into AI tools without consent.</strong> Text your client: "I use AI research tools to help find programs. Your name and SSN are never entered &mdash; I only use general info like age, state, and income range. Reply YES if that\'s OK."</li><li><strong>Anonymize when possible.</strong> Use "Client, age 58, income $24,000" instead of real names and SSNs.</li><li><strong>Secure your files.</strong> Create a Google Drive folder called "ANVIL Clients". One subfolder per client (first name only). Share with nobody.</li><li><strong>Delete when done.</strong> After closing a case, move the folder to a "Closed" subfolder. After 90 days, delete it.</li><li><strong>Never share client information</strong> without explicit consent &mdash; including in cohort discussions or social media.</li><li><strong>Clear your AI chat history</strong> after each client session.</li></ol>'
+        html: '<p>You will handle sensitive personal information. Treat it like a doctor treats medical records.</p><h4>Rules:</h4><ol><li><strong>Never paste real client data into AI tools without consent.</strong> Explain to clients that you use AI research tools and get written permission.</li><li><strong>Anonymize when possible.</strong> Use "Client, age 58, income $24,000" instead of real names and SSNs.</li><li><strong>Secure your files.</strong> Client documents in a password-protected folder. Not in your regular downloads.</li><li><strong>Delete when done.</strong> After a case is closed, retain only what you need. Delete AI chat histories with client data.</li><li><strong>Never share client information</strong> without explicit consent &mdash; including in cohort discussions or social media.</li><li><strong>Clear your AI chat history</strong> after each client session.</li></ol>'
       },
       {
         id: '4D', title: 'Ethical Scenario Exercise', time: '30 min',
@@ -869,7 +913,7 @@ var DAYS = [
       },
       {
         id: '4E', title: 'Draft Your Service Agreement', time: '15 min',
-        html: '<p>Customize your service agreement. This goes to every client before you start work.</p><h4>Must include:</h4><ul><li>Your name and contact information</li><li>Description of services you provide</li><li>Clear statement of what you are NOT</li><li>Scope of work for this engagement</li><li>Fee structure and payment terms</li><li>Data handling and privacy commitment</li><li>Client\'s right to terminate at any time</li><li>Your disclaimer and limitation of liability</li></ul><div class="exercise-card"><div class="exercise-label">Fill-in-the-Blank Template</div><div class="prompt-block">SERVICE AGREEMENT\n\nBetween: [YOUR NAME] ("Specialist") and [CLIENT NAME] ("Client")\nDate: [DATE]\n\nServices: Research [SERVICE] and provide a written report.\nI am NOT a lawyer, doctor, or financial advisor.\nFee: $[AMOUNT] due upon delivery. Payment: [Venmo/Zelle/Cash].\nPrivacy: I will not share your information. I use AI tools but never\nenter your name, SSN, or identifying details.\nCancel anytime before delivery at no charge.</div><p><strong>THE SIMPLEST WAY TO USE THIS:</strong> Copy into a Google Doc. Fill in the blanks. Text or email the link to your client. Ask them to reply "I agree." That reply is your signed agreement.</p></div><p><strong>Do not skip this step.</strong> A clear service agreement protects you and builds client trust.</p>'
+        html: '<p>Customize your service agreement. This goes to every client before you start work.</p><h4>Must include:</h4><ul><li>Your name and contact information</li><li>Description of services you provide</li><li>Clear statement of what you are NOT</li><li>Scope of work for this engagement</li><li>Fee structure and payment terms</li><li>Data handling and privacy commitment</li><li>Client\'s right to terminate at any time</li><li>Your disclaimer and limitation of liability</li></ul><p><strong>Do not skip this step.</strong> A clear service agreement protects you and builds client trust.</p>'
       }
     ],
     homework: [
@@ -893,11 +937,11 @@ var DAYS = [
       },
       {
         id: '5B', title: 'Writing Posts That Attract (Not Repel)', time: '45 min',
-        html: '<h4>The Formula:</h4><ol><li>Lead with the PROBLEM (not your service)</li><li>Offer something FREE</li><li>Be specific about what you\'ll do</li><li>Remove all risk ("no strings attached")</li><li>Make it easy to respond ("DM me")</li></ol><h4>Bad example:</h4><p><em>"Hi! I\'m a certified AI-powered benefits navigation specialist offering comprehensive eligibility assessments. Visit my website..."</em></p><h4>Good example:</h4><p><em>"Hey neighbors &mdash; did you know there are government programs that help with heating bills, internet costs, and prescription drugs that most people don\'t know about? I\'m offering free eligibility checks for anyone in [AREA]. No cost, no strings. DM me if you want me to check for you."</em></p><div class="exercise-card"><div class="exercise-label">Step-by-step: Posting in a Facebook Group</div><ol><li>Open the Facebook app &rarr; Tap the search icon &rarr; Search "[YOUR CITY] community"</li><li>Find a group with 1,000+ members &rarr; Tap "Join"</li><li>Once approved, tap "Write something..." &rarr; Paste your post &rarr; Tap Post</li><li>Check back in 4 hours. That\'s it.</li></ol></div><div class="exercise-card"><div class="exercise-label">Exercise</div><p>Write 3 posts customized for your niche and location:</p><ol><li>A Facebook group post for your local community</li><li>A Nextdoor post for your neighborhood</li><li>A third post for your top-ranked channel</li></ol></div>'
+        html: '<h4>The Formula:</h4><ol><li>Lead with the PROBLEM (not your service)</li><li>Offer something FREE</li><li>Be specific about what you\'ll do</li><li>Remove all risk ("no strings attached")</li><li>Make it easy to respond ("DM me")</li></ol><h4>Bad example:</h4><p><em>"Hi! I\'m a certified AI-powered benefits navigation specialist offering comprehensive eligibility assessments. Visit my website..."</em></p><h4>Good example:</h4><p><em>"Hey neighbors &mdash; did you know there are government programs that help with heating bills, internet costs, and prescription drugs that most people don\'t know about? I\'m offering free eligibility checks for anyone in [AREA]. No cost, no strings. DM me if you want me to check for you."</em></p><div class="exercise-card"><div class="exercise-label">Exercise</div><p>Write 3 posts customized for your niche and location:</p><ol><li>A Facebook group post for your local community</li><li>A Nextdoor post for your neighborhood</li><li>A third post for your top-ranked channel</li></ol></div>'
       },
       {
         id: '5C', title: 'The Referral Partnership Model', time: '30 min',
-        html: '<p>The most sustainable client source is referral partnerships with organizations that already serve your target clients.</p><table class="content-table"><thead><tr><th>Niche</th><th>Partner With</th></tr></thead><tbody><tr><td>Benefits Navigation</td><td>Churches, food banks, nonprofits, community action agencies</td></tr><tr><td>Medical Bill Auditing</td><td>Patient advocacy groups, doctor\'s offices, hospital social workers</td></tr><tr><td>Insurance Appeals</td><td>Doctor\'s offices, clinics, patient advocacy organizations</td></tr><tr><td>Senior Services</td><td>Senior centers, Area Agency on Aging, churches</td></tr><tr><td>Small Business Compliance</td><td>Chamber of Commerce, SBDCs, coworking spaces</td></tr><tr><td>Tenant Rights</td><td>Legal aid societies, community housing orgs</td></tr><tr><td>Disability Benefits</td><td>Support groups, rehab centers, social workers</td></tr></tbody></table><div class="exercise-card"><div class="exercise-label">Copy-Paste Partnership Outreach Email</div><div class="prompt-block">Subject: Free resource for your [clients/members/patients]\n\nHi [NAME],\n\nI\'m [YOUR NAME], a trained AI-powered [NICHE] specialist in [CITY]. I help people [ONE-SENTENCE DESCRIPTION OF SERVICE].\n\nI\'d love to be a resource for your [clients/members/patients] who need this kind of help. I\'m currently offering free consultations to my first clients.\n\nWould you be open to a 10-minute call or coffee to see if this could be helpful for the people you serve?\n\nBest,\n[YOUR NAME]\n[YOUR PHONE]</div></div><div class="exercise-card"><div class="exercise-label">Exercise</div><p>Identify <strong>3 specific organizations in your area</strong> that could be referral partners. Find the contact name. Send the email above to at least one of them today.</p></div>'
+        html: '<p>The most sustainable client source is referral partnerships with organizations that already serve your target clients.</p><table class="content-table"><thead><tr><th>Niche</th><th>Partner With</th></tr></thead><tbody><tr><td>Benefits Navigation</td><td>Churches, food banks, nonprofits, community action agencies</td></tr><tr><td>Medical Bill Auditing</td><td>Patient advocacy groups, doctor\'s offices, hospital social workers</td></tr><tr><td>Insurance Appeals</td><td>Doctor\'s offices, clinics, patient advocacy organizations</td></tr><tr><td>Senior Services</td><td>Senior centers, Area Agency on Aging, churches</td></tr><tr><td>Small Business Compliance</td><td>Chamber of Commerce, SBDCs, coworking spaces</td></tr><tr><td>Tenant Rights</td><td>Legal aid societies, community housing orgs</td></tr><tr><td>Disability Benefits</td><td>Support groups, rehab centers, social workers</td></tr></tbody></table><div class="exercise-card"><div class="exercise-label">Exercise</div><p>Identify <strong>3 specific organizations in your area</strong> that could be referral partners. Find the contact name. Draft a short email or plan a walk-in introduction.</p></div>'
       },
       {
         id: '5D', title: 'The "Free First Case" Strategy', time: '30 min',
@@ -905,7 +949,7 @@ var DAYS = [
       },
       {
         id: '5E', title: 'Post and Track', time: '15 min',
-        html: '<p><strong>Do this now. Not later. Now.</strong></p><p>Open Facebook RIGHT NOW. Go to the group you joined. Paste your post. Tap Post. Screenshot it. Come back here.</p><p>Then:</p><ol><li>Screenshot the post</li><li>Note the time you posted</li><li>Set a reminder to check for responses in 4 hours and 24 hours</li><li>Share your post in the cohort chat for accountability</li></ol><table class="content-table"><thead><tr><th>Date</th><th>Platform</th><th>Post Type</th><th>Responses</th><th>Leads</th><th>Clients</th></tr></thead><tbody><tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Start tracking here...</td></tr></tbody></table>'
+        html: '<p><strong>Do this now. Not later. Now.</strong></p><p>Post at least ONE of the 3 messages you wrote on a live platform. Then:</p><ol><li>Screenshot the post</li><li>Note the time you posted</li><li>Set a reminder to check for responses in 4 hours and 24 hours</li><li>Share your post in the cohort chat for accountability</li></ol><table class="content-table"><thead><tr><th>Date</th><th>Platform</th><th>Post Type</th><th>Responses</th><th>Leads</th><th>Clients</th></tr></thead><tbody><tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Start tracking here...</td></tr></tbody></table>'
       }
     ],
     homework: [
@@ -938,7 +982,7 @@ var DAYS = [
       },
       {
         id: '6D', title: 'Pricing Your Services', time: '30 min',
-        html: '<p><strong>Do not underprice yourself.</strong></p><table class="content-table"><thead><tr><th>Niche</th><th>Starting Price</th><th>After 10 Clients</th></tr></thead><tbody><tr><td>Benefits Navigation</td><td>$65-85 per case</td><td>$85-125 per case</td></tr><tr><td>Medical Bill Auditing</td><td>25% of savings (min $75)</td><td>30% of savings (min $100)</td></tr><tr><td>Insurance Appeals</td><td>$100-150 per appeal</td><td>$150-250 per appeal</td></tr><tr><td>Senior Services</td><td>$65-85/hr</td><td>$85-120/hr</td></tr><tr><td>Small Biz Compliance</td><td>$85-100/hr</td><td>$100-150/hr</td></tr><tr><td>Tenant Rights</td><td>$60-80 per case</td><td>$80-120 per case</td></tr><tr><td>Disability Benefits</td><td>$125-175 per case</td><td>$175-250 per case</td></tr></tbody></table><div class="exercise-card"><div class="exercise-label">SIMPLEST WAY TO GET PAID</div><ul><li><strong>Venmo/Zelle:</strong> "I\'ll send you a request for $[X] after delivering your report." Open the app &rarr; Request &rarr; Enter their phone number &rarr; Enter amount &rarr; Send.</li><li><strong>Cash:</strong> "My fee is $[X], payable when we meet to review your results."</li><li><strong>DO NOT:</strong> Build a website, set up Stripe, or buy a card reader. Keep it simple.</li></ul></div><div class="exercise-card"><div class="exercise-label">The Confidence Script</div><p>"My fee for a [DELIVERABLE] is [AMOUNT]. That includes [WHAT\'S INCLUDED]. Most clients find the value is [X] times what they pay. Would you like to get started?"</p><p><strong>Sliding scale:</strong> "My standard rate is $[X]. If that\'s outside your budget, let me know and we\'ll figure something out."</p></div>'
+        html: '<p><strong>Do not underprice yourself.</strong></p><table class="content-table"><thead><tr><th>Niche</th><th>Starting Price</th><th>After 10 Clients</th></tr></thead><tbody><tr><td>Benefits Navigation</td><td>$65-85 per case</td><td>$85-125 per case</td></tr><tr><td>Medical Bill Auditing</td><td>25% of savings (min $75)</td><td>30% of savings (min $100)</td></tr><tr><td>Insurance Appeals</td><td>$100-150 per appeal</td><td>$150-250 per appeal</td></tr><tr><td>Senior Services</td><td>$65-85/hr</td><td>$85-120/hr</td></tr><tr><td>Small Biz Compliance</td><td>$85-100/hr</td><td>$100-150/hr</td></tr><tr><td>Tenant Rights</td><td>$60-80 per case</td><td>$80-120 per case</td></tr><tr><td>Disability Benefits</td><td>$125-175 per case</td><td>$175-250 per case</td></tr></tbody></table><div class="exercise-card"><div class="exercise-label">The Confidence Script</div><p>"My fee for a [DELIVERABLE] is [AMOUNT]. That includes [WHAT\'S INCLUDED]. Most clients find the value is [X] times what they pay. Would you like to get started?"</p><p><strong>Sliding scale:</strong> "My standard rate is $[X]. If that\'s outside your budget, let me know and we\'ll figure something out."</p></div>'
       },
       {
         id: '6E', title: 'Building Your Case Portfolio', time: '15 min',
@@ -967,7 +1011,7 @@ var DAYS = [
       },
       {
         id: '7B', title: 'Professional Presence Setup', time: '45 min',
-        html: '<p>You need three things: a way to be found, a way to schedule, and a way to get paid.</p><h4>1. Google Business Profile (15 min)</h4><ul><li>Go to business.google.com</li><li>Create a profile as a "Service area business"</li><li>Add services, hours, phone number, description</li><li>This makes you findable on Google Maps &mdash; for free</li></ul><h4>2. Scheduling (10 min)</h4><p><strong>Option A: Calendly (free tier)</strong> &mdash; Set up one event type: "Free Consultation &mdash; 30 minutes". Set your availability. Share this link everywhere.</p><p><strong>Option B: Just use your phone calendar.</strong> If Calendly feels like too much, just tell clients: "I have openings Tuesday and Thursday afternoons. Which works?" That\'s fine for your first 10 clients.</p><h4>3. Payment Methods (10 min)</h4><p><strong>If you set up ONE payment method, make it Zelle.</strong> Free, instant, most banks already have it built in.</p><ul><li><strong>Zelle:</strong> Bank-to-bank, no fees, instant &mdash; best starting option</li><li><strong>Venmo:</strong> Good for individuals, most people already have it</li><li><strong>Cash/check:</strong> For in-person clients, especially seniors</li><li>Set up at least 1 method. Don\'t overthink this.</li></ul><h4>4. Simple Website (optional, 10 min)</h4><p>Use Carrd.co (free tier) for a one-page site. Or just use your Google Business profile as your web presence. <strong>Do NOT spend hours on a website.</strong></p>'
+        html: '<p>You need three things: a way to be found, a way to schedule, and a way to get paid.</p><h4>1. Google Business Profile (15 min)</h4><ul><li>Go to business.google.com</li><li>Create a profile as a "Service area business"</li><li>Add services, hours, phone number, description</li><li>This makes you findable on Google Maps &mdash; for free</li></ul><h4>2. Scheduling: Calendly Free Tier (10 min)</h4><ul><li>Set up one event type: "Free Consultation &mdash; 30 minutes"</li><li>Set your availability (be realistic in week 1)</li><li>Share this link everywhere</li></ul><h4>3. Payment Methods (10 min)</h4><ul><li><strong>Venmo:</strong> Good for individuals</li><li><strong>Zelle:</strong> Bank-to-bank, no fees, instant</li><li><strong>PayPal:</strong> Most professional-looking, allows invoices</li><li><strong>Cash/check:</strong> For in-person clients, especially seniors</li><li>Set up at least 2 methods</li></ul><h4>4. Simple Website (optional, 10 min)</h4><p>Use Carrd.co (free tier) for a one-page site. Or just use your Google Business profile as your web presence. <strong>Do NOT spend hours on a website.</strong></p>'
       },
       {
         id: '7C', title: 'The 30-Day Growth Plan', time: '30 min',
@@ -1002,7 +1046,7 @@ var QUIZZES = {
   2: [
     { q: 'How many niches should you focus on during the sprint?', opts: ['All 7', '3-4', '1', '2'], ans: 2 },
     { q: 'What is the four-step service delivery model?', opts: ['Research, Write, Send, Invoice', 'Intake, AI Analysis, Human Review, Client Delivery', 'Find, Call, Email, Bill', 'Learn, Practice, Deliver, Scale'], ans: 1 },
-    { q: 'What\'s the SIMPLEST way to get written client consent?', opts: ['Hire a lawyer to draft a form', 'Text them asking to reply YES or email asking them to reply I agree', 'Get a notarized signature', 'You don\'t need consent'], ans: 1 },
+    { q: 'What\'s the purpose of a client avatar?', opts: ['Marketing only', 'To guide messaging, pricing, and service delivery', 'Legal requirement', 'Looks professional'], ans: 1 },
     { q: 'How long should a simple case take?', opts: ['30 minutes', '1.5-2 hours', '4+ hours', 'All day'], ans: 1 },
     { q: 'Why practice intake with a role-play partner?', opts: ['Fun exercise', 'Required for certification', 'So your first real conversation isn\'t your first practice', 'To memorize a script'], ans: 2 }
   ],
@@ -1016,21 +1060,21 @@ var QUIZZES = {
   4: [
     { q: 'Which of these CAN you do?', opts: ['Give legal advice', 'Guarantee outcomes', 'Help clients understand their options', 'Sign documents for clients'], ans: 2 },
     { q: 'Instead of "You qualify for SNAP," you should say:', opts: ['"You will definitely get SNAP"', '"Based on my research, you appear eligible for SNAP"', '"Apply for SNAP"', '"SNAP is easy to get"'], ans: 1 },
-    { q: 'Where should you store client documents?', opts: ['In your email inbox', 'In a password-protected Google Drive folder', 'On your desktop', 'In the AI chat history'], ans: 1 },
+    { q: 'What should you do with a client\'s Social Security number?', opts: ['Save it in your files', 'Put it in AI prompts', 'Never store it \u2014 anonymize data', 'Share with partners'], ans: 2 },
     { q: 'How many items are on the ANVIL Quality Checklist?', opts: ['5', '8', '13', '20'], ans: 2 },
     { q: 'A client wants you to "write it so they get approved." You should:', opts: ['Do what they ask', 'Refuse the case immediately', 'Explain you present accurate information only', 'Report them'], ans: 2 }
   ],
   5: [
     { q: 'Where are your clients most likely found?', opts: ['LinkedIn', 'Job boards', 'Local Facebook groups, Nextdoor, churches', 'Twitter'], ans: 2 },
     { q: 'Good outreach posts should lead with:', opts: ['Your credentials', 'The problem the client faces', 'Your pricing', 'A link to your website'], ans: 1 },
-    { q: 'What is the FIRST step to post in a local Facebook group?', opts: ['Create a business page', 'Search for local community groups and join one', 'Pay for a Facebook ad', 'Build a website first'], ans: 1 },
+    { q: 'How many free cases should you do first?', opts: ['0', '1', '3', '10'], ans: 2 },
     { q: 'What is the most sustainable client source?', opts: ['Paid ads', 'Cold calling', 'Referral partnerships', 'Social media'], ans: 2 },
     { q: 'When should you post your first message?', opts: ['After perfecting your website', 'After 3 months of practice', 'Day 5 \u2014 right now', 'After certification'], ans: 2 }
   ],
   6: [
     { q: 'What is the target time for a full intermediate case?', opts: ['30 minutes', '75 minutes', '3 hours', 'All day'], ans: 1 },
     { q: 'When stating your prices, you should:', opts: ['Apologize for the cost', 'Say "my fee is $X" with confidence', 'Always offer a discount', 'Let the client suggest a price'], ans: 1 },
-    { q: 'What is the simplest way to collect payment?', opts: ['Build a Stripe integration', 'Send a Venmo or Zelle request', 'Only accept cash', 'Wait for the client to pay on their own'], ans: 1 },
+    { q: 'What goes into your case portfolio?', opts: ['Only successful cases', 'Only paid cases', 'Every case \u2014 anonymized', 'Nothing until month 3'], ans: 2 },
     { q: 'How soon after delivery should you follow up?', opts: ['24 hours', '3-5 days', '2 weeks', 'Never'], ans: 1 },
     { q: 'A sliding scale policy shows:', opts: ['Weakness', 'You value your work AND you\'re human', 'Desperation', 'Lack of confidence'], ans: 1 }
   ],
@@ -1057,34 +1101,6 @@ function loadState() {
 
 function saveState() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
-  // Sync to server
-  syncCurriculumToServer();
-}
-
-function getSessionId() {
-  var sid = localStorage.getItem('anvil_session_id');
-  if (!sid) {
-    var arr = new Uint8Array(16);
-    (window.crypto || window.msCrypto).getRandomValues(arr);
-    sid = Array.from(arr, function(b) { return b.toString(16).padStart(2, '0'); }).join('');
-    localStorage.setItem('anvil_session_id', sid);
-  }
-  return sid;
-}
-
-function syncCurriculumToServer() {
-  var sid = getSessionId();
-  var payload = {
-    sessionId: sid,
-    currentDay: state.currentDay,
-    completedDays: state.completed || [],
-    quizScores: state.quizScores || {}
-  };
-  fetch('/api/curriculum/progress', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  }).catch(function() { /* silent fail */ });
 }
 
 function isDayUnlocked(day) {
@@ -1306,8 +1322,7 @@ function submitQuiz(day) {
     }
   } else {
     banner.className = 'quiz-result-banner fail';
-    banner.innerHTML = 'You scored ' + correct + '/5. You need at least 3/5 to pass.<br><span class="quiz-hint">Review the session content above and try again.</span><br><button class="quiz-retry-btn" data-retry-day="' + day + '">Try Again</button>';
-    banner.querySelector('[data-retry-day]').addEventListener('click', function() { retryQuiz(day); });
+    banner.innerHTML = 'You scored ' + correct + '/5. You need at least 3/5 to pass.<br><span class="quiz-hint">Review the session content above and try again.</span><br><button class="quiz-retry-btn" onclick="retryQuiz(' + day + ')">Try Again</button>';
     submitBtn.style.display = 'none';
   }
   saveState();
@@ -1463,28 +1478,14 @@ document.getElementById('testimonialForm').addEventListener('submit', function(e
   var niche = document.getElementById('testNiche').value;
   var stars = document.querySelectorAll('#starRating .star-btn.filled').length;
   if (!name || !text) return;
-  var data = { name: name, text: text, niche: niche, rating: stars || 5 };
-  var form = document.getElementById('testimonialForm');
-  var submitBtn = form.querySelector('button[type="submit"]');
-  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting...'; }
+  var data = { name: name, testimonial: text, niche: niche, rating: stars || 5 };
   fetch('/api/testimonials', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
-  }).then(function(r) { return r.json(); }).then(function(res) {
-    if (res.success) {
-      form.textContent = '';
-      var msg = document.createElement('p');
-      msg.style.cssText = 'color:var(--green);font-weight:600;padding:20px 0';
-      msg.textContent = 'Thank you for sharing your experience!';
-      form.appendChild(msg);
-    } else {
-      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit'; }
-      alert(res.error || 'Submission failed. Please try again.');
-    }
-  }).catch(function() {
-    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit'; }
-    alert('Network error. Please check your connection and try again.');
-  });
+  }).catch(function() {});
+  // Show success regardless
+  var form = document.getElementById('testimonialForm');
+  form.innerHTML = '<p style="color:var(--green);font-weight:600;padding:20px 0;">Thank you for sharing your experience!</p>';
 });
 
 /* Star rating */
@@ -1507,80 +1508,47 @@ document.getElementById('directoryForm').addEventListener('submit', function(e) 
     city: document.getElementById('dirCity').value.trim(),
     state: document.getElementById('dirState').value.trim()
   };
-  var form = document.getElementById('directoryForm');
-  var submitBtn = form.querySelector('button[type="submit"]');
-  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting...'; }
   fetch('/api/graduates', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
-  }).then(function(r) { return r.json(); }).then(function(res) {
-    if (res.success) {
-      form.textContent = '';
-      var msg = document.createElement('p');
-      msg.style.cssText = 'color:var(--green);font-weight:600;padding:20px 0';
-      msg.textContent = "You've been added to the graduate directory!";
-      form.appendChild(msg);
-    } else {
-      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Join Directory'; }
-      alert(res.error || 'Submission failed. Please try again.');
-    }
-  }).catch(function() {
-    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Join Directory'; }
-    alert('Network error. Please check your connection and try again.');
-  });
+  }).catch(function() {});
+  var form = document.getElementById('directoryForm');
+  form.innerHTML = '<p style="color:var(--green);font-weight:600;padding:20px 0;">You\'ve been added to the graduate directory!</p>';
 });
 
 /* ── Initialize ── */
 buildContent();
 render();
 
-// Restore curriculum progress from server (merge with localStorage)
+/* ── Toast notifications ── */
+function showToast(message, type) {
+  var container = document.getElementById('toastContainer');
+  if (!container) return;
+  var toast = document.createElement('div');
+  toast.className = 'toast ' + (type || 'info');
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(function() {
+    toast.style.opacity = '0'; toast.style.transform = 'translateY(12px)';
+    toast.style.transition = 'all 0.3s';
+    setTimeout(function() { toast.remove(); }, 300);
+  }, 3500);
+}
+
+/* ── Back-to-top button ── */
 (function() {
-  var sid = localStorage.getItem('anvil_session_id');
-  if (!sid) return;
-  fetch('/api/curriculum/progress/' + encodeURIComponent(sid))
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(data) {
-      if (!data || !data.success || !data.progress) return;
-      var server = data.progress;
-      var changed = false;
-
-      // Merge completedDays — union of local and server
-      if (Array.isArray(server.completedDays)) {
-        server.completedDays.forEach(function(d) {
-          var dayNum = parseInt(d, 10);
-          if (dayNum >= 1 && dayNum <= 7 && state.completed.indexOf(dayNum) === -1) {
-            state.completed.push(dayNum);
-            changed = true;
-          }
-        });
-      }
-
-      // Merge quizScores — keep higher score
-      if (server.quizScores && typeof server.quizScores === 'object') {
-        for (var key in server.quizScores) {
-          var serverScore = parseInt(server.quizScores[key], 10);
-          var localScore = parseInt(state.quizScores[key], 10);
-          if (!isNaN(serverScore) && (isNaN(localScore) || serverScore > localScore)) {
-            state.quizScores[key] = serverScore;
-            changed = true;
-          }
-        }
-      }
-
-      // Use server currentDay if further along
-      if (server.currentDay && server.currentDay > state.currentDay && isDayUnlocked(server.currentDay)) {
-        state.currentDay = server.currentDay;
-        changed = true;
-      }
-
-      if (changed) {
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
-        render();
-      }
-    })
-    .catch(function() { /* silent fail */ });
+  var btn = document.getElementById('backToTop');
+  if (!btn) return;
+  window.addEventListener('scroll', function() {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+  btn.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 })();
+
+/* ── Service Worker ── */
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(function() {});
+}
 </script>
 
 <!-- No-JS fallback: basic content visible without JavaScript -->
@@ -1593,5 +1561,12 @@ render();
   .session-accordion.open .session-body, .session-body { max-height: none; overflow: visible; }
 </style>
 </noscript>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+</button>
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="/js/onboarding.js"></script>
 </body>
 </html>

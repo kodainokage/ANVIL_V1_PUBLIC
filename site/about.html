@@ -7,11 +7,6 @@
 <meta name="description" content="Learn about ANVIL's mission to turn displaced workers into AI-augmented specialists. WIOA-aligned training for the future of work.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M14 2L3 26h6l5-12 5 12h6L14 2z' fill='%23e87a2e'/%3E%3C/svg%3E">
 <link rel="manifest" href="/manifest.json">
-<link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180.png">
-<link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152.png">
-<link rel="apple-touch-icon" sizes="120x120" href="/icons/icon-120.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
-<link rel="icon" type="image/png" sizes="96x96" href="/icons/icon-96.png">
 <meta name="theme-color" content="#e87a2e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -104,6 +99,24 @@ button { cursor: pointer; font-family: inherit; border: none; }
 .nav-cta:hover { transform: translateY(-1px); }
 .nav-cta:focus-visible {
   outline: 3px solid #fff; outline-offset: 2px; transform: translateY(-1px);
+}
+
+/* Kids nav link — illuminated */
+.nav-kids {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: #ffd166 !important; font-weight: 700 !important;
+  background: rgba(255, 209, 102, 0.10);
+  padding: 6px 14px !important; border-radius: 100px;
+  border: 1px solid rgba(255, 209, 102, 0.30);
+  box-shadow: 0 0 12px rgba(255, 209, 102, 0.15), 0 0 4px rgba(255, 209, 102, 0.08);
+  transition: all 0.3s ease;
+  animation: kids-glow 3s ease-in-out infinite;
+}
+.nav-kids:hover { color: #fff !important; background: rgba(255, 209, 102, 0.18); box-shadow: 0 0 20px rgba(255, 209, 102, 0.25); transform: translateY(-1px); }
+.nav-kids svg { width: 16px; height: 16px; flex-shrink: 0; }
+@keyframes kids-glow {
+  0%, 100% { box-shadow: 0 0 12px rgba(255, 209, 102, 0.15), 0 0 4px rgba(255, 209, 102, 0.08); }
+  50% { box-shadow: 0 0 18px rgba(255, 209, 102, 0.25), 0 0 8px rgba(255, 209, 102, 0.15); }
 }
 
 @media (max-width: 768px) {
@@ -236,7 +249,7 @@ main { padding-top: 64px; min-height: calc(100vh - 200px); }
       <li><a href="/#solution">Solution</a></li>
       <li><a href="/#quiz">Career Quiz</a></li>
       <li><a href="/about.html">About</a></li>
-      <li><a href="/pulse" style="color:#5bc0be;">Pulse</a></li>
+      <li><a href="/kids/" class="nav-kids"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M12 6v2"/><path d="M9 14l-4 6"/><path d="M15 14l4 6"/><path d="M12 8c-2.5 0-4.5 2-4.5 4.5 0 1.4.6 2.6 1.5 3.5h6c.9-.9 1.5-2.1 1.5-3.5C16.5 10 14.5 8 12 8z"/></svg>Kids</a></li>
     </ul>
     <a href="/#quiz" class="nav-cta">Take the Quiz</a>
   </div>
@@ -305,7 +318,16 @@ main { padding-top: 64px; min-height: calc(100vh - 200px); }
       <p>Your success is our business model. If you don't land work, we don't get paid.</p>
 
       <h2>Who We Are</h2>
-      <p>We're a team of builders who've shipped multiple production-grade AI products. We know how to ship, and we know how to scale.</p>
+      <p>ANVIL is part of the <strong>SYN Portfolio</strong>, a collection of AI-first products built to solve real problems:</p>
+      <ul>
+        <li><strong>PRISM:</strong> Premium dating that filters for serious intent</li>
+        <li><strong>PARADIGM:</strong> On-demand mental health support</li>
+        <li><strong>SPECTRA:</strong> Security audits for small businesses</li>
+        <li><strong>AEVUM:</strong> Digital infrastructure intelligence</li>
+        <li><strong>BURRR:</strong> DeFi portfolio analytics</li>
+        <li><strong>SNYPER:</strong> On-chain momentum trading signals</li>
+      </ul>
+      <p>We've built 6 production-grade AI products totaling 144,000+ lines of code with 2,600+ passing tests. We know how to ship, and we know how to scale.</p>
 
       <h3>Our Commitment</h3>
       <p>We are radically transparent about where we are: ANVIL is <strong>new</strong>. We don't have testimonials yet. We don't have 10,000 graduates. What we have is:</p>
@@ -337,7 +359,7 @@ main { padding-top: 64px; min-height: calc(100vh - 200px); }
         <a href="mailto:hello@getanvil.co" class="footer-email">hello@getanvil.co</a>
       </div>
       <div class="footer-right">
-        
+        <div class="footer-portfolio">Part of the <strong>SYN Portfolio</strong></div>
       </div>
     </div>
     <div class="footer-bottom">

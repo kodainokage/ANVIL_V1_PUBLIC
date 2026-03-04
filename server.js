@@ -2,196 +2,504 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const https = require('https');
-const http = require('http');
+const Database = require('better-sqlite3');
+
+const discovery = require('./discovery');
+const contentGen = require('./content-generator');
+const auth = require('./auth');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
-const API_KEY = process.env.API_KEY || 'dev-key-change-in-production';
-
-// Production safety: require real API_KEY
-if (NODE_ENV === 'production' && API_KEY === 'dev-key-change-in-production') {
-  console.error('[FATAL] API_KEY must be set in production. Exiting.');
-  process.exit(1);
-}
+const API_KEY = (() => {
+  const key = process.env.API_KEY;
+  if (!key || key === 'dev-key-change-in-production') {
+    if (NODE_ENV === 'production') {
+      console.error('[FATAL] API_KEY must be set to a strong secret in production. Exiting.');
+      process.exit(1);
+    }
+    console.warn('[WARN] Using insecure default API_KEY — do NOT use in production');
+    return 'dev-key-change-in-production';
+  }
+  return key;
+})();
 const DATA_DIR = path.join(__dirname, 'data');
-const SUBMISSIONS_FILE = path.join(DATA_DIR, 'submissions.json');
-const ANALYTICS_FILE = path.join(DATA_DIR, 'analytics.json');
-const REFERRALS_FILE = path.join(DATA_DIR, 'referrals.json');
-const TESTIMONIALS_FILE = path.join(DATA_DIR, 'testimonials.json');
-const GRADUATES_FILE = path.join(DATA_DIR, 'graduates.json');
-const PROGRESS_FILE = path.join(DATA_DIR, 'progress.json');
-const CURRICULUM_FILE = path.join(DATA_DIR, 'curriculum-progress.json');
-const PULSE_FILE = path.join(DATA_DIR, 'pulse-feed.json');
+const DB_PATH = path.join(DATA_DIR, 'anvil.db');
+const NICHES_FILE = path.join(__dirname, 'niches.json');
+
+// ── SQLite Database Setup ──────────────────────────────────
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+
+const db = new Database(DB_PATH);
+db.pragma('journal_mode = WAL');
+db.pragma('busy_timeout = 5000');
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS submissions (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT DEFAULT '',
+    answers TEXT DEFAULT '[]',
+    recommended_niches TEXT DEFAULT '[]',
+    referral_code TEXT,
+    referred_by TEXT DEFAULT '',
+    utm_source TEXT DEFAULT '',
+    utm_medium TEXT DEFAULT '',
+    utm_campaign TEXT DEFAULT '',
+    ip TEXT DEFAULT 'unknown',
+    submitted_at TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS analytics (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event TEXT NOT NULL,
+    page TEXT DEFAULT '',
+    data TEXT DEFAULT '{}',
+    fingerprint TEXT,
+    timestamp TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS referrals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    referral_code TEXT NOT NULL,
+    referred_page TEXT DEFAULT '',
+    fingerprint TEXT,
+    timestamp TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS testimonials (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    text TEXT NOT NULL,
+    niche TEXT DEFAULT '',
+    rating INTEGER DEFAULT 5,
+    approved INTEGER DEFAULT 0,
+    submitted_at TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS graduates (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    niche TEXT DEFAULT '',
+    city TEXT DEFAULT '',
+    state TEXT DEFAULT '',
+    joined_at TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS niche_candidates (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    slug TEXT NOT NULL UNIQUE,
+    title TEXT NOT NULL,
+    source TEXT NOT NULL,
+    source_url TEXT DEFAULT '',
+    source_data TEXT DEFAULT '{}',
+    category TEXT DEFAULT '',
+    score_demand INTEGER DEFAULT 0,
+    score_pain INTEGER DEFAULT 0,
+    score_competition INTEGER DEFAULT 0,
+    score_ai_leverage INTEGER DEFAULT 0,
+    score_composite INTEGER DEFAULT 0,
+    draft_niche_json TEXT DEFAULT '{}',
+    draft_playbook TEXT DEFAULT '',
+    draft_quiz_tags TEXT DEFAULT '[]',
+    status TEXT DEFAULT 'new',
+    admin_notes TEXT DEFAULT '',
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS scan_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    source TEXT NOT NULL,
+    results_found INTEGER DEFAULT 0,
+    new_candidates INTEGER DEFAULT 0,
+    duration_ms INTEGER DEFAULT 0,
+    error TEXT DEFAULT '',
+    scanned_at TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS niche_intelligence (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    niche_id TEXT NOT NULL,
+    metric TEXT NOT NULL,
+    period TEXT NOT NULL,
+    count INTEGER DEFAULT 1,
+    updated_at TEXT NOT NULL
+  );
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_intelligence_unique ON niche_intelligence(niche_id, metric, period);
+
+  CREATE TABLE IF NOT EXISTS niche_notifications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    niche_id TEXT NOT NULL,
+    niche_name TEXT NOT NULL,
+    category TEXT DEFAULT '',
+    created_at TEXT NOT NULL
+  );
+
+  -- ANVIL Kids tables
+  CREATE TABLE IF NOT EXISTS kids_children (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    parent_user_id INTEGER NOT NULL,
+    display_name TEXT NOT NULL,
+    age_group TEXT NOT NULL CHECK(age_group IN ('explorer','builder')),
+    birth_year INTEGER,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (parent_user_id) REFERENCES users(id)
+  );
+  CREATE TABLE IF NOT EXISTS kids_subscriptions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    stripe_customer_id TEXT,
+    stripe_sub_id TEXT,
+    plan TEXT NOT NULL DEFAULT 'trial',
+    status TEXT NOT NULL DEFAULT 'trialing',
+    trial_ends_at TEXT,
+    current_period_end TEXT,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+  );
+  CREATE TABLE IF NOT EXISTS kids_progress (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    child_id INTEGER NOT NULL,
+    path_id TEXT NOT NULL,
+    quest_index INTEGER DEFAULT 0,
+    xp INTEGER DEFAULT 0,
+    level INTEGER DEFAULT 1,
+    started_at TEXT NOT NULL,
+    last_activity TEXT,
+    completed_at TEXT,
+    FOREIGN KEY (child_id) REFERENCES kids_children(id)
+  );
+  CREATE TABLE IF NOT EXISTS kids_artifacts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    child_id INTEGER NOT NULL,
+    path_id TEXT NOT NULL,
+    quest_index INTEGER NOT NULL,
+    artifact_type TEXT NOT NULL,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    is_public INTEGER DEFAULT 0,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (child_id) REFERENCES kids_children(id)
+  );
+  CREATE TABLE IF NOT EXISTS kids_activity_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    child_id INTEGER NOT NULL,
+    action TEXT NOT NULL,
+    detail TEXT,
+    xp_earned INTEGER DEFAULT 0,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (child_id) REFERENCES kids_children(id)
+  );
+  CREATE TABLE IF NOT EXISTS kids_referrals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    referrer_user_id INTEGER NOT NULL,
+    referred_email TEXT NOT NULL,
+    code TEXT NOT NULL UNIQUE,
+    redeemed_by INTEGER,
+    redeemed_at TEXT,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (referrer_user_id) REFERENCES users(id)
+  );
+`);
+
+// Migrate existing JSON data into SQLite (one-time, idempotent)
+function migrateJsonToDb() {
+  const jsonFiles = {
+    submissions: path.join(DATA_DIR, 'submissions.json'),
+    analytics: path.join(DATA_DIR, 'analytics.json'),
+    referrals: path.join(DATA_DIR, 'referrals.json'),
+    testimonials: path.join(DATA_DIR, 'testimonials.json'),
+    graduates: path.join(DATA_DIR, 'graduates.json')
+  };
+
+  // Migrate each table independently (idempotent per-table check)
+  // Bug fix: checking only submissions count caused analytics/referrals/testimonials/graduates
+  // to be skipped forever once a single submission existed — data loss on restart after first use.
+
+  for (const [table, filePath] of Object.entries(jsonFiles)) {
+    if (!fs.existsSync(filePath)) continue;
+    try {
+      const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      if (!Array.isArray(data) || data.length === 0) continue;
+
+      // Per-table idempotency check: skip only if this specific table already has data
+      // Use allowlisted table names only (never interpolate user input into SQL)
+      const allowedTables = { submissions: 1, analytics: 1, referrals: 1, testimonials: 1, graduates: 1 };
+      if (!allowedTables[table]) continue;
+      const countStmts = {
+        submissions: db.prepare('SELECT COUNT(*) as c FROM submissions'),
+        analytics: db.prepare('SELECT COUNT(*) as c FROM analytics'),
+        referrals: db.prepare('SELECT COUNT(*) as c FROM referrals'),
+        testimonials: db.prepare('SELECT COUNT(*) as c FROM testimonials'),
+        graduates: db.prepare('SELECT COUNT(*) as c FROM graduates'),
+      };
+      const tableCount = countStmts[table].get().c;
+      if (tableCount > 0) {
+        console.log(`[DB] Skipping ${table}.json migration — table already has ${tableCount} records`);
+        continue;
+      }
+
+      if (table === 'submissions') {
+        const stmt = db.prepare(`INSERT OR IGNORE INTO submissions (id, name, email, phone, answers, recommended_niches, referral_code, referred_by, utm_source, utm_medium, utm_campaign, ip, submitted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+        const tx = db.transaction((rows) => { for (const r of rows) stmt.run(r.id, r.name, r.email, r.phone || '', JSON.stringify(r.answers || []), JSON.stringify(r.recommendedNiches || []), r.referralCode, r.referredBy || '', r.utmSource || '', r.utmMedium || '', r.utmCampaign || '', r.ip || 'unknown', r.submittedAt); });
+        tx(data);
+      } else if (table === 'analytics') {
+        const stmt = db.prepare(`INSERT INTO analytics (event, page, data, fingerprint, timestamp) VALUES (?, ?, ?, ?, ?)`);
+        const tx = db.transaction((rows) => { for (const r of rows) stmt.run(r.event, r.page || '', JSON.stringify(r.data || {}), r.fingerprint, r.timestamp); });
+        tx(data);
+      } else if (table === 'referrals') {
+        const stmt = db.prepare(`INSERT INTO referrals (referral_code, referred_page, fingerprint, timestamp) VALUES (?, ?, ?, ?)`);
+        const tx = db.transaction((rows) => { for (const r of rows) stmt.run(r.referralCode, r.referredPage || '', r.fingerprint, r.timestamp); });
+        tx(data);
+      } else if (table === 'testimonials') {
+        const stmt = db.prepare(`INSERT OR IGNORE INTO testimonials (id, name, text, niche, rating, approved, submitted_at) VALUES (?, ?, ?, ?, ?, ?, ?)`);
+        const tx = db.transaction((rows) => { for (const r of rows) stmt.run(r.id, r.name, r.text, r.niche || '', r.rating || 5, r.approved ? 1 : 0, r.submittedAt); });
+        tx(data);
+      } else if (table === 'graduates') {
+        const stmt = db.prepare(`INSERT OR IGNORE INTO graduates (id, name, niche, city, state, joined_at) VALUES (?, ?, ?, ?, ?, ?)`);
+        const tx = db.transaction((rows) => { for (const r of rows) stmt.run(r.id, r.name, r.niche || '', r.city || '', r.state || '', r.joinedAt); });
+        tx(data);
+      }
+      console.log(`[DB] Migrated ${data.length} records from ${table}.json`);
+    } catch (err) {
+      console.error(`[DB] Migration failed for ${table}:`, err.message);
+    }
+  }
+}
+migrateJsonToDb();
+
+// Initialize auth tables
+auth.initAuthTables(db);
+
+console.log(`[DB] SQLite database ready at ${DB_PATH}`);
+
+// Prepared statements (cached for performance)
+const stmts = {
+  insertSubmission: db.prepare(`INSERT INTO submissions (id, name, email, phone, answers, recommended_niches, referral_code, referred_by, utm_source, utm_medium, utm_campaign, ip, submitted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+  getSubmissions: db.prepare(`SELECT * FROM submissions ORDER BY submitted_at DESC`),
+  getSubmissionById: db.prepare(`SELECT * FROM submissions WHERE id = ?`),
+  getSubmissionByReferral: db.prepare(`SELECT id FROM submissions WHERE referral_code = ? LIMIT 1`),
+  insertAnalytics: db.prepare(`INSERT INTO analytics (event, page, data, fingerprint, timestamp) VALUES (?, ?, ?, ?, ?)`),
+  getAnalytics: db.prepare(`SELECT * FROM analytics ORDER BY timestamp DESC`),
+  insertReferral: db.prepare(`INSERT INTO referrals (referral_code, referred_page, fingerprint, timestamp) VALUES (?, ?, ?, ?)`),
+  getReferrals: db.prepare(`SELECT * FROM referrals ORDER BY timestamp DESC`),
+  getReferralCounts: db.prepare(`SELECT referral_code, COUNT(*) as count FROM referrals GROUP BY referral_code ORDER BY count DESC LIMIT 10`),
+  getReferralCountByCode: db.prepare(`SELECT COUNT(*) as count FROM referrals WHERE referral_code = ?`),
+  insertTestimonial: db.prepare(`INSERT INTO testimonials (id, name, text, niche, rating, approved, submitted_at) VALUES (?, ?, ?, ?, ?, 0, ?)`),
+  getApprovedTestimonials: db.prepare(`SELECT * FROM testimonials WHERE approved = 1 ORDER BY submitted_at DESC`),
+  getAllTestimonials: db.prepare(`SELECT * FROM testimonials ORDER BY submitted_at DESC`),
+  approveTestimonial: db.prepare(`UPDATE testimonials SET approved = 1 WHERE id = ?`),
+  insertGraduate: db.prepare(`INSERT INTO graduates (id, name, niche, city, state, joined_at) VALUES (?, ?, ?, ?, ?, ?)`),
+  getGraduates: db.prepare(`SELECT * FROM graduates ORDER BY joined_at DESC`),
+  // Discovery & Intelligence
+  insertCandidate: db.prepare(`INSERT OR IGNORE INTO niche_candidates (slug, title, source, source_url, source_data, category, score_demand, score_pain, score_competition, score_ai_leverage, score_composite, draft_niche_json, draft_playbook, draft_quiz_tags, status, admin_notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'new', '', ?, ?)`),
+  getCandidates: db.prepare(`SELECT * FROM niche_candidates ORDER BY score_composite DESC`),
+  getCandidatesByStatus: db.prepare(`SELECT * FROM niche_candidates WHERE status = ? ORDER BY score_composite DESC`),
+  getCandidateById: db.prepare(`SELECT * FROM niche_candidates WHERE id = ?`),
+  getCandidateBySlug: db.prepare(`SELECT id FROM niche_candidates WHERE slug = ?`),
+  updateCandidateStatus: db.prepare(`UPDATE niche_candidates SET status = ?, admin_notes = ?, updated_at = ? WHERE id = ?`),
+  updateCandidateDrafts: db.prepare(`UPDATE niche_candidates SET draft_niche_json = ?, draft_playbook = ?, draft_quiz_tags = ?, updated_at = ? WHERE id = ?`),
+  insertScanLog: db.prepare(`INSERT INTO scan_log (source, results_found, new_candidates, duration_ms, error, scanned_at) VALUES (?, ?, ?, ?, ?, ?)`),
+  getScanLogs: db.prepare(`SELECT * FROM scan_log ORDER BY scanned_at DESC LIMIT 50`),
+  upsertIntelligence: db.prepare(`INSERT INTO niche_intelligence (niche_id, metric, period, count, updated_at) VALUES (?, ?, ?, 1, ?) ON CONFLICT(niche_id, metric, period) DO UPDATE SET count = count + 1, updated_at = ?`),
+  getIntelligence: db.prepare(`SELECT niche_id, metric, SUM(count) as total FROM niche_intelligence WHERE period >= ? GROUP BY niche_id, metric ORDER BY total DESC`),
+  getIntelligenceByNiche: db.prepare(`SELECT metric, period, count FROM niche_intelligence WHERE niche_id = ? ORDER BY period DESC LIMIT 90`),
+  insertNicheNotification: db.prepare(`INSERT INTO niche_notifications (niche_id, niche_name, category, created_at) VALUES (?, ?, ?, ?)`),
+  getRecentNotifications: db.prepare(`SELECT niche_id, niche_name, category, created_at FROM niche_notifications WHERE created_at >= ? ORDER BY created_at DESC`),
+  getSearchSignals: db.prepare(`SELECT niche_id, SUM(count) as total FROM niche_intelligence WHERE metric = 'search_signal' AND period >= ? GROUP BY niche_id ORDER BY total DESC LIMIT 20`),
+  getUnmatchedSignals: db.prepare(`SELECT niche_id, SUM(count) as total FROM niche_intelligence WHERE metric = 'unmatched_demand' AND period >= ? GROUP BY niche_id ORDER BY total DESC LIMIT 10`),
+  // ANVIL Kids
+  insertChild: db.prepare(`INSERT INTO kids_children (parent_user_id, display_name, age_group, birth_year, created_at) VALUES (?, ?, ?, ?, ?)`),
+  getChildrenByParent: db.prepare(`SELECT * FROM kids_children WHERE parent_user_id = ? ORDER BY created_at`),
+  getChildById: db.prepare(`SELECT * FROM kids_children WHERE id = ?`),
+  updateChild: db.prepare(`UPDATE kids_children SET display_name = ?, age_group = ?, birth_year = ? WHERE id = ?`),
+  deleteChild: db.prepare(`DELETE FROM kids_children WHERE id = ? AND parent_user_id = ?`),
+  insertKidsSub: db.prepare(`INSERT INTO kids_subscriptions (user_id, stripe_customer_id, stripe_sub_id, plan, status, trial_ends_at, current_period_end, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`),
+  getKidsSubByUser: db.prepare(`SELECT * FROM kids_subscriptions WHERE user_id = ? ORDER BY created_at DESC LIMIT 1`),
+  updateKidsSubStatus: db.prepare(`UPDATE kids_subscriptions SET status = ? WHERE id = ?`),
+  updateKidsSubStripe: db.prepare(`UPDATE kids_subscriptions SET stripe_customer_id = ?, stripe_sub_id = ?, plan = ?, status = ?, current_period_end = ? WHERE id = ?`),
+  insertKidsProgress: db.prepare(`INSERT INTO kids_progress (child_id, path_id, quest_index, xp, level, started_at, last_activity) VALUES (?, ?, 0, 0, 1, ?, ?)`),
+  getProgressByChild: db.prepare(`SELECT * FROM kids_progress WHERE child_id = ? ORDER BY started_at`),
+  getProgressByChildPath: db.prepare(`SELECT * FROM kids_progress WHERE child_id = ? AND path_id = ?`),
+  updateProgress: db.prepare(`UPDATE kids_progress SET quest_index = ?, xp = ?, level = ?, last_activity = ? WHERE child_id = ? AND path_id = ?`),
+  completeProgress: db.prepare(`UPDATE kids_progress SET completed_at = ?, last_activity = ? WHERE child_id = ? AND path_id = ?`),
+  insertArtifact: db.prepare(`INSERT INTO kids_artifacts (child_id, path_id, quest_index, artifact_type, title, content, is_public, created_at) VALUES (?, ?, ?, ?, ?, ?, 0, ?)`),
+  getArtifactsByChild: db.prepare(`SELECT * FROM kids_artifacts WHERE child_id = ? ORDER BY created_at DESC`),
+  getPublicArtifacts: db.prepare(`SELECT * FROM kids_artifacts WHERE child_id = ? AND is_public = 1 ORDER BY created_at DESC`),
+  toggleArtifactPublic: db.prepare(`UPDATE kids_artifacts SET is_public = ? WHERE id = ? AND child_id = ?`),
+  logKidsActivity: db.prepare(`INSERT INTO kids_activity_log (child_id, action, detail, xp_earned, created_at) VALUES (?, ?, ?, ?, ?)`),
+  getActivityByChild: db.prepare(`SELECT * FROM kids_activity_log WHERE child_id = ? ORDER BY created_at DESC LIMIT 50`),
+  getActivityByParent: db.prepare(`SELECT a.* FROM kids_activity_log a JOIN kids_children c ON a.child_id = c.id WHERE c.parent_user_id = ? ORDER BY a.created_at DESC LIMIT 100`),
+  insertKidsReferral: db.prepare(`INSERT INTO kids_referrals (referrer_user_id, referred_email, code, created_at) VALUES (?, ?, ?, ?)`),
+  getKidsReferralByCode: db.prepare(`SELECT * FROM kids_referrals WHERE code = ?`),
+  redeemKidsReferral: db.prepare(`UPDATE kids_referrals SET redeemed_by = ?, redeemed_at = ? WHERE code = ? AND redeemed_by IS NULL`),
+  getKidsReferralsByUser: db.prepare(`SELECT * FROM kids_referrals WHERE referrer_user_id = ? ORDER BY created_at DESC`),
+  getKidsSubByStripeId: db.prepare(`SELECT * FROM kids_subscriptions WHERE stripe_sub_id = ?`),
+  getArtifactWithParent: db.prepare(`SELECT a.*, c.parent_user_id FROM kids_artifacts a JOIN kids_children c ON a.child_id = c.id WHERE a.id = ?`),
+};
+
+// Load niches registry (cached in memory, reloads on admin toggle)
+let nichesData = { niches: [], categories: [], quiz_questions: [] };
+function loadNiches() {
+  try {
+    const raw = fs.readFileSync(NICHES_FILE, 'utf8');
+    nichesData = JSON.parse(raw);
+  } catch (err) {
+    console.error('[ERROR] Failed to load niches.json:', err.message);
+  }
+}
+loadNiches();
 
 // Community links
 const COMMUNITY_DISCORD = process.env.COMMUNITY_DISCORD || '';
 const COMMUNITY_SIGNAL = process.env.COMMUNITY_SIGNAL || '';
 
-// Write queue to prevent concurrent JSON file corruption
-let writeQueue = Promise.resolve();
-function queueWrite(filePath, data) {
-  writeQueue = writeQueue.then(() => {
-    const tmp = filePath + '.tmp';
-    fs.writeFileSync(tmp, JSON.stringify(data, null, 2), 'utf8');
-    fs.renameSync(tmp, filePath);
-  }).catch(err => {
-    console.error('[WRITE ERROR]', filePath, err.message);
-  });
-  return writeQueue;
-}
-
-// Safe JSON reader
-function readJSON(filePath) {
-  try {
-    const raw = fs.readFileSync(filePath, 'utf8');
-    const data = JSON.parse(raw);
-    return Array.isArray(data) ? data : [];
-  } catch { return []; }
-}
-
-// Safe JSON reader for object-keyed files
-function readJSONObject(filePath) {
-  try {
-    const raw = fs.readFileSync(filePath, 'utf8');
-    const data = JSON.parse(raw);
-    return (typeof data === 'object' && data !== null && !Array.isArray(data)) ? data : {};
-  } catch { return {}; }
-}
-
-
-// SECURITY: [TBHM Phase 4 - Authentication] - Constant-time API key comparison
-// Prevents: Timing attacks that leak API key length/content via response timing
-// Enterprise: NIST 800-63B Section 5.2.8 (Authentication Intent)
-function requireApiKey(req, res) {
+// Admin auth helper (dual-mode: session cookie OR legacy API key)
+function requireAdmin(req, res) {
+  // Check session-based auth first
+  if (req.user && req.user.role === 'admin') return true;
+  // Fallback: legacy API key (timing-safe comparison)
   const authHeader = req.headers.authorization || '';
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+  if (token && timingSafeCompare(token, API_KEY)) return true;
+  res.status(403).json({ success: false, error: 'Unauthorized' });
+  return false;
+}
 
-  // Constant-time comparison to prevent timing attacks
-  const apiKeyBuf = Buffer.from(API_KEY, 'utf8');
-  const tokenBuf = Buffer.from(token, 'utf8');
-
-  // If lengths differ, compare against dummy buffer of same length as API_KEY
-  const compareBuf = tokenBuf.length === apiKeyBuf.length ? tokenBuf : Buffer.alloc(apiKeyBuf.length);
-
-  const isValid = tokenBuf.length === apiKeyBuf.length &&
-                  crypto.timingSafeEqual(apiKeyBuf, compareBuf);
-
-  if (!isValid) {
-    res.status(403).json({ success: false, error: 'Unauthorized' });
-    return false;
-  }
-  return true;
+// Require any authenticated user
+function requireUser(req, res) {
+  if (req.user) return true;
+  res.status(401).json({ success: false, error: 'Authentication required' });
+  return false;
 }
 
 // Allowed origins for CORS
 const ALLOWED_ORIGINS = NODE_ENV === 'production'
   ? [process.env.ALLOWED_ORIGIN || 'https://anvil.onrender.com']
-  : ['http://localhost:10000', 'http://127.0.0.1:10000', 'http://localhost:5000', 'http://127.0.0.1:5000', 'http://localhost:3000', 'http://127.0.0.1:3000'];
+  : ['http://localhost:10000', 'http://127.0.0.1:10000'];
 
 // Rate limiting (in-memory, no extra dependency)
-const rateLimits = new Map();
+// Bug fix: /health previously shared the same rate limit pool as user-facing endpoints.
+// A monitoring system pinging /health every 30s could exhaust the 10-request quota and
+// block real quiz submissions from the same IP. /health now uses a separate, higher limit.
+const rateLimits = new Map();        // user-facing: 10 req / 15 min
+const healthRateLimits = new Map(); // health check: 120 req / 15 min
+const authRateLimits = new Map();   // auth endpoints: 10 req / 15 min per IP
+const kidsRateLimits = new Map();   // kids endpoints: 60 req / 15 min per IP
 const RATE_WINDOW = 15 * 60 * 1000; // 15 minutes
-const RATE_MAX_WRITE = 10; // max write requests (POST) per window per IP
-const RATE_MAX_READ = 120; // max read requests (GET) per window per IP
+const RATE_MAX = 10;                 // max user-facing submissions per window per IP
+const HEALTH_RATE_MAX = 120;         // max health checks per window per IP (1 per 7.5s)
+const KIDS_RATE_MAX = 200;           // max kids API requests per window per IP
 
-// SECURITY: [TBHM Phase 5 - Rate Limit Bypass] - Trusted IP extraction
-// Prevents: X-Forwarded-For header spoofing to bypass rate limits
-// Enterprise: OWASP ASVS 4.0.3 V11.1.4 (Rate Limiting)
-function getTrustedIP(req) {
-  // Only trust X-Forwarded-For if behind a proxy in production
-  if (NODE_ENV === 'production' && req.headers['x-forwarded-for']) {
-    // Take leftmost IP (original client) but validate it's not private/local
-    const forwarded = req.headers['x-forwarded-for'].split(',')[0].trim();
-    // Reject private IP ranges attempting to spoof
-    if (!/^(10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.|127\.|169\.254\.|::1|fc00:|fe80:)/.test(forwarded)) {
-      return forwarded;
-    }
-  }
-  // Fallback to direct connection IP
-  return req.ip || req.connection.remoteAddress || 'unknown';
-}
-
-function rateLimit(req, res) {
-  const ip = getTrustedIP(req);
-  const isRead = req.method === 'GET';
-  const key = ip + (isRead ? ':r' : ':w');
-  const maxReqs = isRead ? RATE_MAX_READ : RATE_MAX_WRITE;
+function rateLimitFromMap(map, ip, max) {
   const now = Date.now();
-  const entry = rateLimits.get(key);
-
+  const entry = map.get(ip);
   if (!entry || now - entry.windowStart > RATE_WINDOW) {
-    rateLimits.set(key, { windowStart: now, count: 1 });
+    map.set(ip, { windowStart: now, count: 1 });
     return true;
   }
-
-  if (entry.count >= maxReqs) {
-    const retryAfter = Math.ceil((RATE_WINDOW - (now - entry.windowStart)) / 1000);
-    if (res) res.setHeader('Retry-After', String(retryAfter));
-    return false;
-  }
+  if (entry.count >= max) return false;
   entry.count++;
   return true;
 }
 
-// Clean stale rate limit entries every 30 minutes
+function rateLimit(req) {
+  const ip = req.ip || req.connection.remoteAddress;
+  return rateLimitFromMap(rateLimits, ip, RATE_MAX);
+}
+
+function healthRateLimit(req) {
+  const ip = req.ip || req.connection.remoteAddress;
+  return rateLimitFromMap(healthRateLimits, ip, HEALTH_RATE_MAX);
+}
+
+function authRateLimit(req) {
+  const ip = req.ip || req.connection.remoteAddress;
+  return rateLimitFromMap(authRateLimits, ip, RATE_MAX);
+}
+
+function kidsRateLimit(req) {
+  const ip = req.ip || req.connection.remoteAddress;
+  return rateLimitFromMap(kidsRateLimits, ip, KIDS_RATE_MAX);
+}
+
+// Clean stale rate limit entries + expired sessions every 30 minutes
 setInterval(() => {
   const now = Date.now();
   for (const [ip, entry] of rateLimits) {
     if (now - entry.windowStart > RATE_WINDOW) rateLimits.delete(ip);
   }
+  for (const [ip, entry] of healthRateLimits) {
+    if (now - entry.windowStart > RATE_WINDOW) healthRateLimits.delete(ip);
+  }
+  for (const [ip, entry] of authRateLimits) {
+    if (now - entry.windowStart > RATE_WINDOW) authRateLimits.delete(ip);
+  }
+  for (const [ip, entry] of kidsRateLimits) {
+    if (now - entry.windowStart > RATE_WINDOW) kidsRateLimits.delete(ip);
+  }
+  auth.cleanExpiredSessions();
 }, 30 * 60 * 1000);
 
 // Middleware
-app.use(express.json({ limit: '16kb' }));
+// Skip JSON parsing for Stripe webhook (needs raw body for signature verification)
+app.use((req, res, next) => {
+  if (req.path === '/api/kids/subscribe/webhook') return next();
+  express.json({ limit: '16kb' })(req, res, next);
+});
 
-// SECURITY: [TBHM Phase 8 - Transport Security] - Comprehensive security headers
-// Prevents: Clickjacking, MIME sniffing, XSS, missing HSTS
-// Enterprise: OWASP Secure Headers Project + PCI DSS 6.5.10
+// Cookie parsing + user resolver
+app.use((req, res, next) => {
+  req.cookies = auth.parseCookies(req.headers.cookie);
+  const sid = req.cookies.anvil_sid;
+  if (sid) {
+    req.user = auth.getSessionUser(sid);
+    req.sessionId = sid;
+  } else {
+    req.user = null;
+  }
+  next();
+});
+
+// Security headers
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-
-  // HSTS: Force HTTPS for 1 year in production
-  if (NODE_ENV === 'production') {
-    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
-  }
-
-  // Permissions-Policy: Disable unnecessary browser features
-  res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=()');
-
-  // Content-Security-Policy: Basic XSS protection (upgrade as needed)
-  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;");
-
+  res.setHeader('Content-Security-Policy', [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline'",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    "img-src 'self' data:",
+    "connect-src 'self' https://accounts.google.com https://discord.com",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self' https://accounts.google.com https://discord.com"
+  ].join('; '));
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   next();
 });
 
-// SECURITY: [TBHM Phase 8 - CORS Bypass] - Strict origin validation
-// Prevents: CORS wildcard in development, origin reflection attacks
-// Enterprise: OWASP ASVS 4.0.3 V14.5.3 (CORS Configuration)
+// CORS — restrict to allowed origins in production
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   const allowedOriginsList = ALLOWED_ORIGINS;
 
-  // FIXED: Even in development, only allow specific origins (no wildcard)
-  if (NODE_ENV !== 'production') {
-    // If origin matches allowed list, reflect it; otherwise use first allowed origin
-    const allowedOrigin = allowedOriginsList.includes(origin) ? origin : allowedOriginsList[0];
-    res.header('Access-Control-Allow-Origin', allowedOrigin);
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key');
-  } else if (origin && allowedOriginsList.includes(origin)) {
+  // Check if origin is allowed
+  if (origin && allowedOriginsList.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   } else if (!origin) {
+    // No origin = same-origin request, allow with default
     res.header('Access-Control-Allow-Origin', allowedOriginsList[0]);
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   } else {
+    // Origin not allowed - log and deny (don't set CORS headers)
     console.warn(`[CORS] Rejected request from unauthorized origin: ${origin}`);
   }
 
@@ -199,31 +507,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// Ensure data directory and submissions file exist
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
-if (!fs.existsSync(SUBMISSIONS_FILE)) {
-  fs.writeFileSync(SUBMISSIONS_FILE, '[]', 'utf8');
-}
-[ANALYTICS_FILE, REFERRALS_FILE, TESTIMONIALS_FILE, GRADUATES_FILE].forEach(f => {
-  if (!fs.existsSync(f)) {
-    fs.writeFileSync(f, '[]', 'utf8');
-  }
-});
-[PROGRESS_FILE, CURRICULUM_FILE].forEach(f => {
-  if (!fs.existsSync(f)) {
-    fs.writeFileSync(f, '{}', 'utf8');
-  }
-});
-if (!fs.existsSync(PULSE_FILE)) {
-  fs.writeFileSync(PULSE_FILE, '[]', 'utf8');
-}
+// Data directory ensured during DB init above
 
 // Input sanitization
 function sanitize(str) {
   if (typeof str !== 'string') return '';
   return str
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // strip control chars including null bytes
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
@@ -236,6 +526,8 @@ function sanitize(str) {
 function isValidEmail(email) {
   if (typeof email !== 'string') return false;
   if (email.length > 254) return false;
+  // Reject null bytes and other control characters (fix: regex allowed \x00 through [^\s@])
+  if (/[\x00-\x1F\x7F]/.test(email)) return false;
   const parts = email.split('@');
   if (parts.length !== 2) return false;
   if (parts[0].length > 64 || parts[0].length === 0) return false;
@@ -243,9 +535,35 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
 }
 
-// Health check (rate limited to prevent enumeration)
+function isValidPhone(phone) {
+  if (!phone || typeof phone !== 'string') return true; // optional field
+  const digits = phone.replace(/[\s\-\(\)\.\+]/g, '');
+  if (digits.length < 7 || digits.length > 15) return false;
+  if (!/^\d+$/.test(digits)) return false;
+  return true;
+}
+
+function isValidName(name) {
+  if (typeof name !== 'string') return false;
+  const trimmed = name.trim();
+  if (trimmed.length < 1 || trimmed.length > 100) return false;
+  if (/^\d+$/.test(trimmed)) return false;
+  if (/<script/i.test(trimmed)) return false;
+  return true;
+}
+
+// Hash-then-compare: prevents timing oracle on key length
+function timingSafeCompare(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string') return false;
+  const hashA = crypto.createHash('sha256').update(a).digest();
+  const hashB = crypto.createHash('sha256').update(b).digest();
+  return crypto.timingSafeEqual(hashA, hashB);
+}
+
+// Health check — uses separate rate limiter (healthRateLimit) so monitoring systems
+// do not exhaust the user-facing submission quota.
 app.get('/health', (req, res) => {
-  if (!rateLimit(req, res)) {
+  if (!healthRateLimit(req)) {
     return res.status(429).json({
       success: false,
       error: 'Too many health check requests. Try again in 15 minutes.'
@@ -262,7 +580,7 @@ app.get('/health', (req, res) => {
 
 // Quiz submission — rate limited + validated
 app.post('/api/quiz-submit', (req, res) => {
-  if (!rateLimit(req, res)) {
+  if (!rateLimit(req)) {
     return res.status(429).json({
       success: false,
       error: 'Too many submissions. Try again in 15 minutes.'
@@ -272,43 +590,61 @@ app.post('/api/quiz-submit', (req, res) => {
   try {
     const { name, email, phone, answers, recommendedNiches } = req.body;
 
-    // Validate required fields
+    // Validate raw name first (before sanitize strips HTML chars)
+    if (!isValidName(typeof name === 'string' ? name : '')) {
+      return res.status(400).json({ success: false, error: 'Name is required (1-100 characters, no scripts)' });
+    }
     const cleanName = sanitize(name);
     const cleanEmail = (typeof email === 'string' ? email.trim().toLowerCase() : '');
-
-    if (!cleanName || cleanName.length < 1) {
-      return res.status(400).json({ success: false, error: 'Name is required' });
-    }
     if (!isValidEmail(cleanEmail)) {
       return res.status(400).json({ success: false, error: 'Valid email is required' });
     }
+    if (!isValidPhone(phone)) {
+      return res.status(400).json({ success: false, error: 'Invalid phone number format' });
+    }
 
-    const submission = {
-      id: Date.now().toString(36) + crypto.randomBytes(4).toString('hex'),
-      name: cleanName,
-      email: cleanEmail,
-      phone: sanitize(phone || ''),
-      answers: Array.isArray(answers) ? answers.slice(0, 20).map(a => sanitize(String(a))) : [],
-      recommendedNiches: Array.isArray(recommendedNiches) ? recommendedNiches.slice(0, 7).map(n => sanitize(String(n))) : [],
-      referralCode: Date.now().toString(36) + crypto.randomBytes(3).toString('hex'),
-      referredBy: sanitize(req.body.referredBy || ''),
-      utmSource: sanitize(req.body.utmSource || ''),
-      utmMedium: sanitize(req.body.utmMedium || ''),
-      utmCampaign: sanitize(req.body.utmCampaign || ''),
-      submittedAt: new Date().toISOString(),
-      ip: req.ip || 'unknown'
-    };
+    const id = crypto.randomBytes(10).toString('hex');
+    const referralCode = crypto.randomBytes(6).toString('hex');
+    const cleanPhone = sanitize(phone || '');
+    const cleanAnswers = Array.isArray(answers) ? answers.slice(0, 20).map(a => sanitize(String(a))) : [];
+    const cleanNiches = Array.isArray(recommendedNiches) ? recommendedNiches.slice(0, 7).map(n => sanitize(String(n))) : [];
+    const now = new Date().toISOString();
 
-    const submissions = readJSON(SUBMISSIONS_FILE);
-    submissions.push(submission);
-    queueWrite(SUBMISSIONS_FILE, submissions);
+    stmts.insertSubmission.run(
+      id, cleanName, cleanEmail, cleanPhone,
+      JSON.stringify(cleanAnswers), JSON.stringify(cleanNiches),
+      referralCode, sanitize(req.body.referredBy || ''),
+      sanitize(req.body.utmSource || ''), sanitize(req.body.utmMedium || ''),
+      sanitize(req.body.utmCampaign || ''), req.ip || 'unknown', now
+    );
 
-    console.log(`[SUBMISSION] ${submission.id} | ${cleanName} <${cleanEmail}> | Niches: ${submission.recommendedNiches.join(', ') || 'none'}`);
+    // Intelligence: record quiz_match signal for each recommended niche
+    const period = now.slice(0, 10);
+    for (const nicheId of cleanNiches) {
+      try { stmts.upsertIntelligence.run(nicheId, 'quiz_match', period, now, now); } catch (e) { /* non-critical */ }
+    }
+
+    // Unmatched quiz demand: capture when no niches match the user's answers
+    if (cleanNiches.length === 0 && cleanAnswers.length > 0) {
+      const topTags = cleanAnswers.slice(0, 3).map(a => a.replace(/[^a-z0-9-]/gi, '').toLowerCase()).filter(Boolean);
+      if (topTags.length > 0) {
+        const key = '_unmatched:' + topTags.join('+');
+        try { stmts.upsertIntelligence.run(key, 'unmatched_demand', period, now, now); } catch (e) { /* non-critical */ }
+      }
+    }
+
+    console.log(`[SUBMISSION] ${id} | ${cleanName} <${cleanEmail}> | Niches: ${cleanNiches.join(', ') || 'none'}`);
+
+    // If user is logged in, link submission to their account
+    if (req.user) {
+      try { auth.stmts.updateQuizLink.run(id, new Date().toISOString(), req.user.id); } catch (e) { /* non-critical */ }
+    }
 
     res.json({
       success: true,
-      id: submission.id,
-      referralCode: submission.referralCode,
+      id,
+      referralCode,
+      link_token: id, // For linking to account during signup
       message: 'Quiz submitted successfully'
     });
   } catch (err) {
@@ -320,65 +656,49 @@ app.post('/api/quiz-submit', (req, res) => {
   }
 });
 
-// Get submissions — protected by API key
+// Get submissions — protected by admin auth
 app.get('/api/submissions', (req, res) => {
-  const authHeader = req.headers.authorization || '';
-  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
-
-  if (token !== API_KEY) {
-    return res.status(403).json({ success: false, error: 'Unauthorized' });
-  }
+  if (!requireAdmin(req, res)) return;
 
   try {
-    const raw = fs.readFileSync(SUBMISSIONS_FILE, 'utf8');
-    let submissions = [];
-
-    try {
-      submissions = JSON.parse(raw);
-    } catch (parseErr) {
-      console.error('[ERROR] Submissions file is corrupted:', parseErr.message);
-      // Return empty list rather than crashing
-      submissions = [];
-    }
-
-    // Validate it's an array
-    if (!Array.isArray(submissions)) {
-      console.warn('[WARNING] Submissions file is not an array. Resetting.');
-      submissions = [];
-    }
-
-    res.json({
-      success: true,
-      count: submissions.length,
-      submissions
-    });
+    const rows = stmts.getSubmissions.all();
+    const submissions = rows.map(r => ({
+      id: r.id, name: r.name, email: r.email, phone: r.phone,
+      answers: JSON.parse(r.answers || '[]'),
+      recommendedNiches: JSON.parse(r.recommended_niches || '[]'),
+      referralCode: r.referral_code, referredBy: r.referred_by,
+      utmSource: r.utm_source, utmMedium: r.utm_medium, utmCampaign: r.utm_campaign,
+      ip: r.ip, submittedAt: r.submitted_at
+    }));
+    res.json({ success: true, count: submissions.length, submissions });
   } catch (err) {
     console.error('[ERROR] Failed to read submissions:', err.message);
-    res.json({
-      success: true,
-      count: 0,
-      submissions: []
-    });
+    res.json({ success: true, count: 0, submissions: [] });
   }
 });
 
-// --- Public results for shareable links ---
+// --- Public results for shareable links (rate limited to prevent enumeration) ---
 app.get('/api/results/:id', (req, res) => {
+  if (!rateLimit(req)) {
+    return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
+  }
   try {
-    const submissions = readJSON(SUBMISSIONS_FILE);
-    const sub = submissions.find(s => s.id === req.params.id);
+    // Validate ID format: alphanumeric only, max 20 chars
+    const id = String(req.params.id || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 20);
+    if (!id) return res.status(404).json({ success: false, error: 'Result not found' });
+
+    const sub = stmts.getSubmissionById.get(id);
     if (!sub) {
       return res.status(404).json({ success: false, error: 'Result not found' });
     }
-    // Return only safe public fields (no email, IP, phone)
     const firstName = (sub.name || '').split(' ')[0];
     res.json({
       success: true,
       result: {
         id: sub.id,
         name: firstName,
-        recommendedNiches: sub.recommendedNiches || [],
-        submittedAt: sub.submittedAt
+        recommendedNiches: JSON.parse(sub.recommended_niches || '[]'),
+        submittedAt: sub.submitted_at
       }
     });
   } catch (err) {
@@ -389,42 +709,28 @@ app.get('/api/results/:id', (req, res) => {
 
 // --- Privacy-respecting analytics ---
 app.post('/api/analytics/event', (req, res) => {
-  if (!rateLimit(req, res)) {
+  if (!rateLimit(req)) {
     return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
   }
 
   try {
     const { event, page, data } = req.body;
-    const ip = getTrustedIP(req);
+    const ip = req.ip || req.connection.remoteAddress || 'unknown';
     const hash = crypto.createHash('sha256').update(API_KEY + ip).digest('hex').slice(0, 12);
 
-    // SECURITY: [TBHM Phase 2 - XSS in Analytics] - Prevent prototype pollution
-    // Prevents: __proto__ injection, constructor pollution via JSON
-    // Enterprise: CWE-1321 (Improperly Controlled Modification of Object Prototype)
-    let safeData = {};
-    if (data && typeof data === 'object' && !Array.isArray(data)) {
-      for (const key of Object.keys(data)) {
-        // Block prototype pollution attempts
-        if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
-        // Only copy safe primitive values
-        const val = data[key];
-        if (typeof val === 'string' || typeof val === 'number' || typeof val === 'boolean') {
-          safeData[key] = typeof val === 'string' ? sanitize(val) : val;
-        }
-      }
+    const cleanEvent = sanitize(event || '');
+    const cleanPage = sanitize(page || '');
+    const cleanData = typeof data === 'object' && data !== null ? JSON.stringify(data) : '{}';
+
+    const analyticsNow = new Date().toISOString();
+    stmts.insertAnalytics.run(cleanEvent, cleanPage, cleanData, hash, analyticsNow);
+
+    // Intelligence: record niche_view / playbook_view signals
+    if (typeof data === 'object' && data !== null && data.nicheId) {
+      const metric = cleanEvent.includes('playbook') ? 'playbook_view' : 'niche_view';
+      const period = analyticsNow.slice(0, 10);
+      try { stmts.upsertIntelligence.run(String(data.nicheId), metric, period, analyticsNow, analyticsNow); } catch (e) { /* non-critical */ }
     }
-
-    const entry = {
-      event: sanitize(event || ''),
-      page: sanitize(page || ''),
-      data: safeData,
-      fingerprint: hash,
-      timestamp: new Date().toISOString()
-    };
-
-    const analytics = readJSON(ANALYTICS_FILE);
-    analytics.push(entry);
-    queueWrite(ANALYTICS_FILE, analytics);
 
     res.json({ success: true });
   } catch (err) {
@@ -435,7 +741,7 @@ app.post('/api/analytics/event', (req, res) => {
 
 // --- Record referral visit ---
 app.post('/api/referrals/track', (req, res) => {
-  if (!rateLimit(req, res)) {
+  if (!rateLimit(req)) {
     return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
   }
 
@@ -446,38 +752,16 @@ app.post('/api/referrals/track', (req, res) => {
       return res.status(400).json({ success: false, error: 'referralCode is required' });
     }
 
-    // SECURITY: [TBHM Phase 7 - Business Logic] - Prevent self-referral abuse
-    // Prevents: Users creating multiple referral visits from same IP
-    // Enterprise: OWASP ASVS 4.0.3 V11.1.7 (Business Logic Security)
-    const ip = getTrustedIP(req);
-    const fingerprint = crypto.createHash('sha256').update(API_KEY + ip).digest('hex').slice(0, 12);
-
-    // Check if this fingerprint has already tracked this referral code in last 24h
-    const referrals = readJSON(REFERRALS_FILE);
-    const recentDupe = referrals.find(r =>
-      r.referralCode === cleanCode &&
-      r.fingerprint === fingerprint &&
-      (Date.now() - new Date(r.timestamp).getTime() < 24 * 60 * 60 * 1000)
-    );
-    if (recentDupe) {
-      // Silently succeed to prevent enumeration, but don't record duplicate
-      return res.json({ success: true });
-    }
-
     // Verify referralCode exists in submissions
-    const submissions = readJSON(SUBMISSIONS_FILE);
-    const exists = submissions.some(s => s.referralCode === cleanCode);
+    const exists = stmts.getSubmissionByReferral.get(cleanCode);
     if (!exists) {
       return res.status(404).json({ success: false, error: 'Invalid referral code' });
     }
 
-    referrals.push({
-      referralCode: cleanCode,
-      referredPage: sanitize(referredPage || ''),
-      timestamp: new Date().toISOString(),
-      fingerprint
-    });
-    queueWrite(REFERRALS_FILE, referrals);
+    const ip = req.ip || req.connection.remoteAddress || 'unknown';
+    const fingerprint = crypto.createHash('sha256').update(API_KEY + ip).digest('hex').slice(0, 12);
+
+    stmts.insertReferral.run(cleanCode, sanitize(referredPage || ''), fingerprint, new Date().toISOString());
 
     res.json({ success: true });
   } catch (err) {
@@ -489,15 +773,9 @@ app.post('/api/referrals/track', (req, res) => {
 // --- Top 10 referrers (public) ---
 app.get('/api/referrals/leaderboard', (req, res) => {
   try {
-    const referrals = readJSON(REFERRALS_FILE);
-    const counts = {};
-    referrals.forEach(r => {
-      counts[r.referralCode] = (counts[r.referralCode] || 0) + 1;
-    });
-    const leaderboard = Object.entries(counts)
-      .map(([referralCode, count]) => ({ referralCode, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 10);
+    const leaderboard = stmts.getReferralCounts.all().map(r => ({
+      referralCode: r.referral_code, count: r.count
+    }));
     res.json({ success: true, leaderboard });
   } catch (err) {
     console.error('[ERROR] Leaderboard failed:', err.message);
@@ -505,12 +783,18 @@ app.get('/api/referrals/leaderboard', (req, res) => {
   }
 });
 
-// --- Referral count for specific code ---
+// --- Referral count for specific code (rate limited) ---
 app.get('/api/referrals/status/:code', (req, res) => {
+  if (!rateLimit(req)) {
+    return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
+  }
   try {
-    const referrals = readJSON(REFERRALS_FILE);
-    const count = referrals.filter(r => r.referralCode === req.params.code).length;
-    res.json({ success: true, referralCode: req.params.code, count });
+    // Validate code format
+    const code = String(req.params.code || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 20);
+    if (!code) return res.json({ success: true, referralCode: '', count: 0 });
+
+    const result = stmts.getReferralCountByCode.get(code);
+    res.json({ success: true, referralCode: code, count: result ? result.count : 0 });
   } catch (err) {
     console.error('[ERROR] Referral status failed:', err.message);
     res.status(500).json({ success: false, error: 'Internal server error' });
@@ -519,7 +803,7 @@ app.get('/api/referrals/status/:code', (req, res) => {
 
 // --- Submit testimonial ---
 app.post('/api/testimonials', (req, res) => {
-  if (!rateLimit(req, res)) {
+  if (!rateLimit(req)) {
     return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
   }
 
@@ -533,41 +817,40 @@ app.post('/api/testimonials', (req, res) => {
     if (!cleanName || cleanName.length < 1) {
       return res.status(400).json({ success: false, error: 'Name is required' });
     }
-    if (!cleanText || cleanText.length < 10 || cleanText.length > 500) {
+    // Bug fix: sanitize() caps at 500 chars, so cleanText.length > 500 was unreachable dead code.
+    // Check raw text length before sanitization to properly enforce the 500-char limit.
+    if (typeof text !== 'string' || text.trim().length > 500) {
+      return res.status(400).json({ success: false, error: 'Text must be between 10 and 500 characters' });
+    }
+    if (!cleanText || cleanText.length < 10) {
       return res.status(400).json({ success: false, error: 'Text must be between 10 and 500 characters' });
     }
     if (isNaN(cleanRating) || cleanRating < 1 || cleanRating > 5) {
       return res.status(400).json({ success: false, error: 'Rating must be between 1 and 5' });
     }
 
-    const testimonial = {
-      id: Date.now().toString(36) + crypto.randomBytes(4).toString('hex'),
-      name: cleanName,
-      text: cleanText,
-      niche: cleanNiche,
-      rating: cleanRating,
-      approved: false,
-      submittedAt: new Date().toISOString()
-    };
+    const id = crypto.randomBytes(10).toString('hex');
+    stmts.insertTestimonial.run(id, cleanName, cleanText, cleanNiche, cleanRating, new Date().toISOString());
 
-    const testimonials = readJSON(TESTIMONIALS_FILE);
-    testimonials.push(testimonial);
-    queueWrite(TESTIMONIALS_FILE, testimonials);
-
-    console.log(`[TESTIMONIAL] ${testimonial.id} | ${cleanName} | Rating: ${cleanRating}`);
-    res.json({ success: true, id: testimonial.id });
+    console.log(`[TESTIMONIAL] ${id} | ${cleanName} | Rating: ${cleanRating}`);
+    res.json({ success: true, id });
   } catch (err) {
     console.error('[ERROR] Testimonial submission failed:', err.message);
     res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
 
-// --- Public approved testimonials ---
+// --- Public approved testimonials (rate limited) ---
 app.get('/api/testimonials', (req, res) => {
+  if (!rateLimit(req)) {
+    return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
+  }
   try {
-    const testimonials = readJSON(TESTIMONIALS_FILE);
-    const approved = testimonials.filter(t => t.approved === true);
-    res.json({ success: true, testimonials: approved });
+    const testimonials = stmts.getApprovedTestimonials.all().map(t => ({
+      id: t.id, name: t.name, text: t.text, niche: t.niche,
+      rating: t.rating, approved: true, submittedAt: t.submitted_at
+    }));
+    res.json({ success: true, testimonials });
   } catch (err) {
     console.error('[ERROR] Testimonials read failed:', err.message);
     res.status(500).json({ success: false, error: 'Internal server error' });
@@ -576,7 +859,7 @@ app.get('/api/testimonials', (req, res) => {
 
 // --- Graduate directory opt-in ---
 app.post('/api/graduates', (req, res) => {
-  if (!rateLimit(req, res)) {
+  if (!rateLimit(req)) {
     return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
   }
 
@@ -587,252 +870,36 @@ app.post('/api/graduates', (req, res) => {
       return res.status(400).json({ success: false, error: 'Name is required' });
     }
 
-    const graduate = {
-      id: Date.now().toString(36) + crypto.randomBytes(4).toString('hex'),
-      name: cleanName,
-      niche: sanitize(niche || ''),
-      city: sanitize(city || ''),
-      state: sanitize(state || ''),
-      joinedAt: new Date().toISOString()
-    };
+    const id = crypto.randomBytes(10).toString('hex');
+    const cleanNiche = sanitize(niche || '');
+    const cleanCity = sanitize(city || '');
+    const cleanState = sanitize(state || '');
+    stmts.insertGraduate.run(id, cleanName, cleanNiche, cleanCity, cleanState, new Date().toISOString());
 
-    const graduates = readJSON(GRADUATES_FILE);
-    graduates.push(graduate);
-    queueWrite(GRADUATES_FILE, graduates);
-
-    console.log(`[GRADUATE] ${graduate.id} | ${cleanName} | ${graduate.niche}`);
-    res.json({ success: true, id: graduate.id });
+    console.log(`[GRADUATE] ${id} | ${cleanName} | ${cleanNiche}`);
+    res.json({ success: true, id });
   } catch (err) {
     console.error('[ERROR] Graduate registration failed:', err.message);
     res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
 
-// SECURITY: [TBHM Phase 7 - Session Fixation] - Tie session to IP fingerprint
-// Prevents: Session manipulation, progress tampering across different users
-// Enterprise: OWASP ASVS 4.0.3 V3.3.1 (Session Binding)
-
-// Session ownership validation
-function validateSessionOwnership(sessionId, req) {
-  const ip = getTrustedIP(req);
-  const fingerprint = crypto.createHash('sha256').update(API_KEY + ip).digest('hex').slice(0, 12);
-  // Session ID should contain fingerprint (first 12 chars) to prevent cross-user access
-  return sessionId.startsWith(fingerprint);
-}
-
-function createSessionId(req) {
-  const ip = getTrustedIP(req);
-  const fingerprint = crypto.createHash('sha256').update(API_KEY + ip).digest('hex').slice(0, 12);
-  const random = Date.now().toString(36) + crypto.randomBytes(6).toString('hex');
-  return fingerprint + '-' + random;
-}
-
-// --- Create secure session ID (fingerprinted to user) ---
-app.post('/api/create-session', (req, res) => {
-  if (!rateLimit(req, res)) {
-    return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
-  }
-
-  try {
-    const sessionId = createSessionId(req);
-    res.json({ success: true, sessionId });
-  } catch (err) {
-    console.error('[ERROR] Session creation failed:', err.message);
-    res.status(500).json({ success: false, error: 'Internal server error' });
-  }
-});
-
-// --- Quiz progress persistence (server-side session) ---
-app.post('/api/quiz-progress', (req, res) => {
-  if (!rateLimit(req, res)) {
-    return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
-  }
-
-  try {
-    const { sessionId, currentQuestion, answers } = req.body;
-    const cleanId = sanitize(sessionId || '');
-
-    if (!cleanId || cleanId.length < 1) {
-      return res.status(400).json({ success: false, error: 'sessionId is required' });
-    }
-
-    // Validate session ownership to prevent cross-user tampering
-    if (!validateSessionOwnership(cleanId, req)) {
-      return res.status(403).json({ success: false, error: 'Invalid session' });
-    }
-
-    // Validate currentQuestion is a number 0-20
-    const qNum = parseInt(currentQuestion, 10);
-    if (isNaN(qNum) || qNum < 0 || qNum > 20) {
-      return res.status(400).json({ success: false, error: 'currentQuestion must be a number between 0 and 20' });
-    }
-
-    // Validate answers is an array, max 20 elements
-    if (!Array.isArray(answers) || answers.length > 20) {
-      return res.status(400).json({ success: false, error: 'answers must be an array with max 20 elements' });
-    }
-
-    const cleanAnswers = answers.map(a => sanitize(String(a)));
-
-    const progress = readJSONObject(PROGRESS_FILE);
-    progress[cleanId] = {
-      currentQuestion: qNum,
-      answers: cleanAnswers,
-      updatedAt: new Date().toISOString()
-    };
-    queueWrite(PROGRESS_FILE, progress);
-
-    console.log('[QUIZ-PROGRESS] Saved for session ' + cleanId + ' at question ' + qNum);
-    res.json({ success: true });
-  } catch (err) {
-    console.error('[ERROR] Quiz progress save failed:', err.message);
-    res.status(500).json({ success: false, error: 'Internal server error' });
-  }
-});
-
-app.get('/api/quiz-progress/:sessionId', (req, res) => {
-  if (!rateLimit(req, res)) {
-    return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
-  }
-
-  try {
-    const cleanId = sanitize(req.params.sessionId || '');
-    if (!cleanId) {
-      return res.status(400).json({ success: false, error: 'sessionId is required' });
-    }
-
-    // Validate session ownership
-    if (!validateSessionOwnership(cleanId, req)) {
-      return res.status(403).json({ success: false, error: 'Invalid session' });
-    }
-
-    const progress = readJSONObject(PROGRESS_FILE);
-    if (!progress[cleanId]) {
-      return res.status(404).json({ success: false, error: 'No progress found for this session' });
-    }
-
-    res.json({ success: true, progress: progress[cleanId] });
-  } catch (err) {
-    console.error('[ERROR] Quiz progress read failed:', err.message);
-    res.status(500).json({ success: false, error: 'Internal server error' });
-  }
-});
-
-// --- Curriculum progress persistence (server-side session) ---
-app.post('/api/curriculum/progress', (req, res) => {
-  if (!rateLimit(req, res)) {
-    return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
-  }
-
-  try {
-    const { sessionId, currentDay, completedDays, quizScores } = req.body;
-    const cleanId = sanitize(sessionId || '');
-
-    if (!cleanId || cleanId.length < 1) {
-      return res.status(400).json({ success: false, error: 'sessionId is required' });
-    }
-
-    // Validate session ownership
-    if (!validateSessionOwnership(cleanId, req)) {
-      return res.status(403).json({ success: false, error: 'Invalid session' });
-    }
-
-    // Validate currentDay is 1-7
-    const dayNum = parseInt(currentDay, 10);
-    if (isNaN(dayNum) || dayNum < 1 || dayNum > 7) {
-      return res.status(400).json({ success: false, error: 'currentDay must be a number between 1 and 7' });
-    }
-
-    // Validate completedDays is array of numbers 1-7
-    if (!Array.isArray(completedDays)) {
-      return res.status(400).json({ success: false, error: 'completedDays must be an array' });
-    }
-    const cleanCompleted = completedDays
-      .map(d => parseInt(d, 10))
-      .filter(d => !isNaN(d) && d >= 1 && d <= 7);
-
-    // Validate quizScores is an object with numeric values
-    const cleanScores = {};
-    if (typeof quizScores === 'object' && quizScores !== null && !Array.isArray(quizScores)) {
-      for (const key in quizScores) {
-        const dayKey = parseInt(key, 10);
-        const score = parseInt(quizScores[key], 10);
-        if (!isNaN(dayKey) && dayKey >= 1 && dayKey <= 7 && !isNaN(score) && score >= 0 && score <= 5) {
-          cleanScores[dayKey] = score;
-        }
-      }
-    }
-
-    const curriculum = readJSONObject(CURRICULUM_FILE);
-    curriculum[cleanId] = {
-      currentDay: dayNum,
-      completedDays: cleanCompleted,
-      quizScores: cleanScores,
-      updatedAt: new Date().toISOString()
-    };
-    queueWrite(CURRICULUM_FILE, curriculum);
-
-    console.log('[CURRICULUM] Saved for session ' + cleanId + ' — day ' + dayNum + ', ' + cleanCompleted.length + ' completed');
-    res.json({ success: true });
-  } catch (err) {
-    console.error('[ERROR] Curriculum progress save failed:', err.message);
-    res.status(500).json({ success: false, error: 'Internal server error' });
-  }
-});
-
-app.get('/api/curriculum/progress/:sessionId', (req, res) => {
-  if (!rateLimit(req, res)) {
-    return res.status(429).json({ success: false, error: 'Too many requests. Try again in 15 minutes.' });
-  }
-
-  try {
-    const cleanId = sanitize(req.params.sessionId || '');
-    if (!cleanId) {
-      return res.status(400).json({ success: false, error: 'sessionId is required' });
-    }
-
-    // Validate session ownership
-    if (!validateSessionOwnership(cleanId, req)) {
-      return res.status(403).json({ success: false, error: 'Invalid session' });
-    }
-
-    const curriculum = readJSONObject(CURRICULUM_FILE);
-    if (!curriculum[cleanId]) {
-      return res.status(404).json({ success: false, error: 'No curriculum progress found for this session' });
-    }
-
-    res.json({ success: true, progress: curriculum[cleanId] });
-  } catch (err) {
-    console.error('[ERROR] Curriculum progress read failed:', err.message);
-    res.status(500).json({ success: false, error: 'Internal server error' });
-  }
-});
-
 // --- Admin: Analytics summary (API key protected) ---
 app.get('/api/admin/analytics', (req, res) => {
-  if (!requireApiKey(req, res)) return;
+  if (!requireAdmin(req, res)) return;
 
   try {
-    const analytics = readJSON(ANALYTICS_FILE);
-    const uniqueFingerprints = new Set(analytics.map(a => a.fingerprint)).size;
+    const totalEvents = db.prepare('SELECT COUNT(*) as c FROM analytics').get().c;
+    const uniqueFingerprints = db.prepare('SELECT COUNT(DISTINCT fingerprint) as c FROM analytics').get().c;
+    const eventRows = db.prepare('SELECT event, COUNT(*) as count FROM analytics GROUP BY event').all();
+    const dailyRows = db.prepare("SELECT substr(timestamp, 1, 10) as day, COUNT(*) as count FROM analytics GROUP BY day ORDER BY day").all();
+
     const eventBreakdown = {};
+    eventRows.forEach(r => { eventBreakdown[r.event] = r.count; });
     const dailyCounts = {};
+    dailyRows.forEach(r => { dailyCounts[r.day] = r.count; });
 
-    analytics.forEach(a => {
-      eventBreakdown[a.event] = (eventBreakdown[a.event] || 0) + 1;
-      const day = (a.timestamp || '').slice(0, 10);
-      if (day) {
-        dailyCounts[day] = (dailyCounts[day] || 0) + 1;
-      }
-    });
-
-    res.json({
-      success: true,
-      totalEvents: analytics.length,
-      uniqueFingerprints,
-      eventBreakdown,
-      dailyCounts
-    });
+    res.json({ success: true, totalEvents, uniqueFingerprints, eventBreakdown, dailyCounts });
   } catch (err) {
     console.error('[ERROR] Admin analytics failed:', err.message);
     res.status(500).json({ success: false, error: 'Internal server error' });
@@ -841,10 +908,13 @@ app.get('/api/admin/analytics', (req, res) => {
 
 // --- Admin: Full referral data (API key protected) ---
 app.get('/api/admin/referrals', (req, res) => {
-  if (!requireApiKey(req, res)) return;
+  if (!requireAdmin(req, res)) return;
 
   try {
-    const referrals = readJSON(REFERRALS_FILE);
+    const referrals = stmts.getReferrals.all().map(r => ({
+      referralCode: r.referral_code, referredPage: r.referred_page,
+      fingerprint: r.fingerprint, timestamp: r.timestamp
+    }));
     res.json({ success: true, count: referrals.length, referrals });
   } catch (err) {
     console.error('[ERROR] Admin referrals failed:', err.message);
@@ -854,27 +924,17 @@ app.get('/api/admin/referrals', (req, res) => {
 
 // --- Admin: Curriculum progress stats (API key protected) ---
 app.get('/api/admin/curriculum-progress', (req, res) => {
-  if (!requireApiKey(req, res)) return;
+  if (!requireAdmin(req, res)) return;
 
   try {
-    const analytics = readJSON(ANALYTICS_FILE);
-    const curriculumEvents = analytics.filter(a =>
-      (a.event || '').startsWith('curriculum_') || (a.event || '').startsWith('lesson_')
-    );
+    const total = db.prepare("SELECT COUNT(*) as c FROM analytics WHERE event LIKE 'curriculum_%' OR event LIKE 'lesson_%'").get().c;
+    const learners = db.prepare("SELECT COUNT(DISTINCT fingerprint) as c FROM analytics WHERE event LIKE 'curriculum_%' OR event LIKE 'lesson_%'").get().c;
+    const eventRows = db.prepare("SELECT event, COUNT(*) as count FROM analytics WHERE event LIKE 'curriculum_%' OR event LIKE 'lesson_%' GROUP BY event").all();
 
     const eventBreakdown = {};
-    const uniqueLearners = new Set();
-    curriculumEvents.forEach(a => {
-      eventBreakdown[a.event] = (eventBreakdown[a.event] || 0) + 1;
-      uniqueLearners.add(a.fingerprint);
-    });
+    eventRows.forEach(r => { eventBreakdown[r.event] = r.count; });
 
-    res.json({
-      success: true,
-      totalCurriculumEvents: curriculumEvents.length,
-      uniqueLearners: uniqueLearners.size,
-      eventBreakdown
-    });
+    res.json({ success: true, totalCurriculumEvents: total, uniqueLearners: learners, eventBreakdown });
   } catch (err) {
     console.error('[ERROR] Admin curriculum progress failed:', err.message);
     res.status(500).json({ success: false, error: 'Internal server error' });
@@ -883,31 +943,31 @@ app.get('/api/admin/curriculum-progress', (req, res) => {
 
 // --- Admin: Export submissions as CSV (API key protected) ---
 app.get('/api/admin/export/csv', (req, res) => {
-  if (!requireApiKey(req, res)) return;
+  if (!requireAdmin(req, res)) return;
 
   try {
-    const submissions = readJSON(SUBMISSIONS_FILE);
-    // CSV-safe: escape formula injection and quote fields with commas/quotes
+    const submissions = stmts.getSubmissions.all();
+    // CSV-safe: escape formula injection characters and quote fields properly
     function csvSafe(val) {
-      let s = String(val || '');
+      if (!val) return '""';
+      let s = String(val);
+      // Strip formula injection prefixes
       if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
-      if (s.includes(',') || s.includes('"') || s.includes('\n')) {
-        s = '"' + s.replace(/"/g, '""') + '"';
-      }
-      return s;
+      // Quote and escape internal quotes
+      return '"' + s.replace(/"/g, '""') + '"';
     }
     const headers = 'id,name,email,phone,niches,date,referralCode,referredBy';
     const rows = submissions.map(s => {
-      const niches = (s.recommendedNiches || []).join('; ');
+      const niches = JSON.parse(s.recommended_niches || '[]').join('; ');
       return [
         csvSafe(s.id),
         csvSafe(s.name),
         csvSafe(s.email),
         csvSafe(s.phone),
         csvSafe(niches),
-        csvSafe(s.submittedAt),
-        csvSafe(s.referralCode),
-        csvSafe(s.referredBy)
+        csvSafe(s.submitted_at),
+        csvSafe(s.referral_code),
+        csvSafe(s.referred_by)
       ].join(',');
     });
 
@@ -923,7 +983,7 @@ app.get('/api/admin/export/csv', (req, res) => {
 
 // --- Content calendar: TikTok + outreach as JSON (API key protected) ---
 app.get('/api/content-calendar', (req, res) => {
-  if (!requireApiKey(req, res)) return;
+  if (!requireAdmin(req, res)) return;
 
   try {
     const tiktokPath = path.join(__dirname, 'content', 'tiktok-scripts.md');
@@ -1011,16 +1071,16 @@ app.get('/api/content-calendar', (req, res) => {
 
 // --- Admin: Backup all data (API key protected) ---
 app.post('/api/admin/backup', (req, res) => {
-  if (!requireApiKey(req, res)) return;
+  if (!requireAdmin(req, res)) return;
 
   try {
     const backup = {
       exportedAt: new Date().toISOString(),
-      submissions: readJSON(SUBMISSIONS_FILE),
-      analytics: readJSON(ANALYTICS_FILE),
-      referrals: readJSON(REFERRALS_FILE),
-      testimonials: readJSON(TESTIMONIALS_FILE),
-      graduates: readJSON(GRADUATES_FILE)
+      submissions: stmts.getSubmissions.all(),
+      analytics: stmts.getAnalytics.all(),
+      referrals: stmts.getReferrals.all(),
+      testimonials: stmts.getAllTestimonials.all(),
+      graduates: stmts.getGraduates.all()
     };
 
     res.setHeader('Content-Type', 'application/json');
@@ -1034,10 +1094,13 @@ app.post('/api/admin/backup', (req, res) => {
 
 // --- Admin: All testimonials including unapproved (API key protected) ---
 app.get('/api/admin/testimonials', (req, res) => {
-  if (!requireApiKey(req, res)) return;
+  if (!requireAdmin(req, res)) return;
 
   try {
-    const testimonials = readJSON(TESTIMONIALS_FILE);
+    const testimonials = stmts.getAllTestimonials.all().map(t => ({
+      id: t.id, name: t.name, text: t.text, niche: t.niche,
+      rating: t.rating, approved: !!t.approved, submittedAt: t.submitted_at
+    }));
     res.json({ success: true, count: testimonials.length, testimonials });
   } catch (err) {
     console.error('[ERROR] Admin testimonials failed:', err.message);
@@ -1047,19 +1110,22 @@ app.get('/api/admin/testimonials', (req, res) => {
 
 // --- Admin: Approve a testimonial (API key protected) ---
 app.post('/api/admin/testimonials/:id/approve', (req, res) => {
-  if (!requireApiKey(req, res)) return;
+  if (!requireAdmin(req, res)) return;
 
   try {
-    const testimonials = readJSON(TESTIMONIALS_FILE);
-    const idx = testimonials.findIndex(t => t.id === req.params.id);
-    if (idx === -1) {
+    const result = stmts.approveTestimonial.run(req.params.id);
+    if (result.changes === 0) {
       return res.status(404).json({ success: false, error: 'Testimonial not found' });
     }
-    testimonials[idx].approved = true;
-    queueWrite(TESTIMONIALS_FILE, testimonials);
-
     console.log(`[TESTIMONIAL APPROVED] ${req.params.id}`);
-    res.json({ success: true, testimonial: testimonials[idx] });
+    const testimonial = db.prepare('SELECT * FROM testimonials WHERE id = ?').get(req.params.id);
+    // Bug fix: spreading raw DB row exposed both `submitted_at` (SQLite column) AND `submittedAt`
+    // (camelCase alias). Explicitly construct the response object to avoid the duplicate field.
+    res.json({ success: true, testimonial: {
+      id: testimonial.id, name: testimonial.name, text: testimonial.text,
+      niche: testimonial.niche, rating: testimonial.rating,
+      approved: true, submittedAt: testimonial.submitted_at
+    } });
   } catch (err) {
     console.error('[ERROR] Testimonial approval failed:', err.message);
     res.status(500).json({ success: false, error: 'Internal server error' });
@@ -1072,7 +1138,7 @@ app.get('/sitemap.xml', (req, res) => {
     ? (process.env.ALLOWED_ORIGIN || 'https://anvil.onrender.com')
     : 'http://localhost:' + PORT;
 
-  const pages = ['/', '/learn.html', '/certificate.html', '/about.html', '/terms.html', '/privacy.html', '/disclaimer.html', '/accessibility.html'];
+  const pages = ['/', '/learn.html', '/certificate.html', '/about.html', '/terms.html', '/privacy.html', '/disclaimer.html', '/accessibility.html', '/kids/', '/kids/learn.html', '/kids/portfolio.html'];
   const urls = pages.map(p =>
     `  <url>\n    <loc>${baseUrl}${p}</loc>\n    <lastmod>${new Date().toISOString().slice(0, 10)}</lastmod>\n  </url>`
   ).join('\n');
@@ -1096,236 +1162,1519 @@ app.get('/robots.txt', (req, res) => {
   res.send(`User-agent: *\nAllow: /\n\nSitemap: ${baseUrl}/sitemap.xml\n`);
 });
 
-// --- ANVIL Pulse: AI News Terminal ---
-
-// Public: Get latest pulse updates (optionally filtered by niche)
-app.get('/api/pulse', (req, res) => {
-  if (!rateLimit(req, res)) {
-    return res.status(429).json({ success: false, error: 'Too many requests.' });
-  }
-  try {
-    const feed = readJSON(PULSE_FILE);
-    const niche = sanitize(req.query.niche || '');
-    const limit = Math.min(parseInt(req.query.limit, 10) || 20, 50);
-
-    let items = feed
-      .filter(p => p.published !== false)
-      .sort((a, b) => (b.publishedAt || '').localeCompare(a.publishedAt || ''));
-
-    if (niche) {
-      items = items.filter(p =>
-        (p.niches || []).includes(niche) || (p.niches || []).includes('all')
-      );
-    }
-
-    items = items.slice(0, limit);
-
-    res.json({ success: true, count: items.length, items });
-  } catch (err) {
-    console.error('[ERROR] Pulse feed failed:', err.message);
-    res.status(500).json({ success: false, error: 'Internal server error' });
-  }
-});
-
-// Public: Get today's "One Thing to Learn" hint
-app.get('/api/pulse/daily-hint', (req, res) => {
-  if (!rateLimit(req, res)) {
-    return res.status(429).json({ success: false, error: 'Too many requests.' });
-  }
-  try {
-    const feed = readJSON(PULSE_FILE);
-    const niche = sanitize(req.query.niche || '');
-    const today = new Date().toISOString().slice(0, 10);
-
-    let hints = feed.filter(p =>
-      p.published !== false && p.type === 'hint' &&
-      (p.publishedAt || '').startsWith(today)
-    );
-
-    if (niche) {
-      hints = hints.filter(p =>
-        (p.niches || []).includes(niche) || (p.niches || []).includes('all')
-      );
-    }
-
-    // If no hint for today, return most recent hint
-    if (hints.length === 0) {
-      hints = feed
-        .filter(p => p.published !== false && p.type === 'hint')
-        .sort((a, b) => (b.publishedAt || '').localeCompare(a.publishedAt || ''));
-      if (niche) {
-        hints = hints.filter(p =>
-          (p.niches || []).includes(niche) || (p.niches || []).includes('all')
-        );
-      }
-    }
-
-    const hint = hints[0] || null;
-    res.json({ success: true, hint });
-  } catch (err) {
-    console.error('[ERROR] Daily hint failed:', err.message);
-    res.status(500).json({ success: false, error: 'Internal server error' });
-  }
-});
-
-// SECURITY: [TBHM Phase 3 - SSRF in Admin Endpoints] - Validate admin-submitted URLs
-// Prevents: Admin adding malicious URLs that trigger SSRF when aggregator runs
-// Enterprise: Defense in depth - validate even trusted admin input
-app.post('/api/admin/pulse', (req, res) => {
-  if (!requireApiKey(req, res)) return;
-
-  try {
-    const { headline, summary, sourceUrl, sourceName, niches, type, tags } = req.body;
-    const cleanHeadline = sanitize(headline);
-    const cleanSummary = sanitize(summary).slice(0, 1000);
-
-    if (!cleanHeadline || cleanHeadline.length < 5) {
-      return res.status(400).json({ success: false, error: 'Headline is required (min 5 chars)' });
-    }
-    if (!cleanSummary || cleanSummary.length < 10) {
-      return res.status(400).json({ success: false, error: 'Summary is required (min 10 chars)' });
-    }
-
-    // Validate sourceUrl if provided
-    let cleanSourceUrl = '';
-    if (sourceUrl) {
-      const urlValidation = validateRSSUrl(sourceUrl);
-      if (!urlValidation.valid) {
-        return res.status(400).json({ success: false, error: 'Invalid source URL: ' + urlValidation.error });
-      }
-      cleanSourceUrl = sourceUrl; // URL is valid
-    }
-
-    const entry = {
-      id: Date.now().toString(36) + crypto.randomBytes(4).toString('hex'),
-      headline: cleanHeadline,
-      summary: cleanSummary,
-      sourceUrl: cleanSourceUrl,
-      sourceName: sanitize(sourceName || ''),
-      niches: Array.isArray(niches) ? niches.slice(0, 7).map(n => sanitize(String(n))) : ['all'],
-      type: ['update', 'hint', 'breaking', 'tool', 'opportunity'].includes(type) ? type : 'update',
-      tags: Array.isArray(tags) ? tags.slice(0, 10).map(t => sanitize(String(t))) : [],
-      published: true,
-      publishedAt: new Date().toISOString(),
-      verified: false
-    };
-
-    const feed = readJSON(PULSE_FILE);
-    feed.push(entry);
-    queueWrite(PULSE_FILE, feed);
-
-    console.log(`[PULSE] ${entry.id} | ${entry.type} | ${cleanHeadline.slice(0, 50)}`);
-    res.json({ success: true, id: entry.id });
-  } catch (err) {
-    console.error('[ERROR] Pulse post failed:', err.message);
-    res.status(500).json({ success: false, error: 'Internal server error' });
-  }
-});
-
-// Admin: Verify a pulse update (marks source as checked)
-app.post('/api/admin/pulse/:id/verify', (req, res) => {
-  if (!requireApiKey(req, res)) return;
-
-  try {
-    const feed = readJSON(PULSE_FILE);
-    const idx = feed.findIndex(p => p.id === req.params.id);
-    if (idx === -1) {
-      return res.status(404).json({ success: false, error: 'Pulse item not found' });
-    }
-    feed[idx].verified = true;
-    feed[idx].verifiedAt = new Date().toISOString();
-    queueWrite(PULSE_FILE, feed);
-
-    console.log(`[PULSE VERIFIED] ${req.params.id}`);
-    res.json({ success: true });
-  } catch (err) {
-    console.error('[ERROR] Pulse verify failed:', err.message);
-    res.status(500).json({ success: false, error: 'Internal server error' });
-  }
-});
-
-// Admin: Get all pulse items (including unpublished)
-app.get('/api/admin/pulse', (req, res) => {
-  if (!requireApiKey(req, res)) return;
-  try {
-    const feed = readJSON(PULSE_FILE);
-    res.json({ success: true, count: feed.length, items: feed });
-  } catch (err) {
-    console.error('[ERROR] Admin pulse failed:', err.message);
-    res.status(500).json({ success: false, error: 'Internal server error' });
-  }
-});
-
-// Manual pulse refresh endpoint (admin only)
-app.post('/api/admin/pulse/refresh', (req, res) => {
-  const key = req.headers['x-api-key'] || req.query.key;
-  if (key !== API_KEY) {
-    return res.status(401).json({ success: false, error: 'Unauthorized' });
-  }
-  refreshPulseFeed().then(() => {
-    const cache = fs.existsSync(PULSE_CACHE_FILE) ? JSON.parse(fs.readFileSync(PULSE_CACHE_FILE, 'utf8')) : {};
-    res.json({ success: true, message: 'Refresh complete', stats: cache });
-  }).catch(err => {
-    res.status(500).json({ success: false, error: err.message });
+// --- Niches registry (public — returns enabled niches + quiz questions) ---
+app.get('/api/niches', (req, res) => {
+  const enabledNiches = nichesData.niches.filter(n => n.enabled);
+  res.json({
+    success: true,
+    categories: nichesData.categories || [],
+    niches: enabledNiches.map(n => ({
+      id: n.id,
+      name: n.name,
+      tier: n.tier,
+      category: n.category,
+      icon: n.icon,
+      earn: n.earn,
+      avg_rate: n.avg_rate,
+      who_pays: n.who_pays,
+      desc: n.desc,
+      quiz_tags: n.quiz_tags,
+      coming_soon: n.coming_soon || false,
+      application_links: n.application_links || []
+    })),
+    quiz_questions: nichesData.quiz_questions || []
   });
 });
 
-// Pulse feed status endpoint
-app.get('/api/pulse/status', (req, res) => {
+// --- Admin: All niches (API key protected) ---
+app.get('/api/admin/niches', (req, res) => {
+  if (!requireAdmin(req, res)) return;
+
+  // Check which playbooks exist
+  const nichesWithStatus = nichesData.niches.map(n => {
+    let hasPlaybook = false;
+    if (n.playbook_path) {
+      hasPlaybook = fs.existsSync(path.join(__dirname, n.playbook_path));
+    }
+    return { ...n, hasPlaybook };
+  });
+
+  res.json({ success: true, niches: nichesWithStatus, categories: nichesData.categories });
+});
+
+// --- Admin: Toggle niche enabled/disabled (API key protected) ---
+app.post('/api/admin/niches/:id/toggle', (req, res) => {
+  if (!requireAdmin(req, res)) return;
+
+  const nicheId = req.params.id;
+  const niche = nichesData.niches.find(n => n.id === nicheId);
+  if (!niche) {
+    return res.status(404).json({ success: false, error: 'Niche not found' });
+  }
+
+  niche.enabled = !niche.enabled;
+
+  // Write back to file
+  const tmp = NICHES_FILE + '.tmp';
+  fs.writeFileSync(tmp, JSON.stringify(nichesData, null, 2), 'utf8');
+  fs.renameSync(tmp, NICHES_FILE);
+
+  console.log(`[NICHES] ${nicheId} ${niche.enabled ? 'enabled' : 'disabled'}`);
+  res.json({ success: true, id: nicheId, enabled: niche.enabled });
+});
+
+// ── Discovery & Intelligence Routes ────────────────────
+
+// Trigger discovery scan
+app.post('/api/admin/discovery/scan', async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+
   try {
-    const cache = fs.existsSync(PULSE_CACHE_FILE) ? JSON.parse(fs.readFileSync(PULSE_CACHE_FILE, 'utf8')) : {};
-    const feed = readJSON(PULSE_FILE);
-    loadSourceState();
-    const sources = PULSE_SOURCES.map(s => {
-      const st = getSourceState(s.name);
-      return {
-        name: s.name,
-        niche: s.niche,
-        healthy: st.failCount < CIRCUIT_BREAKER_THRESHOLD,
-        failCount: st.failCount,
-        lastSuccess: st.lastSuccess ? new Date(st.lastSuccess).toISOString() : null,
-        cached304s: st.total304s || 0,
-        totalFetches: st.totalFetches || 0,
-        backoffActive: st.backoffUntil ? Date.now() < st.backoffUntil : false,
-      };
-    });
+    const { sources } = req.body;
+    const validSources = ['bls', 'federal_register', 'regulations_gov', 'onet', 'onet_keyword', 'nvd'];
+    const requested = Array.isArray(sources) ? sources.filter(s => validSources.includes(s)) : ['federal_register'];
+
+    if (requested.length === 0) {
+      return res.status(400).json({ success: false, error: 'No valid sources specified' });
+    }
+
+    const result = await discovery.scan(requested, stmts);
     res.json({
       success: true,
-      lastRefresh: cache.lastRefresh || null,
-      totalItems: feed.length,
-      verifiedCount: feed.filter(i => i.verified).length,
-      sourceCount: PULSE_SOURCES.length,
-      healthySources: sources.filter(s => s.healthy).length,
-      notModified: cache.notModified || 0,
-      sources,
+      sources_scanned: requested,
+      total_results: result.results.length,
+      logs: result.logs,
+      available_sources: discovery.getAvailableSources()
     });
   } catch (err) {
-    res.status(500).json({ success: false, error: 'Status unavailable' });
+    console.error('[ERROR] Discovery scan failed:', err.message);
+    res.status(500).json({ success: false, error: 'Discovery scan failed' });
   }
 });
 
-// SECURITY: [TBHM Phase 6 - Information Disclosure] - Block /data/ directory access
-// Prevents: Direct access to JSON data files, backup files, state files
-// Enterprise: CWE-538 (File and Directory Information Exposure)
-app.use('/data', (req, res) => {
-  res.status(403).json({ success: false, error: 'Forbidden' });
+// List candidates with optional status filter
+app.get('/api/admin/discovery/candidates', (req, res) => {
+  if (!requireAdmin(req, res)) return;
+
+  try {
+    const status = req.query.status;
+    const rows = status
+      ? stmts.getCandidatesByStatus.all(status)
+      : stmts.getCandidates.all();
+
+    const candidates = rows.map(r => ({
+      id: r.id, slug: r.slug, title: r.title,
+      source: r.source, source_url: r.source_url,
+      category: r.category, status: r.status,
+      scores: {
+        demand: r.score_demand, pain: r.score_pain,
+        competition: r.score_competition, ai_leverage: r.score_ai_leverage,
+        composite: r.score_composite
+      },
+      admin_notes: r.admin_notes,
+      created_at: r.created_at, updated_at: r.updated_at
+    }));
+
+    res.json({ success: true, count: candidates.length, candidates });
+  } catch (err) {
+    console.error('[ERROR] Candidates list failed:', err.message);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
 });
 
-// Block access to common backup/temp file patterns
-app.use((req, res, next) => {
-  const blocked = ['.tmp', '.backup', '.bak', '.swp', '.json.', 'pulse-cache', 'pulse-source-state'];
-  if (blocked.some(pattern => req.path.includes(pattern))) {
-    return res.status(403).json({ success: false, error: 'Forbidden' });
+// Get full candidate detail with drafts
+app.get('/api/admin/discovery/candidates/:id', (req, res) => {
+  if (!requireAdmin(req, res)) return;
+
+  try {
+    const row = stmts.getCandidateById.get(req.params.id);
+    if (!row) return res.status(404).json({ success: false, error: 'Candidate not found' });
+
+    res.json({
+      success: true,
+      candidate: {
+        ...row,
+        source_data: JSON.parse(row.source_data || '{}'),
+        draft_niche_json: JSON.parse(row.draft_niche_json || '{}'),
+        draft_quiz_tags: JSON.parse(row.draft_quiz_tags || '[]')
+      }
+    });
+  } catch (err) {
+    console.error('[ERROR] Candidate detail failed:', err.message);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// Review candidate: update status + admin notes
+app.post('/api/admin/discovery/candidates/:id/review', (req, res) => {
+  if (!requireAdmin(req, res)) return;
+
+  try {
+    const row = stmts.getCandidateById.get(req.params.id);
+    if (!row) return res.status(404).json({ success: false, error: 'Candidate not found' });
+
+    const { status, notes } = req.body;
+    const validStatuses = ['new', 'reviewed', 'approved', 'rejected'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ success: false, error: 'Invalid status. Use: ' + validStatuses.join(', ') });
+    }
+
+    const now = new Date().toISOString();
+    stmts.updateCandidateStatus.run(status, sanitize(notes || row.admin_notes), now, row.id);
+
+    // Auto-generate drafts on approval if not yet generated
+    if (status === 'approved') {
+      const existing = JSON.parse(row.draft_niche_json || '{}');
+      if (!existing.id) {
+        const candidate = { ...row, source_data: JSON.parse(row.source_data || '{}') };
+        const nicheJSON = contentGen.generateNicheJSON(candidate);
+        const playbook = contentGen.generatePlaybook(candidate);
+        const quizTags = contentGen.generateQuizTags(candidate);
+        stmts.updateCandidateDrafts.run(JSON.stringify(nicheJSON), playbook, JSON.stringify(quizTags), now, row.id);
+      }
+    }
+
+    console.log(`[DISCOVERY] Candidate ${row.id} "${row.title}" → ${status}`);
+    res.json({ success: true, id: row.id, status });
+  } catch (err) {
+    console.error('[ERROR] Candidate review failed:', err.message);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// Deploy candidate: write to niches.json + create playbook + reload
+app.post('/api/admin/discovery/candidates/:id/deploy', (req, res) => {
+  if (!requireAdmin(req, res)) return;
+
+  try {
+    const row = stmts.getCandidateById.get(req.params.id);
+    if (!row) return res.status(404).json({ success: false, error: 'Candidate not found' });
+    if (row.status !== 'approved') {
+      return res.status(400).json({ success: false, error: 'Candidate must be approved before deploying' });
+    }
+
+    let nicheJSON = JSON.parse(row.draft_niche_json || '{}');
+    if (!nicheJSON.id) {
+      return res.status(400).json({ success: false, error: 'No draft niche JSON. Run regenerate first.' });
+    }
+
+    // Allow admin overrides from request body — strict allowlist only
+    if (req.body.niche_json && typeof req.body.niche_json === 'object') {
+      const allowed = ['name', 'category', 'icon', 'earn', 'avg_rate', 'who_pays', 'desc', 'tier'];
+      for (const key of allowed) {
+        if (req.body.niche_json[key] !== undefined) {
+          nicheJSON[key] = typeof req.body.niche_json[key] === 'string'
+            ? sanitize(req.body.niche_json[key])
+            : req.body.niche_json[key];
+        }
+      }
+      nicheJSON.enabled = false;
+      nicheJSON.coming_soon = true;
+    }
+
+    // Add deployed_at timestamp
+    nicheJSON.deployed_at = new Date().toISOString();
+
+    const playbookContent = row.draft_playbook || '';
+    const result = contentGen.deployCandidate(nicheJSON, playbookContent);
+
+    if (!result.success) {
+      return res.status(400).json({ success: false, error: result.error });
+    }
+
+    const candidate = { ...row, source_data: JSON.parse(row.source_data || '{}') };
+    const deployedPaths = [result.playbook_path];
+    const baseDir = path.resolve(__dirname);
+
+    // Generate outreach scripts
+    try {
+      const outreach = contentGen.generateOutreach(candidate);
+      const outreachPath = path.resolve(path.join(__dirname, 'content', 'outreach', `${candidate.slug}.md`));
+      if (outreachPath.startsWith(baseDir + path.sep)) {
+        const outreachDir = path.dirname(outreachPath);
+        if (!fs.existsSync(outreachDir)) fs.mkdirSync(outreachDir, { recursive: true });
+        fs.writeFileSync(outreachPath, outreach, 'utf8');
+        deployedPaths.push(`content/outreach/${candidate.slug}.md`);
+      }
+    } catch (e) { console.error('[DEPLOY] Outreach generation failed:', e.message); }
+
+    // Generate report template
+    try {
+      const template = contentGen.generateTemplate(candidate);
+      const templatePath = path.resolve(path.join(__dirname, 'templates', candidate.slug, 'report-template.md'));
+      if (templatePath.startsWith(baseDir + path.sep)) {
+        const templateDir = path.dirname(templatePath);
+        if (!fs.existsSync(templateDir)) fs.mkdirSync(templateDir, { recursive: true });
+        fs.writeFileSync(templatePath, template, 'utf8');
+        deployedPaths.push(`templates/${candidate.slug}/report-template.md`);
+      }
+    } catch (e) { console.error('[DEPLOY] Template generation failed:', e.message); }
+
+    // Generate Pulse keywords
+    try {
+      const keywords = contentGen.generatePulseKeywords(candidate);
+      const kwFile = path.resolve(path.join(__dirname, 'data', 'pulse-niche-keywords.json'));
+      if (kwFile.startsWith(baseDir + path.sep)) {
+        let existing = {};
+        try { existing = JSON.parse(fs.readFileSync(kwFile, 'utf8')); } catch { /* fresh file */ }
+        existing[candidate.slug] = keywords;
+        fs.writeFileSync(kwFile, JSON.stringify(existing, null, 2), 'utf8');
+        deployedPaths.push('data/pulse-niche-keywords.json');
+      }
+    } catch (e) { console.error('[DEPLOY] Pulse keywords generation failed:', e.message); }
+
+    // Record notification
+    const now = new Date().toISOString();
+    try { stmts.insertNicheNotification.run(nicheJSON.id, nicheJSON.name, nicheJSON.category || '', now); } catch (e) { /* non-critical */ }
+
+    // Update candidate status to deployed
+    stmts.updateCandidateStatus.run('deployed', row.admin_notes, now, row.id);
+
+    // Reload niches in memory
+    loadNiches();
+
+    console.log(`[DISCOVERY] Deployed niche "${nicheJSON.id}" from candidate ${row.id} — ${deployedPaths.length} files`);
+    res.json({ success: true, niche_id: result.id, playbook_path: result.playbook_path, deployed_paths: deployedPaths });
+  } catch (err) {
+    console.error('[ERROR] Candidate deploy failed:', err.message);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// Regenerate drafts for a candidate
+app.post('/api/admin/discovery/candidates/:id/regenerate', (req, res) => {
+  if (!requireAdmin(req, res)) return;
+
+  try {
+    const row = stmts.getCandidateById.get(req.params.id);
+    if (!row) return res.status(404).json({ success: false, error: 'Candidate not found' });
+
+    const candidate = { ...row, source_data: JSON.parse(row.source_data || '{}') };
+    const nicheJSON = contentGen.generateNicheJSON(candidate);
+    const playbook = contentGen.generatePlaybook(candidate);
+    const quizTags = contentGen.generateQuizTags(candidate);
+    const now = new Date().toISOString();
+
+    stmts.updateCandidateDrafts.run(JSON.stringify(nicheJSON), playbook, JSON.stringify(quizTags), now, row.id);
+
+    res.json({ success: true, draft_niche_json: nicheJSON, draft_quiz_tags: quizTags });
+  } catch (err) {
+    console.error('[ERROR] Regenerate failed:', err.message);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// Scan logs
+app.get('/api/admin/discovery/logs', (req, res) => {
+  if (!requireAdmin(req, res)) return;
+
+  try {
+    const logs = stmts.getScanLogs.all();
+    res.json({ success: true, logs });
+  } catch (err) {
+    console.error('[ERROR] Scan logs failed:', err.message);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// Intelligence: demand signals, rising niches, unmet demand
+app.get('/api/admin/intelligence', (req, res) => {
+  if (!requireAdmin(req, res)) return;
+
+  try {
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now - 30 * 86400000).toISOString().split('T')[0];
+    const sixtyDaysAgo = new Date(now - 60 * 86400000).toISOString().split('T')[0];
+
+    // Current 30-day signals
+    const currentSignals = stmts.getIntelligence.all(thirtyDaysAgo);
+    // Prior 30-day signals (for trend comparison)
+    const priorSignals = stmts.getIntelligence.all(sixtyDaysAgo);
+
+    // Build per-niche summary
+    const nicheMap = {};
+
+    for (const row of currentSignals) {
+      if (!nicheMap[row.niche_id]) nicheMap[row.niche_id] = { niche_id: row.niche_id, current: {}, prior: {} };
+      nicheMap[row.niche_id].current[row.metric] = row.total;
+    }
+
+    // Prior period: subtract current to get prior-only
+    for (const row of priorSignals) {
+      if (!nicheMap[row.niche_id]) nicheMap[row.niche_id] = { niche_id: row.niche_id, current: {}, prior: {} };
+      const currentVal = nicheMap[row.niche_id].current[row.metric] || 0;
+      nicheMap[row.niche_id].prior[row.metric] = Math.max(0, row.total - currentVal);
+    }
+
+    // Calculate trends and sort by total demand
+    const intelligence = Object.values(nicheMap).map(n => {
+      const currentTotal = Object.values(n.current).reduce((s, v) => s + v, 0);
+      const priorTotal = Object.values(n.prior).reduce((s, v) => s + v, 0);
+      const trend = priorTotal > 0 ? ((currentTotal - priorTotal) / priorTotal * 100).toFixed(1) : (currentTotal > 0 ? 100 : 0);
+
+      return {
+        niche_id: n.niche_id,
+        quiz_matches: n.current.quiz_match || 0,
+        niche_views: n.current.niche_view || 0,
+        playbook_views: n.current.playbook_view || 0,
+        total_signals: currentTotal,
+        trend: parseFloat(trend),
+        direction: parseFloat(trend) > 10 ? 'rising' : (parseFloat(trend) < -10 ? 'declining' : 'stable')
+      };
+    }).sort((a, b) => b.total_signals - a.total_signals);
+
+    // Identify unmet demand: niches with quiz_matches but no playbook
+    const existingNiches = nichesData.niches || [];
+    const unmetDemand = intelligence
+      .filter(n => {
+        const niche = existingNiches.find(en => en.id === n.niche_id || en.name === n.niche_id);
+        return n.quiz_matches > 0 && (!niche || niche.coming_soon || !niche.enabled);
+      })
+      .slice(0, 10);
+
+    // Demand gaps: search terms + unmatched quiz profiles
+    let demandGaps = { search_terms: [], unmatched_profiles: [] };
+    try {
+      const searchRows = stmts.getSearchSignals.all(thirtyDaysAgo);
+      demandGaps.search_terms = searchRows.map(r => ({
+        query: r.niche_id.replace('_search:', ''),
+        count: r.total
+      }));
+      const unmatchedRows = stmts.getUnmatchedSignals.all(thirtyDaysAgo);
+      demandGaps.unmatched_profiles = unmatchedRows.map(r => ({
+        tags: r.niche_id.replace('_unmatched:', '').split('+'),
+        count: r.total
+      }));
+    } catch (e) { /* non-critical */ }
+
+    res.json({
+      success: true,
+      period: { from: thirtyDaysAgo, to: now.toISOString().split('T')[0] },
+      intelligence,
+      rising: intelligence.filter(n => n.direction === 'rising').slice(0, 10),
+      top_converting: intelligence.filter(n => n.quiz_matches > 0).sort((a, b) => b.quiz_matches - a.quiz_matches).slice(0, 10),
+      unmet_demand: unmetDemand,
+      demand_gaps: demandGaps
+    });
+  } catch (err) {
+    console.error('[ERROR] Intelligence failed:', err.message);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// ── Search Signal Capture ────────────────────────────────
+const searchSignalLimiter = {};
+app.post('/api/analytics/niche-search', (req, res) => {
+  const query = typeof req.body.query === 'string' ? req.body.query.trim().toLowerCase().slice(0, 100) : '';
+  if (query.length < 2) return res.status(400).json({ success: false, error: 'Query too short' });
+
+  // Rate limit: 10 per minute per IP
+  const ip = req.ip || 'unknown';
+  const now = Date.now();
+  if (!searchSignalLimiter[ip]) searchSignalLimiter[ip] = [];
+  searchSignalLimiter[ip] = searchSignalLimiter[ip].filter(t => now - t < 60000);
+  if (searchSignalLimiter[ip].length >= 10) return res.status(429).json({ success: false, error: 'Rate limited' });
+  searchSignalLimiter[ip].push(now);
+
+  try {
+    const period = new Date().toISOString().split('T')[0];
+    const safeQuery = query.replace(/[^a-z0-9\s-]/g, '').slice(0, 60);
+    const nowISO = new Date().toISOString();
+    stmts.upsertIntelligence.run('_search:' + safeQuery, 'search_signal', period, nowISO, nowISO);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('[ERROR] Search signal failed:', err.message);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// ── New Niche Notifications ─────────────────────────────
+app.get('/api/niches/new', (req, res) => {
+  try {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString();
+    const rows = stmts.getRecentNotifications.all(thirtyDaysAgo);
+    res.json({ success: true, count: rows.length, niches: rows.map(r => ({ niche_id: r.niche_id, name: r.niche_name, category: r.category, added_at: r.created_at })) });
+  } catch (err) {
+    console.error('[ERROR] New niches failed:', err.message);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// ── Auth Routes ─────────────────────────────────────────
+
+// Sign up with email + password
+app.post('/api/auth/signup', async (req, res) => {
+  if (!authRateLimit(req)) {
+    return res.status(429).json({ success: false, error: 'Too many attempts. Try again in 15 minutes.' });
+  }
+
+  try {
+    const { email, password, name, link_token } = req.body;
+    const cleanEmail = (typeof email === 'string' ? email.trim().toLowerCase() : '');
+    const rawName = typeof name === 'string' ? name : cleanEmail.split('@')[0];
+
+    if (!isValidEmail(cleanEmail)) {
+      return res.status(400).json({ success: false, error: 'Valid email is required' });
+    }
+    if (rawName && !isValidName(rawName)) {
+      return res.status(400).json({ success: false, error: 'Invalid name (1-100 characters, no scripts)' });
+    }
+    const cleanName = sanitize(rawName);
+    if (typeof password !== 'string' || password.length < 8) {
+      return res.status(400).json({ success: false, error: 'Password must be at least 8 characters' });
+    }
+    if (password.length > 128) {
+      return res.status(400).json({ success: false, error: 'Password too long' });
+    }
+
+    // Check if email already exists
+    const existing = auth.stmts.getUserByEmail.get(cleanEmail);
+    if (existing) {
+      return res.status(409).json({ success: false, error: 'An account with this email already exists' });
+    }
+
+    const { hash, salt } = await auth.hashPassword(password);
+    const id = crypto.randomUUID();
+    const now = new Date().toISOString();
+    const role = (process.env.ADMIN_EMAIL && cleanEmail === process.env.ADMIN_EMAIL.toLowerCase().trim()) ? 'admin' : 'user';
+
+    // Validate link_token: must be alphanumeric and max 20 chars, and exist in submissions
+    let quizLink = '';
+    if (link_token && typeof link_token === 'string') {
+      const cleaned = link_token.replace(/[^a-zA-Z0-9]/g, '').slice(0, 20);
+      if (cleaned && stmts.getSubmissionById.get(cleaned)) {
+        quizLink = cleaned;
+      }
+    }
+
+    auth.stmts.insertUser.run(id, cleanEmail, 0, `${hash}:${salt}`, cleanName, role, '', '', quizLink, '{}', 0, now, now);
+
+    const sessionId = auth.createSession(id, req);
+    res.setHeader('Set-Cookie', auth.serializeSessionCookie(sessionId));
+
+    const user = auth.stmts.getUserById.get(id);
+    res.json({
+      success: true,
+      user: { id: user.id, email: user.email, display_name: user.display_name, role: user.role, onboarding_done: !!user.onboarding_done },
+      providers_configured: auth.getProvidersConfigured(),
+    });
+  } catch (err) {
+    console.error('[AUTH] Signup error:', err.message);
+    res.status(500).json({ success: false, error: 'Signup failed' });
+  }
+});
+
+// Sign in with email + password
+app.post('/api/auth/login', async (req, res) => {
+  if (!authRateLimit(req)) {
+    return res.status(429).json({ success: false, error: 'Too many attempts. Try again in 15 minutes.' });
+  }
+
+  try {
+    const { email, password } = req.body;
+    const cleanEmail = (typeof email === 'string' ? email.trim().toLowerCase() : '');
+
+    if (!cleanEmail || typeof password !== 'string') {
+      return res.status(400).json({ success: false, error: 'Email and password are required' });
+    }
+
+    const user = auth.stmts.getUserByEmail.get(cleanEmail);
+    if (!user || !user.password_hash) {
+      await auth.dummyHash(); // timing-safe
+      return res.status(401).json({ success: false, error: 'Invalid email or password' });
+    }
+
+    const parts = user.password_hash.split(':');
+    if (parts.length !== 2) {
+      await auth.dummyHash();
+      return res.status(401).json({ success: false, error: 'Invalid email or password' });
+    }
+
+    const valid = await auth.verifyPassword(password, parts[0], parts[1]);
+    if (!valid) {
+      return res.status(401).json({ success: false, error: 'Invalid email or password' });
+    }
+
+    const sessionId = auth.createSession(user.id, req);
+    res.setHeader('Set-Cookie', auth.serializeSessionCookie(sessionId));
+
+    res.json({
+      success: true,
+      user: { id: user.id, email: user.email, display_name: user.display_name, role: user.role, onboarding_done: !!user.onboarding_done },
+      providers_configured: auth.getProvidersConfigured(),
+    });
+  } catch (err) {
+    console.error('[AUTH] Login error:', err.message);
+    res.status(500).json({ success: false, error: 'Login failed' });
+  }
+});
+
+// Logout
+app.post('/api/auth/logout', (req, res) => {
+  auth.destroySession(req.sessionId);
+  res.setHeader('Set-Cookie', auth.clearSessionCookie());
+  res.json({ success: true });
+});
+
+// Current user info
+app.get('/api/auth/me', (req, res) => {
+  if (!req.user) {
+    return res.json({ authenticated: false, providers_configured: auth.getProvidersConfigured() });
+  }
+  res.json({
+    authenticated: true,
+    user: {
+      id: req.user.id, email: req.user.email, display_name: req.user.display_name,
+      role: req.user.role, onboarding_done: !!req.user.onboarding_done,
+      has_google: !!req.user.oauth_google_id, has_discord: !!req.user.oauth_discord_id,
+    },
+    providers_configured: auth.getProvidersConfigured(),
+    magic_link_available: true,
+  });
+});
+
+// ── Magic Link Auth ─────────────────────────────────────
+
+app.post('/api/auth/magic-link', (req, res) => {
+  if (!authRateLimit(req)) {
+    return res.status(429).json({ success: false, error: 'Too many attempts. Try again in 15 minutes.' });
+  }
+  const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+  if (!isValidEmail(email)) {
+    return res.status(400).json({ success: false, error: 'Valid email is required' });
+  }
+  if (auth.isMagicLinkRateLimited(email)) {
+    return res.status(429).json({ success: false, error: 'Too many magic link requests for this email. Try again in 15 minutes.' });
+  }
+  const token = auth.generateMagicToken(email);
+  const origin = ALLOWED_ORIGINS[0] || `${req.protocol}://${req.headers.host}`;
+  const magicUrl = auth.getMagicLinkUrl(token, origin);
+  const delivery = auth.sendMagicLinkEmail(email, magicUrl);
+  const response = { success: true, message: 'Check your email for a sign-in link.' };
+  if (delivery === 'console') response.dev_link = magicUrl;
+  res.json(response);
+});
+
+app.get('/api/auth/verify', (req, res) => {
+  const token = typeof req.query.token === 'string' ? req.query.token : '';
+  const result = auth.verifyMagicToken(token);
+  if (!result) return res.redirect('/?auth_error=invalid_or_expired');
+  const user = auth.findOrCreateMagicUser(result.email);
+  const sessionId = auth.createSession(user.id, req);
+  res.setHeader('Set-Cookie', auth.serializeSessionCookie(sessionId));
+  res.redirect('/?auth_success=1');
+});
+
+app.post('/api/auth/link-progress', (req, res) => {
+  if (!requireUser(req, res)) return;
+  try {
+    const { sprint_progress } = req.body;
+    if (!sprint_progress || typeof sprint_progress !== 'object') {
+      return res.json({ success: true, merged: false });
+    }
+    const user = auth.stmts.getUserById.get(req.user.id);
+    let existing = {};
+    try { existing = JSON.parse(user.sprint_progress || '{}'); } catch { /* ignore */ }
+    const merged = {};
+    merged.currentDay = Math.max(existing.currentDay || 1, sprint_progress.currentDay || 1);
+    const existingCompleted = Array.isArray(existing.completed) ? existing.completed : [];
+    const anonCompleted = Array.isArray(sprint_progress.completed) ? sprint_progress.completed.filter(n => typeof n === 'number' && n >= 1 && n <= 7) : [];
+    merged.completed = [...new Set([...existingCompleted, ...anonCompleted])].sort((a, b) => a - b).slice(0, 7);
+    const existingScores = (typeof existing.quizScores === 'object' && existing.quizScores) ? existing.quizScores : {};
+    const anonScores = (typeof sprint_progress.quizScores === 'object' && sprint_progress.quizScores) ? sprint_progress.quizScores : {};
+    merged.quizScores = { ...existingScores };
+    for (const [k, v] of Object.entries(anonScores)) {
+      const key = String(k).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 30);
+      const val = Number(v);
+      if (key && !isNaN(val) && val >= 0 && val <= 100) {
+        merged.quizScores[key] = Math.max(merged.quizScores[key] || 0, Math.round(val));
+      }
+    }
+    auth.stmts.updateProgress.run(JSON.stringify(merged), new Date().toISOString(), req.user.id);
+    res.json({ success: true, merged: true, sprint_progress: merged });
+  } catch (err) {
+    console.error('[AUTH] Link progress error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to link progress' });
+  }
+});
+
+app.get('/api/auth/progress', (req, res) => {
+  if (!requireUser(req, res)) return;
+  try {
+    const user = auth.stmts.getUserById.get(req.user.id);
+    let sprintProgress = {};
+    try { sprintProgress = JSON.parse(user.sprint_progress || '{}'); } catch { /* ignore */ }
+    res.json({ success: true, sprint_progress: sprintProgress });
+  } catch (err) {
+    console.error('[AUTH] Progress fetch error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to load progress' });
+  }
+});
+
+// ── OAuth: Google ───────────────────────────────────────
+app.get('/auth/google', (req, res) => {
+  if (!auth.isGoogleConfigured()) {
+    return res.status(404).json({ success: false, error: 'Google OAuth not configured' });
+  }
+  const redirectTo = auth.isValidRedirect(req.query.redirect) ? req.query.redirect : '/';
+  const state = auth.generateState('google', redirectTo);
+  // Use configured origin instead of Host header to prevent host header injection
+  const origin = ALLOWED_ORIGINS[0] || `${req.protocol}://${req.headers.host}`;
+  const callbackUrl = `${origin}/auth/google/callback`;
+  const params = new URLSearchParams({
+    client_id: process.env.GOOGLE_CLIENT_ID,
+    redirect_uri: callbackUrl,
+    response_type: 'code',
+    scope: 'openid email profile',
+    state,
+  });
+  res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`);
+});
+
+app.get('/auth/google/callback', async (req, res) => {
+  try {
+    const { code, state: stateParam } = req.query;
+    if (!code || !stateParam) return res.redirect('/login.html?error=OAuth+failed');
+
+    const stateData = auth.verifyState(stateParam);
+    if (!stateData || stateData.provider !== 'google') return res.redirect('/login.html?error=Invalid+state');
+
+    const origin = ALLOWED_ORIGINS[0] || `${req.protocol}://${req.headers.host}`;
+    const callbackUrl = `${origin}/auth/google/callback`;
+
+    const tokenRes = await auth.oauthFetchToken('google', code, callbackUrl);
+    if (tokenRes.status !== 200 || !tokenRes.data.access_token) {
+      return res.redirect('/login.html?error=Google+auth+failed');
+    }
+
+    const profileRes = await auth.oauthFetchProfile('google', tokenRes.data.access_token);
+    if (profileRes.status !== 200) return res.redirect('/login.html?error=Google+profile+failed');
+
+    const user = auth.findOrCreateOAuthUser('google', profileRes.data);
+    const sessionId = auth.createSession(user.id, req);
+    res.setHeader('Set-Cookie', auth.serializeSessionCookie(sessionId));
+    const safeRedirect = auth.isValidRedirect(stateData.redirect_to) ? stateData.redirect_to : '/';
+    res.redirect(safeRedirect);
+  } catch (err) {
+    console.error('[AUTH] Google callback error:', err.message);
+    res.redirect('/login.html?error=Google+auth+error');
+  }
+});
+
+// ── OAuth: Discord ──────────────────────────────────────
+app.get('/auth/discord', (req, res) => {
+  if (!auth.isDiscordConfigured()) {
+    return res.status(404).json({ success: false, error: 'Discord OAuth not configured' });
+  }
+  const redirectTo = auth.isValidRedirect(req.query.redirect) ? req.query.redirect : '/';
+  const state = auth.generateState('discord', redirectTo);
+  const origin = ALLOWED_ORIGINS[0] || `${req.protocol}://${req.headers.host}`;
+  const callbackUrl = `${origin}/auth/discord/callback`;
+  const params = new URLSearchParams({
+    client_id: process.env.DISCORD_CLIENT_ID,
+    redirect_uri: callbackUrl,
+    response_type: 'code',
+    scope: 'identify email',
+    state,
+  });
+  res.redirect(`https://discord.com/oauth2/authorize?${params}`);
+});
+
+app.get('/auth/discord/callback', async (req, res) => {
+  try {
+    const { code, state: stateParam } = req.query;
+    if (!code || !stateParam) return res.redirect('/login.html?error=OAuth+failed');
+
+    const stateData = auth.verifyState(stateParam);
+    if (!stateData || stateData.provider !== 'discord') return res.redirect('/login.html?error=Invalid+state');
+
+    const origin = ALLOWED_ORIGINS[0] || `${req.protocol}://${req.headers.host}`;
+    const callbackUrl = `${origin}/auth/discord/callback`;
+
+    const tokenRes = await auth.oauthFetchToken('discord', code, callbackUrl);
+    if (tokenRes.status !== 200 || !tokenRes.data.access_token) {
+      return res.redirect('/login.html?error=Discord+auth+failed');
+    }
+
+    const profileRes = await auth.oauthFetchProfile('discord', tokenRes.data.access_token);
+    if (profileRes.status !== 200) return res.redirect('/login.html?error=Discord+profile+failed');
+
+    const user = auth.findOrCreateOAuthUser('discord', profileRes.data);
+    const sessionId = auth.createSession(user.id, req);
+    res.setHeader('Set-Cookie', auth.serializeSessionCookie(sessionId));
+    const safeRedirect = auth.isValidRedirect(stateData.redirect_to) ? stateData.redirect_to : '/';
+    res.redirect(safeRedirect);
+  } catch (err) {
+    console.error('[AUTH] Discord callback error:', err.message);
+    res.redirect('/login.html?error=Discord+auth+error');
+  }
+});
+
+// ── User Profile & Progress ─────────────────────────────
+
+// Full profile data
+app.get('/api/user/profile', (req, res) => {
+  if (!requireUser(req, res)) return;
+
+  try {
+    const user = auth.stmts.getUserById.get(req.user.id);
+    if (!user) return res.status(404).json({ success: false, error: 'User not found' });
+
+    // Get linked quiz submission if any
+    let quizResults = null;
+    if (user.quiz_submission_id) {
+      const sub = stmts.getSubmissionById.get(user.quiz_submission_id);
+      if (sub) {
+        quizResults = {
+          id: sub.id,
+          recommendedNiches: JSON.parse(sub.recommended_niches || '[]'),
+          submittedAt: sub.submitted_at,
+        };
+      }
+    }
+
+    let sprintProgress = {};
+    try { sprintProgress = JSON.parse(user.sprint_progress || '{}'); } catch { /* ignore */ }
+
+    // Certificate eligibility
+    const completed = Array.isArray(sprintProgress.completed) ? sprintProgress.completed : [];
+    const certificateEligible = completed.length >= 7;
+
+    res.json({
+      success: true,
+      profile: {
+        id: user.id,
+        email: user.email,
+        display_name: user.display_name,
+        role: user.role,
+        has_google: !!user.oauth_google_id,
+        has_discord: !!user.oauth_discord_id,
+        onboarding_done: !!user.onboarding_done,
+        created_at: user.created_at,
+        has_password: !!user.password_hash,
+      },
+      quiz_results: quizResults,
+      sprint_progress: sprintProgress,
+      certificate_eligible: certificateEligible,
+    });
+  } catch (err) {
+    console.error('[AUTH] Profile fetch error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to load profile' });
+  }
+});
+
+// Sync sprint progress
+app.post('/api/user/progress', (req, res) => {
+  if (!requireUser(req, res)) return;
+
+  try {
+    const { sprint_progress, onboarding_done } = req.body;
+    const now = new Date().toISOString();
+
+    if (onboarding_done !== undefined) {
+      auth.stmts.updateOnboarding.run(onboarding_done ? 1 : 0, now, req.user.id);
+    }
+
+    if (sprint_progress && typeof sprint_progress === 'object') {
+      // Validate shape
+      // Validate and cap quizScores: max 7 keys, each value must be a number 0-100
+      let safeScores = {};
+      if (typeof sprint_progress.quizScores === 'object' && sprint_progress.quizScores !== null && !Array.isArray(sprint_progress.quizScores)) {
+        const entries = Object.entries(sprint_progress.quizScores).slice(0, 7);
+        for (const [k, v] of entries) {
+          const key = String(k).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 30);
+          const val = Number(v);
+          if (key && !isNaN(val) && val >= 0 && val <= 100) safeScores[key] = Math.round(val);
+        }
+      }
+      const safe = {
+        currentDay: Math.min(Math.max(parseInt(sprint_progress.currentDay) || 1, 1), 7),
+        completed: Array.isArray(sprint_progress.completed) ? sprint_progress.completed.filter(n => typeof n === 'number' && n >= 1 && n <= 7).slice(0, 7) : [],
+        quizScores: safeScores,
+      };
+      auth.stmts.updateProgress.run(JSON.stringify(safe), now, req.user.id);
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('[AUTH] Progress sync error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to save progress' });
+  }
+});
+
+// Update display name
+app.post('/api/user/update-name', (req, res) => {
+  if (!requireUser(req, res)) return;
+  const name = sanitize(req.body.display_name || '');
+  if (!name) return res.status(400).json({ success: false, error: 'Name is required' });
+  auth.stmts.updateUser.run(name, new Date().toISOString(), req.user.id);
+  res.json({ success: true });
+});
+
+// Change password
+app.post('/api/user/change-password', async (req, res) => {
+  if (!requireUser(req, res)) return;
+  try {
+    const { current_password, new_password } = req.body;
+    const user = auth.stmts.getUserById.get(req.user.id);
+
+    // If user has a password, verify current
+    if (user.password_hash) {
+      const parts = user.password_hash.split(':');
+      if (parts.length !== 2 || !current_password) {
+        return res.status(400).json({ success: false, error: 'Current password is required' });
+      }
+      const valid = await auth.verifyPassword(current_password, parts[0], parts[1]);
+      if (!valid) return res.status(401).json({ success: false, error: 'Current password is incorrect' });
+    }
+
+    if (typeof new_password !== 'string' || new_password.length < 8) {
+      return res.status(400).json({ success: false, error: 'New password must be at least 8 characters' });
+    }
+    if (new_password.length > 128) {
+      return res.status(400).json({ success: false, error: 'Password too long' });
+    }
+
+    const { hash, salt } = await auth.hashPassword(new_password);
+    auth.stmts.updatePassword.run(`${hash}:${salt}`, new Date().toISOString(), req.user.id);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('[AUTH] Password change error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to change password' });
+  }
+});
+
+// ── ANVIL Kids ──────────────────────────────────────────
+
+// Load kids paths
+const KIDS_PATHS_FILE = path.join(__dirname, 'kids-paths.json');
+let kidsPathsData = { paths: [], quiz_questions: [] };
+function loadKidsPaths() {
+  try {
+    if (fs.existsSync(KIDS_PATHS_FILE)) {
+      kidsPathsData = JSON.parse(fs.readFileSync(KIDS_PATHS_FILE, 'utf8'));
+    }
+  } catch (err) {
+    console.error('[KIDS] Failed to load kids-paths.json:', err.message);
+  }
+}
+loadKidsPaths();
+
+// Stripe HTTP client (zero-dep, uses built-in https)
+// Required env vars for paid subscriptions:
+//   STRIPE_SECRET_KEY       — Stripe secret key (sk_live_... or sk_test_...)
+//   STRIPE_WEBHOOK_SECRET   — Webhook signing secret (whsec_...)
+//   STRIPE_PRICE_MONTHLY    — Price ID for $9.99/mo plan (price_...)
+//   STRIPE_PRICE_ANNUAL     — Price ID for $79.99/yr plan (price_...)
+// If none are set, kids subscription runs in trial-only mode (14-day free trial, no paid upgrade).
+const https = require('https');
+const STRIPE_SECRET = process.env.STRIPE_SECRET_KEY || '';
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
+const STRIPE_PRICE_MONTHLY = process.env.STRIPE_PRICE_MONTHLY || '';
+const STRIPE_PRICE_ANNUAL = process.env.STRIPE_PRICE_ANNUAL || '';
+const STRIPE_CONFIGURED = !!(STRIPE_SECRET && STRIPE_WEBHOOK_SECRET && STRIPE_PRICE_MONTHLY);
+if (STRIPE_CONFIGURED) {
+  console.log('[KIDS] Stripe configured — paid subscriptions enabled');
+} else {
+  console.log('[KIDS] Stripe not configured — trial-only mode');
+}
+
+function stripeRequest(method, stripePath, body) {
+  return new Promise((resolve, reject) => {
+    if (!STRIPE_SECRET) return reject(new Error('Stripe not configured'));
+    const encoded = body ? new URLSearchParams(body).toString() : '';
+    const options = {
+      hostname: 'api.stripe.com',
+      port: 443,
+      path: '/v1' + stripePath,
+      method,
+      headers: {
+        'Authorization': 'Bearer ' + STRIPE_SECRET,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    };
+    if (encoded) options.headers['Content-Length'] = Buffer.byteLength(encoded);
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => {
+        try { resolve({ status: res.statusCode, data: JSON.parse(data) }); }
+        catch { resolve({ status: res.statusCode, data: {} }); }
+      });
+    });
+    req.on('error', reject);
+    req.setTimeout(15000, () => { req.destroy(); reject(new Error('Stripe timeout')); });
+    if (encoded) req.write(encoded);
+    req.end();
+  });
+}
+
+// Subscription middleware
+function requireKidsSub(req, res, next) {
+  if (!req.user) return res.status(401).json({ error: 'Login required' });
+  const sub = stmts.getKidsSubByUser.get(req.user.id);
+  if (!sub) return res.status(402).json({ error: 'Subscription required', trial_available: true });
+  if (sub.status === 'trialing') {
+    if (new Date(sub.trial_ends_at) < new Date()) {
+      stmts.updateKidsSubStatus.run('expired', sub.id);
+      return res.status(402).json({ error: 'Trial expired' });
+    }
+  } else if (sub.status !== 'active') {
+    return res.status(402).json({ error: 'Subscription inactive' });
+  }
+  req.kidsSub = sub;
+  next();
+}
+
+// Helper: verify parent owns child
+function verifyParentChild(req, childId) {
+  const child = stmts.getChildById.get(childId);
+  if (!child || child.parent_user_id !== req.user.id) return null;
+  return child;
+}
+
+// XP level calculation
+function xpToLevel(xp) {
+  if (xp < 100) return 1;
+  if (xp < 250) return 2;
+  if (xp < 500) return 3;
+  if (xp < 800) return 4;
+  return 5;
+}
+
+// Kids rate limiting middleware (all /api/kids/* except webhook)
+app.use('/api/kids', (req, res, next) => {
+  if (req.path === '/subscribe/webhook') return next();
+  if (!kidsRateLimit(req)) {
+    return res.status(429).json({ error: 'Too many requests. Try again in 15 minutes.' });
   }
   next();
 });
 
+// ── Kids: Children Management ───────────────────────────
+app.post('/api/kids/children', (req, res) => {
+  if (!requireUser(req, res)) return;
+  try {
+    const { display_name, age_group, birth_year } = req.body;
+    const name = sanitize(display_name || '');
+    if (!name || name.length < 1) return res.status(400).json({ error: 'Display name required' });
+    if (name.length > 50) return res.status(400).json({ error: 'Display name too long (max 50 characters)' });
+    if (!['explorer', 'builder'].includes(age_group)) return res.status(400).json({ error: 'age_group must be explorer or builder' });
+    const year = birth_year ? parseInt(birth_year) : null;
+    const currentYear = new Date().getFullYear();
+    if (year && (year < 1990 || year > currentYear)) return res.status(400).json({ error: 'Invalid birth year' });
+    // Limit to 5 children per parent
+    const existing = stmts.getChildrenByParent.all(req.user.id);
+    if (existing.length >= 5) return res.status(400).json({ error: 'Maximum 5 children per account' });
+    const now = new Date().toISOString();
+    const result = stmts.insertChild.run(req.user.id, name, age_group, year, now);
+    res.json({ success: true, child: { id: result.lastInsertRowid, display_name: name, age_group, birth_year: year, created_at: now } });
+  } catch (err) {
+    console.error('[KIDS] Add child error:', err.message);
+    res.status(500).json({ error: 'Failed to add child' });
+  }
+});
+
+app.get('/api/kids/children', (req, res) => {
+  if (!requireUser(req, res)) return;
+  try {
+    const children = stmts.getChildrenByParent.all(req.user.id).map(c => ({
+      id: c.id, display_name: c.display_name, age_group: c.age_group,
+      birth_year: c.birth_year, created_at: c.created_at,
+    }));
+    res.json({ success: true, children });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load children' });
+  }
+});
+
+app.put('/api/kids/children/:id', (req, res) => {
+  if (!requireUser(req, res)) return;
+  try {
+    const child = verifyParentChild(req, parseInt(req.params.id));
+    if (!child) return res.status(404).json({ error: 'Child not found' });
+    const name = sanitize(req.body.display_name || child.display_name);
+    if (name.length > 50) return res.status(400).json({ error: 'Display name too long (max 50 characters)' });
+    const ag = ['explorer', 'builder'].includes(req.body.age_group) ? req.body.age_group : child.age_group;
+    const year = req.body.birth_year !== undefined ? parseInt(req.body.birth_year) : child.birth_year;
+    const currentYear = new Date().getFullYear();
+    if (year && (year < 1990 || year > currentYear)) return res.status(400).json({ error: 'Invalid birth year' });
+    stmts.updateChild.run(name, ag, year, child.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update child' });
+  }
+});
+
+app.delete('/api/kids/children/:id', (req, res) => {
+  if (!requireUser(req, res)) return;
+  try {
+    const result = stmts.deleteChild.run(parseInt(req.params.id), req.user.id);
+    if (result.changes === 0) return res.status(404).json({ error: 'Child not found' });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete child' });
+  }
+});
+
+// ── Kids: Subscription ──────────────────────────────────
+app.post('/api/kids/subscribe/trial', (req, res) => {
+  if (!requireUser(req, res)) return;
+  try {
+    const existing = stmts.getKidsSubByUser.get(req.user.id);
+    if (existing) return res.status(400).json({ error: 'Subscription already exists', status: existing.status });
+    const now = new Date();
+    const trialEnd = new Date(now.getTime() + 14 * 86400000);
+    stmts.insertKidsSub.run(req.user.id, null, null, 'trial', 'trialing', trialEnd.toISOString(), trialEnd.toISOString(), now.toISOString());
+    res.json({ success: true, plan: 'trial', status: 'trialing', trial_ends_at: trialEnd.toISOString() });
+  } catch (err) {
+    console.error('[KIDS] Trial start error:', err.message);
+    res.status(500).json({ error: 'Failed to start trial' });
+  }
+});
+
+app.post('/api/kids/subscribe/checkout', async (req, res) => {
+  if (!requireUser(req, res)) return;
+  if (!STRIPE_CONFIGURED) return res.status(400).json({ error: 'Paid subscriptions not available. Free trial only.', trial_available: true });
+  try {
+    const { plan } = req.body;
+    if (!['monthly', 'annual'].includes(plan)) return res.status(400).json({ error: 'Plan must be "monthly" or "annual"' });
+    const priceId = plan === 'annual' ? STRIPE_PRICE_ANNUAL : STRIPE_PRICE_MONTHLY;
+    if (!priceId) return res.status(400).json({ error: `${plan} plan not configured` });
+    const origin = ALLOWED_ORIGINS[0] || `http://localhost:${PORT}`;
+    const result = await stripeRequest('POST', '/checkout/sessions', {
+      'mode': 'subscription',
+      'line_items[0][price]': priceId,
+      'line_items[0][quantity]': '1',
+      'success_url': `${origin}/kids/dashboard.html?session_id={CHECKOUT_SESSION_ID}`,
+      'cancel_url': `${origin}/kids/subscribe.html?canceled=1`,
+      'client_reference_id': req.user.id,
+      'customer_email': req.user.email,
+    });
+    if (result.status !== 200 || !result.data.url) {
+      return res.status(500).json({ error: 'Failed to create checkout session' });
+    }
+    res.json({ success: true, url: result.data.url });
+  } catch (err) {
+    console.error('[KIDS] Checkout error:', err.message);
+    res.status(500).json({ error: 'Checkout failed' });
+  }
+});
+
+app.get('/api/kids/subscribe/status', (req, res) => {
+  if (!requireUser(req, res)) return;
+  try {
+    const sub = stmts.getKidsSubByUser.get(req.user.id);
+    if (!sub) return res.json({ success: true, subscribed: false, trial_available: true, stripe_enabled: STRIPE_CONFIGURED });
+    // Check trial expiry
+    if (sub.status === 'trialing' && new Date(sub.trial_ends_at) < new Date()) {
+      stmts.updateKidsSubStatus.run('expired', sub.id);
+      sub.status = 'expired';
+    }
+    const children = stmts.getChildrenByParent.all(req.user.id);
+    res.json({ success: true, subscribed: true, plan: sub.plan, status: sub.status, trial_ends_at: sub.trial_ends_at, current_period_end: sub.current_period_end, children_count: children.length, stripe_enabled: STRIPE_CONFIGURED });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to check status' });
+  }
+});
+
+app.post('/api/kids/subscribe/cancel', async (req, res) => {
+  if (!requireUser(req, res)) return;
+  try {
+    const sub = stmts.getKidsSubByUser.get(req.user.id);
+    if (!sub) return res.status(404).json({ error: 'No subscription found' });
+    if (sub.stripe_sub_id && STRIPE_SECRET) {
+      await stripeRequest('POST', `/subscriptions/${sub.stripe_sub_id}`, { cancel_at_period_end: 'true' });
+    }
+    stmts.updateKidsSubStatus.run('canceled', sub.id);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('[KIDS] Cancel error:', err.message);
+    res.status(500).json({ error: 'Cancel failed' });
+  }
+});
+
+// Stripe webhook (raw body needed, signature verified)
+app.post('/api/kids/subscribe/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  try {
+    // Fail-closed: reject all webhooks when secret is not configured
+    if (!STRIPE_WEBHOOK_SECRET) {
+      return res.status(403).json({ error: 'Webhook signature verification not configured' });
+    }
+
+    const payload = req.body.toString ? req.body.toString() : JSON.stringify(req.body);
+
+    // Verify Stripe webhook signature
+    {
+      const sig = req.headers['stripe-signature'] || '';
+      if (!sig) return res.status(400).json({ error: 'Missing stripe-signature header' });
+      const parts = sig.split(',').reduce((acc, p) => {
+        const [k, v] = p.split('=');
+        if (k === 't') acc.t = v;
+        if (k === 'v1') acc.v1 = v;
+        return acc;
+      }, { t: '', v1: '' });
+      if (!parts.t || !parts.v1) return res.status(400).json({ error: 'Invalid signature format' });
+      const expected = crypto.createHmac('sha256', STRIPE_WEBHOOK_SECRET)
+        .update(`${parts.t}.${payload}`)
+        .digest('hex');
+      if (!timingSafeCompare(expected, parts.v1)) {
+        return res.status(400).json({ error: 'Invalid webhook signature' });
+      }
+    }
+
+    const event = JSON.parse(payload);
+    // Validate timestamp is within 5 minutes to prevent replay attacks
+    {
+      const sig = req.headers['stripe-signature'] || '';
+      const tMatch = sig.split(',').find(p => p.startsWith('t='));
+      if (tMatch) {
+        const ts = parseInt(tMatch.split('=')[1]);
+        if (Math.abs(Date.now() / 1000 - ts) > 300) {
+          return res.status(400).json({ error: 'Webhook timestamp too old' });
+        }
+      }
+    }
+    const type = event.type;
+    const obj = event.data?.object;
+    if (!obj) return res.json({ received: true });
+
+    if (type === 'checkout.session.completed' && obj.subscription && obj.client_reference_id) {
+      // Initial subscription activation — client_reference_id is our user ID (UUID string)
+      const userId = String(obj.client_reference_id).trim();
+      if (userId) {
+        const sub = stmts.getKidsSubByUser.get(userId);
+        const plan = obj.metadata?.plan || 'monthly';
+        const periodEnd = obj.expires_at ? new Date(obj.expires_at * 1000).toISOString() : new Date(Date.now() + 30 * 86400000).toISOString();
+        if (sub) {
+          stmts.updateKidsSubStripe.run(obj.customer, obj.subscription, plan, 'active', periodEnd, sub.id);
+        } else {
+          stmts.insertKidsSub.run(userId, obj.customer, obj.subscription, plan, 'active', null, periodEnd, new Date().toISOString());
+        }
+        console.log(`[KIDS] Subscription activated for user ${userId}`);
+      }
+    } else if (type === 'invoice.paid' && obj.subscription) {
+      // Renewal — find by stripe subscription ID
+      const row = stmts.getKidsSubByStripeId.get(obj.subscription);
+      if (row) {
+        const plan = obj.lines?.data?.[0]?.price?.recurring?.interval === 'year' ? 'annual' : 'monthly';
+        const periodEnd = new Date((obj.lines?.data?.[0]?.period?.end || 0) * 1000).toISOString();
+        stmts.updateKidsSubStripe.run(obj.customer, obj.subscription, plan, 'active', periodEnd, row.id);
+      }
+    } else if (type === 'customer.subscription.deleted') {
+      const row = stmts.getKidsSubByStripeId.get(obj.id);
+      if (row) stmts.updateKidsSubStatus.run('canceled', row.id);
+    }
+    res.json({ received: true });
+  } catch (err) {
+    console.error('[KIDS] Webhook error:', err.message);
+    res.status(400).json({ error: 'Webhook processing failed' });
+  }
+});
+
+// Referral
+app.post('/api/kids/subscribe/referral', (req, res) => {
+  if (!requireUser(req, res)) return;
+  try {
+    // Require active subscription to generate referral codes (prevent referral ring abuse)
+    const sub = stmts.getKidsSubByUser.get(req.user.id);
+    if (!sub || (sub.status !== 'active' && sub.status !== 'trialing')) {
+      return res.status(402).json({ error: 'Active subscription required to generate referral codes' });
+    }
+    const existing = stmts.getKidsReferralsByUser.all(req.user.id);
+    if (existing.length >= 10) return res.status(400).json({ error: 'Maximum 10 referral codes' });
+    const code = crypto.randomBytes(6).toString('hex');
+    stmts.insertKidsReferral.run(req.user.id, '', code, new Date().toISOString());
+    res.json({ success: true, code });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to generate referral code' });
+  }
+});
+
+app.post('/api/kids/subscribe/redeem', (req, res) => {
+  if (!requireUser(req, res)) return;
+  try {
+    const code = sanitize(req.body.code || '');
+    if (!code) return res.status(400).json({ error: 'Code required' });
+    const ref = stmts.getKidsReferralByCode.get(code);
+    if (!ref) return res.status(404).json({ error: 'Invalid referral code' });
+    if (ref.redeemed_by) return res.status(400).json({ error: 'Code already redeemed' });
+    if (ref.referrer_user_id === req.user.id) return res.status(400).json({ error: 'Cannot redeem your own code' });
+    const redeemResult = stmts.redeemKidsReferral.run(req.user.id, new Date().toISOString(), code);
+    if (redeemResult.changes === 0) return res.status(409).json({ error: 'Code already redeemed' });
+    // Actually extend the redeemer's subscription by 30 days
+    const sub = stmts.getKidsSubByUser.get(req.user.id);
+    if (sub) {
+      const currentEnd = sub.current_period_end ? new Date(sub.current_period_end) : new Date();
+      const newEnd = new Date(Math.max(currentEnd.getTime(), Date.now()) + 30 * 86400000);
+      stmts.updateKidsSubStripe.run(sub.stripe_customer_id, sub.stripe_sub_id, sub.plan, sub.status === 'expired' ? 'active' : sub.status, newEnd.toISOString(), sub.id);
+    } else {
+      // No subscription yet — create a 30-day trial equivalent
+      const now = new Date();
+      const end = new Date(now.getTime() + 30 * 86400000);
+      stmts.insertKidsSub.run(req.user.id, null, null, 'referral', 'active', null, end.toISOString(), now.toISOString());
+    }
+    // Also extend the referrer's subscription by 30 days
+    const referrerSub = stmts.getKidsSubByUser.get(ref.referrer_user_id);
+    if (referrerSub) {
+      const refEnd = referrerSub.current_period_end ? new Date(referrerSub.current_period_end) : new Date();
+      const newRefEnd = new Date(Math.max(refEnd.getTime(), Date.now()) + 30 * 86400000);
+      stmts.updateKidsSubStripe.run(referrerSub.stripe_customer_id, referrerSub.stripe_sub_id, referrerSub.plan, referrerSub.status === 'expired' ? 'active' : referrerSub.status, newRefEnd.toISOString(), referrerSub.id);
+    }
+    res.json({ success: true, message: 'Referral redeemed — 1 free month applied to both accounts' });
+  } catch (err) {
+    res.status(500).json({ error: 'Redeem failed' });
+  }
+});
+
+// ── Kids: Learning Paths ────────────────────────────────
+app.get('/api/kids/paths', (req, res) => {
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.json({ success: true, paths: kidsPathsData.paths || [], quiz_questions: kidsPathsData.quiz_questions || [] });
+});
+
+app.get('/api/kids/paths/:pathId', (req, res) => {
+  const p = (kidsPathsData.paths || []).find(p => p.id === req.params.pathId);
+  if (!p) return res.status(404).json({ error: 'Path not found' });
+  res.json({ success: true, path: p });
+});
+
+// ── Kids: Progress (require subscription) ───────────────
+app.post('/api/kids/progress/start', requireKidsSub, (req, res) => {
+  try {
+    const child_id = parseInt(req.body.child_id);
+    const path_id = req.body.path_id;
+    if (!Number.isInteger(child_id) || child_id <= 0) return res.status(400).json({ error: 'Valid child_id required' });
+    const child = verifyParentChild(req, child_id);
+    if (!child) return res.status(404).json({ error: 'Child not found' });
+    const pathDef = (kidsPathsData.paths || []).find(p => p.id === path_id);
+    if (!pathDef) return res.status(404).json({ error: 'Path not found' });
+    const existing = stmts.getProgressByChildPath.get(child_id, path_id);
+    if (existing) return res.status(400).json({ error: 'Path already started', progress: existing });
+    const now = new Date().toISOString();
+    stmts.insertKidsProgress.run(child_id, path_id, now, now);
+    stmts.logKidsActivity.run(child_id, 'path_started', path_id, 0, now);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('[KIDS] Start progress error:', err.message);
+    res.status(500).json({ error: 'Failed to start path' });
+  }
+});
+
+app.get('/api/kids/progress/:childId', requireKidsSub, (req, res) => {
+  try {
+    const child = verifyParentChild(req, parseInt(req.params.childId));
+    if (!child) return res.status(404).json({ error: 'Child not found' });
+    const progress = stmts.getProgressByChild.all(child.id);
+    res.json({ success: true, progress });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load progress' });
+  }
+});
+
+app.put('/api/kids/progress/:childId/:pathId', requireKidsSub, (req, res) => {
+  try {
+    const child = verifyParentChild(req, parseInt(req.params.childId));
+    if (!child) return res.status(404).json({ error: 'Child not found' });
+    const prog = stmts.getProgressByChildPath.get(child.id, req.params.pathId);
+    if (!prog) return res.status(404).json({ error: 'Path not started' });
+    // Derive max quest index from path definition (not hardcoded)
+    const pathDef = (kidsPathsData.paths || []).find(p => p.id === req.params.pathId);
+    const maxQuestIndex = pathDef ? pathDef.chapters.flatMap(c => c.quests).length - 1 : 19;
+    // Fix: use Number.isNaN to handle explicit 0, prevent backwards progress
+    const parsed = parseInt(req.body.quest_index);
+    const requestedIndex = Number.isNaN(parsed) ? prog.quest_index : parsed;
+    const questIndex = Math.max(prog.quest_index, Math.min(requestedIndex, maxQuestIndex));
+    // Only award XP when quest_index actually advances (prevents XP farming)
+    const advanced = questIndex > prog.quest_index;
+    // XP is server-authoritative: use quest definition XP, ignore client value
+    const questDef = pathDef?.chapters?.flatMap(c => c.quests)?.[questIndex];
+    const xpAdd = advanced ? (questDef?.xp || 50) : 0;
+    const newXp = prog.xp + xpAdd;
+    const newLevel = xpToLevel(newXp);
+    const now = new Date().toISOString();
+    stmts.updateProgress.run(questIndex, newXp, newLevel, now, child.id, req.params.pathId);
+    if (xpAdd > 0) stmts.logKidsActivity.run(child.id, 'quest_progress', `${req.params.pathId}:quest-${questIndex}`, xpAdd, now);
+    res.json({ success: true, quest_index: questIndex, xp: newXp, level: newLevel });
+  } catch (err) {
+    console.error('[KIDS] Update progress error:', err.message);
+    res.status(500).json({ error: 'Failed to update progress' });
+  }
+});
+
+app.post('/api/kids/progress/:childId/:pathId/complete', requireKidsSub, (req, res) => {
+  try {
+    const child = verifyParentChild(req, parseInt(req.params.childId));
+    if (!child) return res.status(404).json({ error: 'Child not found' });
+    const prog = stmts.getProgressByChildPath.get(child.id, req.params.pathId);
+    if (!prog) return res.status(404).json({ error: 'Path not started' });
+    // Require all quests completed before path completion
+    const pathDef = (kidsPathsData.paths || []).find(p => p.id === req.params.pathId);
+    const totalQuests = pathDef ? pathDef.chapters.flatMap(c => c.quests).length : 20;
+    if (prog.quest_index < totalQuests - 1) {
+      return res.status(400).json({ error: `Must complete all ${totalQuests} quests before finishing path (currently on quest ${prog.quest_index + 1})` });
+    }
+    const now = new Date().toISOString();
+    stmts.completeProgress.run(now, now, child.id, req.params.pathId);
+    stmts.logKidsActivity.run(child.id, 'path_completed', req.params.pathId, 100, now);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to complete path' });
+  }
+});
+
+// ── Kids: Artifacts ─────────────────────────────────────
+app.post('/api/kids/artifacts', requireKidsSub, (req, res) => {
+  try {
+    const { path_id, quest_index, artifact_type, title, content } = req.body;
+    const child_id = parseInt(req.body.child_id);
+    if (!Number.isInteger(child_id) || child_id <= 0) return res.status(400).json({ error: 'Valid child_id required' });
+    const child = verifyParentChild(req, child_id);
+    if (!child) return res.status(404).json({ error: 'Child not found' });
+    // Cap artifacts per child to prevent DB bloat
+    const existingCount = stmts.getArtifactsByChild.all(child_id).length;
+    if (existingCount >= 100) return res.status(400).json({ error: 'Maximum 100 artifacts per child' });
+    const cleanTitle = sanitize(title || '');
+    if (!cleanTitle) return res.status(400).json({ error: 'Title required' });
+    const VALID_ARTIFACT_TYPES = ['document', 'code', 'design', 'project', 'essay', 'report', 'plan'];
+    const cleanType = VALID_ARTIFACT_TYPES.includes(artifact_type) ? artifact_type : 'document';
+    // Validate path_id against known paths
+    const knownPathIds = new Set((kidsPathsData.paths || []).map(p => p.id));
+    const cleanPathId = sanitize(path_id || '');
+    if (cleanPathId && !knownPathIds.has(cleanPathId)) return res.status(400).json({ error: 'Invalid path_id' });
+    // Content is JSON string, cap at 50KB, sanitize on write for defense-in-depth
+    const rawContent = typeof content === 'string' ? content.slice(0, 51200) : JSON.stringify(content || {}).slice(0, 51200);
+    const cleanContent = rawContent.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+    const cleanQuestIndex = Math.max(0, Math.min(parseInt(quest_index) || 0, 19));
+    const now = new Date().toISOString();
+    const result = stmts.insertArtifact.run(child_id, cleanPathId, cleanQuestIndex, cleanType, cleanTitle, cleanContent, now);
+    stmts.logKidsActivity.run(child_id, 'artifact_saved', cleanTitle, 0, now);
+    res.json({ success: true, artifact_id: result.lastInsertRowid });
+  } catch (err) {
+    console.error('[KIDS] Save artifact error:', err.message);
+    res.status(500).json({ error: 'Failed to save artifact' });
+  }
+});
+
+app.get('/api/kids/artifacts/:childId', requireKidsSub, (req, res) => {
+  try {
+    const child = verifyParentChild(req, parseInt(req.params.childId));
+    if (!child) return res.status(404).json({ error: 'Child not found' });
+    const artifacts = stmts.getArtifactsByChild.all(child.id);
+    res.json({ success: true, artifacts });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load artifacts' });
+  }
+});
+
+app.put('/api/kids/artifacts/:id/publish', requireKidsSub, (req, res) => {
+  try {
+    const artifact = stmts.getArtifactWithParent.get(parseInt(req.params.id));
+    if (!artifact || artifact.parent_user_id !== req.user.id) return res.status(404).json({ error: 'Artifact not found' });
+    const newPublic = artifact.is_public ? 0 : 1;
+    stmts.toggleArtifactPublic.run(newPublic, artifact.id, artifact.child_id);
+    res.json({ success: true, is_public: !!newPublic });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to toggle visibility' });
+  }
+});
+
+// Public portfolio (no auth — rate limited by kids middleware above)
+app.get('/api/kids/portfolio/:childId', (req, res) => {
+  try {
+    const child = stmts.getChildById.get(parseInt(req.params.childId));
+    if (!child) return res.status(404).json({ error: 'Not found' });
+    // title/artifact_type already sanitized on save; content is raw JSON so sanitize on output
+    const artifacts = stmts.getPublicArtifacts.all(child.id).map(a => ({
+      id: a.id, path_id: a.path_id, quest_index: a.quest_index,
+      artifact_type: a.artifact_type, title: a.title,
+      content: typeof a.content === 'string'
+        ? a.content.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        : '',
+      created_at: a.created_at,
+    }));
+    const progress = stmts.getProgressByChild.all(child.id);
+    res.json({
+      success: true,
+      child: { display_name: child.display_name, age_group: child.age_group },
+      artifacts,
+      completed_paths: progress.filter(p => p.completed_at).map(p => p.path_id),
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load portfolio' });
+  }
+});
+
+// ── Kids: Parent Dashboard ──────────────────────────────
+app.get('/api/kids/dashboard', requireKidsSub, (req, res) => {
+  try {
+    const children = stmts.getChildrenByParent.all(req.user.id);
+    const stats = children.map(c => {
+      const progress = stmts.getProgressByChild.all(c.id);
+      const artifacts = stmts.getArtifactsByChild.all(c.id);
+      const totalXp = progress.reduce((sum, p) => sum + (p.xp || 0), 0);
+      return {
+        child: c,
+        paths_started: progress.length,
+        paths_completed: progress.filter(p => p.completed_at).length,
+        total_xp: totalXp,
+        level: xpToLevel(totalXp),
+        artifacts_count: artifacts.length,
+        last_active: progress.reduce((latest, p) => p.last_activity > latest ? p.last_activity : latest, ''),
+      };
+    });
+    res.json({ success: true, children: stats });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load dashboard' });
+  }
+});
+
+app.get('/api/kids/activity/:childId', requireKidsSub, (req, res) => {
+  try {
+    const child = verifyParentChild(req, parseInt(req.params.childId));
+    if (!child) return res.status(404).json({ error: 'Child not found' });
+    const activity = stmts.getActivityByChild.all(child.id);
+    res.json({ success: true, activity });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load activity' });
+  }
+});
+
+app.get('/api/kids/activity', requireKidsSub, (req, res) => {
+  try {
+    const activity = stmts.getActivityByParent.all(req.user.id);
+    res.json({ success: true, activity });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load activity' });
+  }
+});
+
+// Kids quiz → path recommendations
+app.post('/api/kids/quiz-submit', (req, res) => {
+  try {
+    const { answers } = req.body;
+    if (!Array.isArray(answers)) return res.status(400).json({ error: 'answers array required' });
+    const tags = answers.flat().filter(t => typeof t === 'string').map(t => t.toLowerCase());
+    const paths = kidsPathsData.paths || [];
+    const scored = paths.map(p => {
+      const matchCount = (p.quiz_tags || []).filter(t => tags.includes(t)).length;
+      return { id: p.id, name: p.name, age_group: p.age_group, tagline: p.tagline, icon: p.icon, score: matchCount };
+    }).sort((a, b) => b.score - a.score);
+    res.json({ success: true, recommended: scored.slice(0, 3), all: scored });
+  } catch (err) {
+    res.status(500).json({ error: 'Quiz processing failed' });
+  }
+});
+
 // Explicit HTML page routes (before wildcard)
-['/learn', '/certificate', '/admin', '/marketing', '/pulse'].forEach(route => {
+['/learn', '/certificate', '/admin', '/marketing', '/login', '/profile'].forEach(route => {
   app.get(route, (req, res) => {
     res.sendFile(path.join(__dirname, 'site', route.slice(1) + '.html'));
   });
 });
+
+// Serve curriculum files (kids quest markdown)
+app.use('/curriculum', express.static(path.join(__dirname, 'curriculum')));
 
 // Serve static files from /site
 app.use(express.static(path.join(__dirname, 'site')));
@@ -1343,557 +2692,51 @@ app.get('*', (req, res) => {
   }
 });
 
-// Handle malformed JSON / oversized payloads without leaking stack traces
-app.use((err, req, res, next) => {
-  if (err.type === 'entity.parse.failed') {
-    return res.status(400).json({ success: false, error: 'Invalid JSON' });
-  }
+// Global error handler — prevent stack traces in responses
+app.use((err, req, res, _next) => {
   if (err.type === 'entity.too.large') {
-    return res.status(413).json({ success: false, error: 'Request too large' });
+    return res.status(413).json({ error: 'Request body too large' });
   }
-  console.error('[ERROR] Unhandled middleware error:', err.message);
-  res.status(500).json({ success: false, error: 'Internal server error' });
+  if (err.type === 'entity.parse.failed') {
+    return res.status(400).json({ error: 'Invalid JSON' });
+  }
+  console.error('[ERROR] Unhandled:', err.message);
+  res.status(err.status || 500).json({ error: 'Internal server error' });
 });
 
-// Global error handlers to prevent crashes
-process.on('uncaughtException', (err) => {
-  console.error('[FATAL] Uncaught exception:', err.message);
-  console.error(err.stack);
+const server = app.listen(PORT, () => {
+  console.log(`[ANVIL] Server running on port ${PORT} (${NODE_ENV})`);
+  console.log(`[ANVIL] Static files: ${path.join(__dirname, 'site')}`);
+  console.log(`[ANVIL] Database: ${DB_PATH}`);
+  console.log(`[ANVIL] Health check: http://localhost:${PORT}/health`);
+
+  // Scheduled auto-scan: Federal Register + NVD daily (free, no key), BLS on Mondays, O*NET keyword on Wednesdays
+  setTimeout(() => {
+    const sources = ['federal_register', 'nvd'];
+    if (new Date().getDay() === 1) sources.push('bls');
+    if (new Date().getDay() === 3) sources.push('onet_keyword');
+    console.log('[DISCOVERY] Running scheduled scan...', sources);
+    discovery.scan(sources, stmts).catch(err => console.error('[DISCOVERY] Scheduled scan error:', err.message));
+  }, 60000);
+
+  setInterval(() => {
+    const sources = ['federal_register', 'nvd'];
+    if (new Date().getDay() === 1) sources.push('bls');
+    if (new Date().getDay() === 3) sources.push('onet_keyword');
+    console.log('[DISCOVERY] Running scheduled scan...', sources);
+    discovery.scan(sources, stmts).catch(err => console.error('[DISCOVERY] Scheduled scan error:', err.message));
+  }, 24 * 60 * 60 * 1000);
 });
-process.on('unhandledRejection', (reason) => {
-  console.error('[WARN] Unhandled rejection:', reason);
-});
 
-// --- Pulse RSS Aggregator (zero external deps, anti-ban hardened) ---
-
-const PULSE_CACHE_FILE = path.join(DATA_DIR, 'pulse-cache.json');
-const PULSE_SOURCE_STATE_FILE = path.join(DATA_DIR, 'pulse-source-state.json');
-const PULSE_FETCH_INTERVAL = 2 * 60 * 60 * 1000; // 2 hours base
-const PULSE_JITTER_MAX = 15 * 60 * 1000; // up to 15 min random jitter
-const PULSE_DELAY_BETWEEN = 4000; // 4s between each source (polite)
-const PULSE_TIMEOUT = 15000; // 15s per request timeout
-const PULSE_MAX_ITEMS = 200; // max stored pulse items
-const CIRCUIT_BREAKER_THRESHOLD = 3; // failures before pausing source
-const CIRCUIT_BREAKER_COOLDOWN = 24 * 60 * 60 * 1000; // 24h pause on tripped circuit
-const BACKOFF_BASE = 60 * 1000; // 1 min base backoff
-
-// RSS sources — free, no API keys, reliable
-const PULSE_SOURCES = [
-  { url: 'https://techcrunch.com/category/artificial-intelligence/feed/', name: 'TechCrunch AI', niche: 'all' },
-  { url: 'https://feeds.arstechnica.com/arstechnica/technology-lab', name: 'Ars Technica', niche: 'all' },
-  { url: 'https://www.wired.com/feed/tag/ai/latest/rss', name: 'Wired AI', niche: 'all' },
-  { url: 'https://news.mit.edu/topic/mitartificial-intelligence2-rss.xml', name: 'MIT AI News', niche: 'all' },
-  { url: 'https://blog.google/technology/ai/rss/', name: 'Google AI Blog', niche: 'all' },
-  { url: 'https://www.healthcareitnews.com/feed', name: 'Healthcare IT News', niche: 'medical-billing' },
-  { url: 'https://www.fiercehealthcare.com/rss/xml', name: 'Fierce Healthcare', niche: 'medical-billing' },
-  { url: 'https://www.grants.gov/rss/GG_NewOppByCategory.xml', name: 'Grants.gov', niche: 'grant-writing' },
-  { url: 'https://www.federalregister.gov/documents/search.rss?conditions%5Btype%5D=NOTICE', name: 'Federal Register', niche: 'grant-writing' },
-  { url: 'https://www.accountingtoday.com/feed', name: 'Accounting Today', niche: 'bookkeeping' },
-  { url: 'https://www.cpapracticeadvisor.com/feed', name: 'CPA Practice Advisor', niche: 'bookkeeping' },
-  { url: 'https://www.insurancejournal.com/feed/', name: 'Insurance Journal', niche: 'insurance' },
-  { url: 'https://www.law.com/legaltechnews/feed/', name: 'Legal Tech News', niche: 'compliance' },
-  { url: 'https://www.housingwire.com/feed/', name: 'HousingWire', niche: 'real-estate' },
-];
-
-// --- Per-source state: ETags, Last-Modified, failures, backoff ---
-let sourceState = {};
-function loadSourceState() {
-  try {
-    if (fs.existsSync(PULSE_SOURCE_STATE_FILE)) {
-      sourceState = JSON.parse(fs.readFileSync(PULSE_SOURCE_STATE_FILE, 'utf8'));
-    }
-  } catch (e) { sourceState = {}; }
-}
-function saveSourceState() {
-  try { fs.writeFileSync(PULSE_SOURCE_STATE_FILE, JSON.stringify(sourceState, null, 2)); } catch (e) {}
-}
-function getSourceState(name) {
-  if (!sourceState[name]) {
-    sourceState[name] = {
-      etag: null,           // ETag from last response
-      lastModified: null,   // Last-Modified from last response
-      failCount: 0,         // consecutive failures
-      lastFail: null,       // timestamp of last failure
-      lastSuccess: null,    // timestamp of last success
-      backoffUntil: null,   // don't retry until this timestamp
-      totalFetches: 0,      // lifetime fetch count
-      total304s: 0,         // times we got 304 Not Modified (saved bandwidth)
-    };
-  }
-  return sourceState[name];
-}
-
-// --- Circuit breaker: should we skip this source? ---
-function isCircuitOpen(name) {
-  const state = getSourceState(name);
-  const now = Date.now();
-  // Backoff active (from 429/503 Retry-After)
-  if (state.backoffUntil && now < state.backoffUntil) {
-    const waitMins = Math.round((state.backoffUntil - now) / 60000);
-    console.log(`[PULSE] Skipping ${name} — backoff active (${waitMins}m remaining)`);
-    return true;
-  }
-  // Circuit breaker tripped (too many consecutive failures)
-  if (state.failCount >= CIRCUIT_BREAKER_THRESHOLD && state.lastFail) {
-    const elapsed = now - state.lastFail;
-    if (elapsed < CIRCUIT_BREAKER_COOLDOWN) {
-      const waitHrs = Math.round((CIRCUIT_BREAKER_COOLDOWN - elapsed) / 3600000 * 10) / 10;
-      console.log(`[PULSE] Skipping ${name} — circuit open (${state.failCount} failures, retry in ${waitHrs}h)`);
-      return true;
-    }
-    // Cooldown expired, allow a retry (half-open)
-    console.log(`[PULSE] Half-open circuit for ${name} — attempting retry`);
-  }
-  return false;
-}
-
-// --- Niche keyword classifier (no AI needed) ---
-const NICHE_KEYWORDS = {
-  'medical-billing': ['medical billing', 'cpt code', 'icd-10', 'cms', 'medicare', 'medicaid', 'health insurance', 'ehr', 'electronic health', 'claim', 'denial', 'prior auth', 'hipaa', 'health it', 'clinical', 'patient', 'hospital', 'telehealth', 'pharmacy', 'healthcare', 'billing', 'diagnosis', 'prescription', 'clinic', 'drug', 'nurse'],
-  'grant-writing': ['grant', 'funding', 'nsf', 'nih', 'sam.gov', 'federal award', 'proposal', 'funder', 'nonprofit funding', 'foundation grant'],
-  'bookkeeping': ['bookkeeping', 'accounting', 'quickbooks', 'xero', 'accounts payable', 'receivable', 'ledger', 'tax prep', 'payroll', 'financial statement', 'cpa', 'invoice', 'cash flow', 'budget', 'expense', 'reconciliation'],
-  'real-estate': ['real estate', 'property', 'mortgage', 'mls', 'broker', 'listing', 'housing', 'appraisal', 'home sale', 'rental', 'zoning', 'tenant', 'landlord', 'lease', 'eviction', 'foreclosure', 'hoa'],
-  'compliance': ['compliance', 'regulation', 'audit', 'sox', 'gdpr', 'risk management', 'regulatory', 'enforcement', 'policy', 'governance', 'certification', 'iso', 'penalty', 'inspection'],
-  'insurance': ['insurance', 'underwriting', 'claim', 'premium', 'actuarial', 'policyholder', 'deductible', 'liability', 'coverage', 'appeal letter', 'health plan', 'aca', 'marketplace', 'adjuster', 'risk'],
-  'benefits': ['benefits', 'enrollment', 'cobra', '401k', 'pension', 'disability', 'leave', 'fmla', 'workers comp', 'employee benefit', 'social security', 'ssi', 'ssdi', 'snap', 'wic', 'tanf', 'liheap', 'unemployment', 'medicaid'],
-};
-
-// SECURITY: [TBHM Phase 1 - Path Traversal] - Safe path resolution
-// Prevents: Directory traversal attacks via malicious file paths
-// Enterprise: CWE-22 (Path Traversal), OWASP ASVS 4.0.3 V12.1.1
-function loadDynamicPulseKeywords() {
-  try {
-    // Resolve to absolute path and verify it's within allowed directory
-    const kwFile = path.resolve(__dirname, '..', 'anvil', 'data', 'pulse-niche-keywords.json');
-    const allowedDir = path.resolve(__dirname, '..', 'anvil', 'data');
-
-    // Prevent directory traversal
-    if (!kwFile.startsWith(allowedDir)) {
-      console.error('[PULSE] Path traversal attempt blocked:', kwFile);
-      return;
-    }
-
-    if (!fs.existsSync(kwFile)) return;
-    const dynamic = JSON.parse(fs.readFileSync(kwFile, 'utf8'));
-    let loaded = 0;
-    for (const [slug, keywords] of Object.entries(dynamic)) {
-      if (!NICHE_KEYWORDS[slug] && Array.isArray(keywords) && keywords.length > 0) {
-        NICHE_KEYWORDS[slug] = keywords;
-        loaded++;
-      }
-    }
-    if (loaded > 0) console.log(`[PULSE] Loaded ${loaded} dynamic niche keyword sets`);
-  } catch (err) {
-    console.error('[PULSE] Failed to load dynamic keywords:', err.message);
-  }
-}
-loadDynamicPulseKeywords();
-
-function classifyNiches(title, description) {
-  const text = ((title || '') + ' ' + (description || '')).toLowerCase();
-  const matched = [];
-  for (const [niche, keywords] of Object.entries(NICHE_KEYWORDS)) {
-    for (const kw of keywords) {
-      if (text.includes(kw)) { matched.push(niche); break; }
-    }
-  }
-  if (/\b(artificial intelligence|ai-powered|machine learning|llm|gpt|chatgpt|claude|automation|automate)\b/i.test(text)) {
-    if (!matched.length) matched.push('all');
-  }
-  return matched.length ? matched : ['all'];
-}
-
-function classifyType(title, description) {
-  const text = ((title || '') + ' ' + (description || '')).toLowerCase();
-  if (/breaking|urgent|just in|launch|released|announces/i.test(text)) return 'breaking';
-  if (/tool|app|platform|software|open.?source|github/i.test(text)) return 'tool';
-  if (/opportunity|job|hiring|demand|salary|rate|earn/i.test(text)) return 'opportunity';
-  if (/\b(pro tip|trick|how to|step.by.step|tutorial|beginner.?s? guide|cheat sheet)\b/i.test(text)) return 'hint';
-  return 'update';
-}
-
-// SECURITY: [TBHM Phase 3 - SSRF Prevention] - URL validation and redirect protection
-// Prevents: Server-Side Request Forgery to internal services (AWS metadata, Redis, etc.)
-// Enterprise: OWASP ASVS 4.0.3 V12.6.1 (SSRF Protection), CWE-918
-function isPrivateIP(hostname) {
-  // Block private IP ranges, localhost, link-local, AWS metadata
-  const privatePatterns = [
-    /^127\./,                    // localhost
-    /^10\./,                     // 10.0.0.0/8
-    /^172\.(1[6-9]|2[0-9]|3[01])\./, // 172.16.0.0/12
-    /^192\.168\./,               // 192.168.0.0/16
-    /^169\.254\./,               // link-local
-    /^::1$/,                     // IPv6 localhost
-    /^fc00:/,                    // IPv6 unique local
-    /^fe80:/,                    // IPv6 link-local
-    /^169\.254\.169\.254$/,      // AWS metadata (exact match)
-    /^metadata\.google\.internal$/, // GCP metadata
-  ];
-  return privatePatterns.some(pattern => pattern.test(hostname));
-}
-
-function validateRSSUrl(urlString) {
-  try {
-    const parsed = new URL(urlString);
-    // Only allow HTTP/HTTPS
-    if (!['http:', 'https:'].includes(parsed.protocol)) {
-      return { valid: false, error: 'Only HTTP/HTTPS allowed' };
-    }
-    // Block private IPs and internal hostnames
-    if (isPrivateIP(parsed.hostname)) {
-      return { valid: false, error: 'Private IP/hostname blocked' };
-    }
-    // Block file:// and other dangerous protocols
-    if (parsed.protocol === 'file:') {
-      return { valid: false, error: 'File protocol blocked' };
-    }
-    return { valid: true, parsed };
-  } catch (e) {
-    return { valid: false, error: 'Invalid URL' };
-  }
-}
-
-// --- Conditional fetch with ETag/If-Modified-Since support ---
-let redirectCount = 0; // Track redirect depth to prevent infinite loops
-function fetchRSS(url, sourceName, depth = 0) {
-  return new Promise((resolve, reject) => {
-    // SSRF Protection: Validate URL before fetching
-    const validation = validateRSSUrl(url);
-    if (!validation.valid) {
-      reject(new Error(`SSRF blocked: ${validation.error}`));
-      return;
-    }
-
-    // Prevent infinite redirect loops
-    if (depth > 3) {
-      reject(new Error('Too many redirects'));
-      return;
-    }
-
-    const state = getSourceState(sourceName);
-    const mod = url.startsWith('https') ? https : http;
-    const headers = {
-      'User-Agent': 'ANVIL-Pulse/1.0 (RSS Reader; +https://anvil.onrender.com; feeds only)',
-      'Accept': 'application/rss+xml, application/xml, application/atom+xml, text/xml',
-      'Accept-Encoding': 'identity', // don't request gzip (simpler, avoids issues)
-      'Connection': 'close', // don't keep connections open
-    };
-    // Conditional request headers — saves bandwidth, shows good behavior
-    if (state.etag) headers['If-None-Match'] = state.etag;
-    if (state.lastModified) headers['If-Modified-Since'] = state.lastModified;
-
-    const req = mod.get(url, { headers, timeout: PULSE_TIMEOUT }, (res) => {
-      // Follow redirects (up to 3) with SSRF validation on redirect target
-      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        res.resume();
-        const redirectUrl = res.headers.location;
-        // Validate redirect target before following
-        const redirectValidation = validateRSSUrl(redirectUrl);
-        if (!redirectValidation.valid) {
-          reject(new Error(`SSRF redirect blocked: ${redirectValidation.error}`));
-          return;
-        }
-        fetchRSS(redirectUrl, sourceName, depth + 1).then(resolve).catch(reject);
-        return;
-      }
-
-      // 304 Not Modified — content hasn't changed, no need to re-parse
-      if (res.statusCode === 304) {
-        res.resume();
-        state.total304s++;
-        resolve({ notModified: true, xml: null });
-        return;
-      }
-
-      // 429 Too Many Requests or 503 Service Unavailable — backoff
-      if (res.statusCode === 429 || res.statusCode === 503) {
-        res.resume();
-        const retryAfter = res.headers['retry-after'];
-        let backoffMs;
-        if (retryAfter) {
-          // Retry-After can be seconds or a date string
-          const parsed = parseInt(retryAfter, 10);
-          backoffMs = isNaN(parsed)
-            ? Math.max(0, new Date(retryAfter).getTime() - Date.now())
-            : parsed * 1000;
-        } else {
-          // Exponential backoff: 1min, 2min, 4min, 8min, up to 1 hour
-          backoffMs = Math.min(BACKOFF_BASE * Math.pow(2, state.failCount), 60 * 60 * 1000);
-        }
-        state.backoffUntil = Date.now() + backoffMs;
-        const waitMins = Math.round(backoffMs / 60000);
-        reject(new Error(`HTTP ${res.statusCode} — backing off ${waitMins}m`));
-        return;
-      }
-
-      if (res.statusCode !== 200) {
-        res.resume();
-        reject(new Error(`HTTP ${res.statusCode}`));
-        return;
-      }
-
-      // Store caching headers for next conditional request
-      if (res.headers['etag']) state.etag = res.headers['etag'];
-      if (res.headers['last-modified']) state.lastModified = res.headers['last-modified'];
-
-      // SECURITY: [TBHM Phase 7 - Denial of Service] - Memory limit on response accumulation
-      // Prevents: OOM attacks via extremely large RSS feeds
-      // Enterprise: CWE-400 (Uncontrolled Resource Consumption)
-      const chunks = [];
-      let size = 0;
-      const MAX_RSS_SIZE = 512 * 1024; // 512KB max
-
-      res.on('data', (chunk) => {
-        size += chunk.length;
-        if (size > MAX_RSS_SIZE) {
-          res.destroy();
-          reject(new Error('Response too large (max 512KB)'));
-          return;
-        }
-        chunks.push(chunk);
-      });
-
-      res.on('end', () => {
-        try {
-          const xml = Buffer.concat(chunks).toString('utf8');
-          // Additional validation: ensure it's actually XML-like
-          if (!xml.includes('<') || !xml.includes('>')) {
-            reject(new Error('Response is not XML'));
-            return;
-          }
-          resolve({ notModified: false, xml });
-        } catch (err) {
-          reject(new Error('Failed to parse response: ' + err.message));
-        }
-      });
-
-      res.on('error', reject);
-    });
-
-    req.on('error', (err) => {
-      // Don't leak internal error details
-      reject(new Error('Request failed'));
-    });
-
-    req.on('timeout', () => {
-      req.destroy();
-      reject(new Error('Request timeout'));
-    });
+// Graceful shutdown
+function shutdown(signal) {
+  console.log(`[ANVIL] ${signal} received — shutting down gracefully...`);
+  server.close(() => {
+    try { db.close(); } catch (e) { /* already closed */ }
+    console.log('[ANVIL] Server + database closed. Goodbye.');
+    process.exit(0);
   });
 }
 
-// --- XML parsing (lightweight regex, no deps) ---
-function parseRSSItems(xml) {
-  const items = [];
-  const itemRegex = /<item[\s>]([\s\S]*?)<\/item>/gi;
-  const entryRegex = /<entry[\s>]([\s\S]*?)<\/entry>/gi;
-  const regex = itemRegex.test(xml) ? itemRegex : entryRegex;
-  regex.lastIndex = 0;
-
-  let match;
-  while ((match = regex.exec(xml)) !== null && items.length < 15) {
-    const block = match[1];
-    const title = extractTag(block, 'title');
-    const link = extractLink(block);
-    const desc = extractTag(block, 'description') || extractTag(block, 'summary') || extractTag(block, 'content');
-    const pubDate = extractTag(block, 'pubDate') || extractTag(block, 'published') || extractTag(block, 'updated');
-    if (title) {
-      items.push({
-        title: decodeEntities(stripHTML(title)).slice(0, 200),
-        link: link || '',
-        description: decodeEntities(stripHTML(desc || '')).replace(/\s+/g, ' ').trim().slice(0, 500),
-        pubDate: safeParseDate(pubDate),
-      });
-    }
-  }
-  return items;
-}
-
-function extractTag(xml, tag) {
-  const cdataRe = new RegExp('<' + tag + '[^>]*>\\s*<!\\[CDATA\\[([\\s\\S]*?)\\]\\]>\\s*<\\/' + tag + '>', 'i');
-  const cdataMatch = xml.match(cdataRe);
-  if (cdataMatch) return cdataMatch[1].trim();
-  const re = new RegExp('<' + tag + '[^>]*>([\\s\\S]*?)<\\/' + tag + '>', 'i');
-  const m = xml.match(re);
-  return m ? m[1].trim() : '';
-}
-
-function extractLink(block) {
-  const atomLink = block.match(/<link[^>]*href=["']([^"']+)["'][^>]*\/?>/i);
-  if (atomLink) return atomLink[1];
-  return extractTag(block, 'link') || '';
-}
-
-function stripHTML(str) { return str.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim(); }
-
-function safeParseDate(str) {
-  if (!str) return new Date().toISOString();
-  try {
-    const d = new Date(str.trim());
-    return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
-  } catch (e) { return new Date().toISOString(); }
-}
-
-function decodeEntities(str) {
-  return str
-    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"').replace(/&#039;/g, "'").replace(/&#x27;/g, "'")
-    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n)))
-    .replace(/&nbsp;/g, ' ');
-}
-
-// --- Shuffle array (Fisher-Yates) to avoid hitting sources in same order ---
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-// --- Main refresh with all protections ---
-async function refreshPulseFeed() {
-  console.log('[PULSE] Starting feed refresh...');
-  loadSourceState();
-  const existingFeed = readJSON(PULSE_FILE);
-  const existingIds = new Set(existingFeed.map(i => i.id));
-  const newItems = [];
-  let successCount = 0;
-  let failCount = 0;
-  let skippedCount = 0;
-  let notModifiedCount = 0;
-
-  // Shuffle order so we don't always hit the same server first
-  const shuffledSources = shuffle(PULSE_SOURCES);
-
-  for (const source of shuffledSources) {
-    const state = getSourceState(source.name);
-
-    // Circuit breaker check
-    if (isCircuitOpen(source.name)) {
-      skippedCount++;
-      continue;
-    }
-
-    try {
-      state.totalFetches++;
-      const result = await fetchRSS(source.url, source.name);
-
-      // 304 Not Modified — nothing new, don't re-parse
-      if (result.notModified) {
-        notModifiedCount++;
-        state.failCount = 0; // reset circuit breaker
-        state.lastSuccess = Date.now();
-        console.log(`[PULSE] 304 Not Modified: ${source.name} (saved bandwidth)`);
-        // Polite delay even on 304
-        await new Promise(r => setTimeout(r, PULSE_DELAY_BETWEEN + Math.random() * 2000));
-        continue;
-      }
-
-      const parsed = parseRSSItems(result.xml);
-
-      for (const item of parsed) {
-        const idBase = source.name + ':' + item.title;
-        const id = 'rss-' + crypto.createHash('md5').update(idBase).digest('hex').slice(0, 12);
-        if (existingIds.has(id)) continue;
-
-        const niches = classifyNiches(item.title, item.description);
-
-        newItems.push({
-          id,
-          headline: item.title,
-          summary: item.description || item.title,
-          sourceUrl: item.link,
-          sourceName: source.name,
-          niches: source.niche === 'all' ? niches : [source.niche, ...niches.filter(n => n !== source.niche)],
-          type: classifyType(item.title, item.description),
-          tags: niches.filter(n => n !== 'all'),
-          published: true,
-          publishedAt: item.pubDate,
-          verified: false,
-          fetchedAt: new Date().toISOString(),
-        });
-        existingIds.add(id);
-      }
-
-      // Success — reset circuit breaker
-      state.failCount = 0;
-      state.lastSuccess = Date.now();
-      state.backoffUntil = null;
-      successCount++;
-      console.log(`[PULSE] Fetched ${parsed.length} items from ${source.name}`);
-    } catch (err) {
-      // Failure — increment circuit breaker
-      state.failCount++;
-      state.lastFail = Date.now();
-      failCount++;
-      console.log(`[PULSE] Failed ${source.name} (${state.failCount}/${CIRCUIT_BREAKER_THRESHOLD}): ${err.message}`);
-    }
-
-    // Polite delay between sources (randomized 4-7s)
-    const delay = PULSE_DELAY_BETWEEN + Math.floor(Math.random() * 3000);
-    await new Promise(r => setTimeout(r, delay));
-  }
-
-  if (newItems.length > 0) {
-    const merged = [...newItems, ...existingFeed]
-      .sort((a, b) => (b.publishedAt || '').localeCompare(a.publishedAt || ''))
-      .slice(0, PULSE_MAX_ITEMS);
-    queueWrite(PULSE_FILE, merged);
-    console.log(`[PULSE] Added ${newItems.length} new items. Total: ${merged.length}`);
-  }
-
-  // Save state for conditional requests & circuit breakers
-  saveSourceState();
-
-  const cacheData = {
-    lastRefresh: new Date().toISOString(),
-    sources: successCount,
-    failed: failCount,
-    skipped: skippedCount,
-    notModified: notModifiedCount,
-    newItems: newItems.length,
-    totalItems: existingFeed.length + newItems.length,
-  };
-  try { fs.writeFileSync(PULSE_CACHE_FILE, JSON.stringify(cacheData, null, 2)); } catch (e) {}
-
-  console.log(`[PULSE] Refresh complete: ${successCount} OK, ${notModifiedCount} cached, ${skippedCount} skipped, ${failCount} failed, ${newItems.length} new`);
-}
-
-// Schedule periodic refresh with jitter
-function schedulePulseRefresh() {
-  const jitter = Math.floor(Math.random() * PULSE_JITTER_MAX);
-  const nextRefresh = PULSE_FETCH_INTERVAL + jitter;
-  setTimeout(() => {
-    refreshPulseFeed().catch(err => {
-      console.error('[PULSE] Refresh error:', err.message);
-    }).finally(() => {
-      schedulePulseRefresh();
-    });
-  }, nextRefresh);
-  console.log(`[PULSE] Next refresh in ${Math.round(nextRefresh / 60000)} minutes`);
-}
-
-// SECURITY: [TBHM Phase 6 - Information Disclosure] - Limit startup logging
-// Prevents: Internal file paths leaked in logs (could aid attackers)
-// Enterprise: CWE-209 (Information Exposure Through Error Message)
-app.listen(PORT, () => {
-  console.log(`[ANVIL] Server running on port ${PORT} (${NODE_ENV})`);
-  console.log(`[ANVIL] Health check: http://localhost:${PORT}/health`);
-
-  // Don't log internal file paths in production
-  if (NODE_ENV !== 'production') {
-    console.log(`[ANVIL] Static files: ${path.join(__dirname, 'site')}`);
-    console.log(`[ANVIL] Data directory: ${DATA_DIR}`);
-  }
-
-  // Initial pulse refresh after 10s (let server stabilize), then schedule periodic
-  setTimeout(() => {
-    refreshPulseFeed().catch(err => {
-      console.error('[PULSE] Initial refresh error:', err.message);
-    }).finally(() => {
-      schedulePulseRefresh();
-    });
-  }, 10000);
-});
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));

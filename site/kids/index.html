@@ -1,0 +1,2802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANVIL Kids - Your Kids Will Work WITH AI. Not Be Replaced BY It.</title>
+<meta name="description" content="10 quest-based skill paths teach kids ages 8-18 to use AI as a professional tool. Real portfolio artifacts. Guided prompts only. COPPA compliant.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M14 2L3 26h6l5-12 5 12h6L14 2z' fill='%23e87a2e'/%3E%3C/svg%3E">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#e87a2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ANVIL Kids">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<!-- Open Graph -->
+<meta property="og:title" content="ANVIL Kids - AI Skills for the Next Generation">
+<meta property="og:description" content="10 quest-based skill paths teach kids ages 8-18 to use AI as a professional tool. Real portfolio artifacts. COPPA compliant.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://anvil.onrender.com/kids/">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ANVIL Kids - AI Skills for the Next Generation">
+<meta name="twitter:description" content="10 quest-based paths. Real portfolios. Ages 8-18. COPPA compliant.">
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: calc(16px * var(--font-scale, 1)); }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: inherit; border: none; }
+img { max-width: 100%; display: block; }
+ul, ol { list-style: none; }
+
+/* Skip to content */
+.skip-link {
+  position: absolute; left: -9999px; top: 10px; z-index: 9999;
+  background: var(--orange); color: #000; padding: 12px 20px;
+  border-radius: 4px; font-weight: 700; font-size: 0.95rem;
+}
+.skip-link:focus { left: 10px; outline: 3px solid #fff; outline-offset: 2px; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   CSS VARIABLES
+   ============================================================ */
+:root {
+  --bg: #1a1a2e;
+  --bg-card: #16213e;
+  --bg-elevated: #1f2b47;
+  --border: #2a3a5e;
+  --text: #e0e0e0;
+  --text-dim: #a0a8c0;
+  --text-muted: #6a7490;
+  --orange: #e87a2e;
+  --orange-light: #f09040;
+  --amber: #f5a623;
+  --amber-glow: rgba(245, 166, 35, 0.15);
+  --ember: #c45e1a;
+  --teal: #5bc0be;
+  --teal-glow: rgba(91, 192, 190, 0.15);
+  --yellow: #ffd166;
+  --yellow-glow: rgba(255, 209, 102, 0.15);
+  --green: #48bb78;
+  --green-glow: rgba(72, 187, 120, 0.15);
+  --forge-gradient: linear-gradient(135deg, #e87a2e, #f5a623);
+  --forge-glow: 0 0 30px rgba(232, 122, 46, 0.2);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --max-w: 1140px;
+  --heading-font: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+h1, h2, h3, h4, .section-title, .hero-title {
+  font-family: var(--heading-font);
+}
+
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
+.container {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.section {
+  padding: 96px 0;
+}
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--orange);
+  margin-bottom: 16px;
+}
+.section-label::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--forge-gradient);
+}
+.section-title {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #fff;
+  margin-bottom: 16px;
+}
+.section-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-dim);
+  max-width: 640px;
+  line-height: 1.7;
+}
+.section-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+.section-header .section-subtitle {
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .section { padding: 64px 0; }
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 14px 28px;
+  border-radius: 100px;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  min-height: 48px;
+  letter-spacing: 0.3px;
+  text-align: center;
+}
+.btn:hover {
+  transform: translateY(-2px);
+}
+.btn:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+.btn-primary {
+  background: var(--forge-gradient);
+  color: #000;
+}
+.btn-primary:hover {
+  box-shadow: var(--forge-glow);
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--orange-light);
+  border: 2px solid var(--orange);
+}
+.btn-secondary:hover {
+  background: rgba(232, 122, 46, 0.1);
+}
+.btn-tour {
+  background: rgba(255, 209, 102, 0.10);
+  color: #ffd166;
+  border: 1.5px solid rgba(255, 209, 102, 0.35);
+  display: inline-flex; align-items: center; gap: 8px;
+  box-shadow: 0 0 12px rgba(255, 209, 102, 0.12);
+  animation: tour-pulse 3s ease-in-out infinite;
+}
+.btn-tour:hover {
+  background: rgba(255, 209, 102, 0.18);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(255, 209, 102, 0.22);
+}
+@keyframes tour-pulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(255, 209, 102, 0.12); }
+  50% { box-shadow: 0 0 20px rgba(255, 209, 102, 0.22); }
+}
+.btn-teal {
+  background: linear-gradient(135deg, #5bc0be, #3aa8a6);
+  color: #000;
+}
+.btn-teal:hover {
+  box-shadow: 0 0 30px rgba(91, 192, 190, 0.3);
+}
+.btn-sm {
+  font-size: 0.85rem;
+  padding: 10px 20px;
+  min-height: 40px;
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(26, 26, 46, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  transition: box-shadow 0.3s;
+}
+.nav.scrolled {
+  box-shadow: 0 2px 24px rgba(0, 0, 0, 0.5);
+}
+.nav-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--heading-font);
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 1px;
+}
+.nav-logo svg {
+  width: 28px;
+  height: 28px;
+}
+.nav-logo .kids-badge {
+  background: var(--teal);
+  color: #000;
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 100px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  position: relative;
+  top: -1px;
+}
+.nav-links {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+  align-items: center;
+}
+.nav-links a {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  transition: color 0.2s;
+  position: relative;
+  padding: 4px 0;
+}
+.nav-links a:hover { color: #fff; }
+.nav-links a:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 4px;
+  border-radius: 2px;
+  color: #fff;
+}
+.nav-links .adult-link {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-left: 1px solid var(--border);
+  padding-left: 20px;
+  margin-left: 4px;
+}
+.nav-links .adult-link:hover {
+  color: var(--orange-light);
+}
+.nav-cta {
+  background: var(--forge-gradient);
+  color: #000;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 10px 20px;
+  border-radius: 100px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  letter-spacing: 0.5px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.nav-cta:hover { transform: translateY(-1px); box-shadow: var(--forge-glow); }
+.nav-cta:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  padding: 12px;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+}
+.hamburger:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Mobile menu */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 64px; left: 0; right: 0; bottom: 0;
+  background: rgba(26, 26, 46, 0.97);
+  z-index: 99;
+  backdrop-filter: blur(8px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 24px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  transition: color 0.2s;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+.mobile-menu a:hover {
+  color: #fff;
+  background: rgba(232, 122, 46, 0.08);
+}
+.mobile-menu a:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+  color: #fff;
+}
+.mobile-menu .adult-link-mobile {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .nav-links, .nav-cta { display: none; }
+  .hamburger { display: flex; }
+}
+
+/* ============================================================
+   HERO SECTION
+   ============================================================ */
+.hero {
+  padding-top: 140px;
+  padding-bottom: 100px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -200px;
+  right: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(91, 192, 190, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -100px;
+  left: -200px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(232, 122, 46, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--teal-glow);
+  border: 1px solid rgba(91, 192, 190, 0.25);
+  color: var(--teal);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 100px;
+  margin-bottom: 24px;
+  letter-spacing: 0.5px;
+}
+.hero-eyebrow svg {
+  width: 16px;
+  height: 16px;
+}
+.hero-title {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 900;
+  line-height: 1.1;
+  color: #fff;
+  margin-bottom: 20px;
+}
+.hero-title .highlight {
+  background: var(--forge-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-title .anti-highlight {
+  color: var(--text-dim);
+  -webkit-text-fill-color: var(--text-dim);
+}
+.hero-subtitle {
+  font-size: 1.15rem;
+  color: var(--text-dim);
+  line-height: 1.7;
+  margin-bottom: 32px;
+  max-width: 480px;
+}
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.hero-note {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 16px;
+}
+.hero-illustration {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-illustration svg {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .hero { padding-top: 110px; padding-bottom: 64px; }
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+  }
+  .hero-subtitle { margin-left: auto; margin-right: auto; }
+  .hero-actions { justify-content: center; }
+  .hero-illustration { order: -1; }
+  .hero-illustration svg { max-width: 320px; }
+  .hero-note { text-align: center; }
+}
+
+/* ============================================================
+   PROBLEM SECTION
+   ============================================================ */
+.problem {
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.problem-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 48px;
+}
+.stat-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 40px 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.stat-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(91, 192, 190, 0.3);
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--forge-gradient);
+}
+.stat-number {
+  font-family: var(--heading-font);
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 900;
+  color: var(--orange);
+  line-height: 1;
+  margin-bottom: 12px;
+}
+.stat-label {
+  font-size: 1rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .problem-stats {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .stat-card { padding: 32px 24px; }
+}
+
+/* ============================================================
+   HOW IT WORKS
+   ============================================================ */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 48px;
+}
+.step-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 40px 32px;
+  position: relative;
+  text-align: center;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.step-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(232, 122, 46, 0.3);
+}
+.step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--forge-gradient);
+  color: #000;
+  font-family: var(--heading-font);
+  font-size: 1.5rem;
+  font-weight: 900;
+  margin-bottom: 20px;
+}
+.step-title {
+  font-family: var(--heading-font);
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.step-desc {
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+.step-connector {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .step-connector {
+    display: block;
+    position: absolute;
+    top: 60px;
+    right: -32px;
+    width: 32px;
+    height: 2px;
+    background: var(--border);
+    z-index: 1;
+  }
+  .step-connector::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: -4px;
+    width: 0; height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 8px solid var(--orange);
+  }
+  .step-card:last-child .step-connector { display: none; }
+}
+
+@media (max-width: 768px) {
+  .steps-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .step-card { padding: 32px 24px; }
+}
+
+/* ============================================================
+   PATHS SECTION
+   ============================================================ */
+.paths {
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.paths-group-label {
+  font-family: var(--heading-font);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--teal);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.paths-group-label svg {
+  width: 20px;
+  height: 20px;
+}
+.paths-group-label .group-age {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg-elevated);
+  padding: 3px 10px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+}
+.paths-group + .paths-group {
+  margin-top: 48px;
+}
+.paths-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+.path-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.path-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(232, 122, 46, 0.35);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+.path-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.path-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.4rem;
+}
+.path-icon.explorer-icon {
+  background: var(--teal-glow);
+  border: 1px solid rgba(91, 192, 190, 0.2);
+}
+.path-icon.builder-icon {
+  background: var(--yellow-glow);
+  border: 1px solid rgba(255, 209, 102, 0.2);
+}
+.path-name {
+  font-family: var(--heading-font);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+}
+.path-age-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 100px;
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+}
+.path-age-badge.explorer {
+  background: rgba(91, 192, 190, 0.15);
+  color: var(--teal);
+  border: 1px solid rgba(91, 192, 190, 0.25);
+}
+.path-age-badge.builder {
+  background: rgba(255, 209, 102, 0.15);
+  color: var(--yellow);
+  border: 1px solid rgba(255, 209, 102, 0.25);
+}
+.path-tagline {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+  flex-grow: 1;
+}
+.path-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--orange);
+  transition: color 0.2s, gap 0.2s;
+}
+.path-link:hover {
+  color: var(--orange-light);
+  gap: 10px;
+}
+.path-link svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.2s;
+}
+.path-link:hover svg {
+  transform: translateX(2px);
+}
+
+@media (max-width: 768px) {
+  .paths-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   SAFETY SECTION
+   ============================================================ */
+.safety-pillars {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-top: 48px;
+}
+.pillar-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px 32px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.pillar-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(72, 187, 120, 0.3);
+}
+.pillar-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-sm);
+  background: var(--green-glow);
+  border: 1px solid rgba(72, 187, 120, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.3rem;
+}
+.pillar-title {
+  font-family: var(--heading-font);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.pillar-desc {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .safety-pillars {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .pillar-card { padding: 28px 20px; }
+}
+
+/* ============================================================
+   PRICING SECTION
+   ============================================================ */
+.pricing {
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 48px;
+}
+.price-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 40px 32px;
+  text-align: center;
+  position: relative;
+  transition: transform 0.2s, border-color 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+.price-card:hover {
+  transform: translateY(-4px);
+}
+.price-card.featured {
+  border-color: var(--orange);
+  box-shadow: 0 0 40px rgba(232, 122, 46, 0.1);
+}
+.price-card.featured::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--forge-gradient);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+.price-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--forge-gradient);
+  color: #000;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 4px 16px;
+  border-radius: 100px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.price-name {
+  font-family: var(--heading-font);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.price-amount {
+  font-family: var(--heading-font);
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 4px;
+  line-height: 1;
+}
+.price-amount .currency {
+  font-size: 1.2rem;
+  vertical-align: super;
+  color: var(--text-dim);
+}
+.price-period {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+.price-savings {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--green);
+  background: var(--green-glow);
+  padding: 4px 12px;
+  border-radius: 100px;
+  margin-bottom: 16px;
+}
+.price-features {
+  list-style: none;
+  text-align: left;
+  margin-bottom: 28px;
+  flex-grow: 1;
+}
+.price-features li {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  padding: 8px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  line-height: 1.5;
+}
+.price-features li::before {
+  content: '';
+  display: block;
+  width: 18px;
+  height: 18px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2348bb78' stroke-width='3'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M5 13l4 4L19 7'/%3E%3C/svg%3E") center/contain no-repeat;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.price-card .btn {
+  width: 100%;
+}
+.pricing-referral {
+  text-align: center;
+  margin-top: 40px;
+  padding: 28px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.pricing-referral-title {
+  font-family: var(--heading-font);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.pricing-referral-desc {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+.pricing-referral-desc span {
+  color: var(--orange);
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .price-card { padding: 32px 24px; }
+}
+
+/* ============================================================
+   QUIZ SECTION
+   ============================================================ */
+.quiz {
+  position: relative;
+}
+.quiz-container {
+  max-width: 640px;
+  margin: 0 auto;
+}
+.quiz-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 48px 40px;
+  position: relative;
+}
+.quiz-progress {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 32px;
+}
+.quiz-progress-dot {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  transition: background 0.3s;
+}
+.quiz-progress-dot.active {
+  background: var(--forge-gradient);
+}
+.quiz-progress-dot.done {
+  background: var(--teal);
+}
+.quiz-question-num {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--orange);
+  margin-bottom: 12px;
+}
+.quiz-question-text {
+  font-family: var(--heading-font);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 28px;
+  line-height: 1.3;
+}
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.quiz-option {
+  background: var(--bg-elevated);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  font-size: 0.95rem;
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  text-align: left;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.quiz-option:hover {
+  border-color: rgba(232, 122, 46, 0.4);
+  background: rgba(232, 122, 46, 0.06);
+  transform: translateX(4px);
+}
+.quiz-option:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 2px;
+}
+.quiz-option.selected {
+  border-color: var(--orange);
+  background: rgba(232, 122, 46, 0.1);
+}
+.quiz-option-marker {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, background 0.2s;
+}
+.quiz-option.selected .quiz-option-marker {
+  border-color: var(--orange);
+  background: var(--orange);
+}
+.quiz-option.selected .quiz-option-marker::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #000;
+}
+.quiz-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 28px;
+}
+
+/* Quiz results */
+.quiz-results {
+  display: none;
+}
+.quiz-results.visible {
+  display: block;
+}
+.quiz-active {
+  display: block;
+}
+.quiz-active.hidden {
+  display: none;
+}
+.results-title {
+  font-family: var(--heading-font);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 8px;
+  text-align: center;
+}
+.results-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: 28px;
+}
+.results-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.result-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.result-rank {
+  font-family: var(--heading-font);
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--orange);
+  width: 36px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.result-info {
+  flex-grow: 1;
+}
+.result-name {
+  font-family: var(--heading-font);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+}
+.result-tagline {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+.result-match {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--teal);
+  background: var(--teal-glow);
+  padding: 4px 10px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+.quiz-results-actions {
+  text-align: center;
+  margin-top: 28px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .quiz-card { padding: 32px 20px; }
+}
+
+/* ============================================================
+   FAQ SECTION
+   ============================================================ */
+.faq {
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.faq-list {
+  max-width: 720px;
+  margin: 48px auto 0;
+}
+.faq-item {
+  border-bottom: 1px solid var(--border);
+}
+.faq-item:first-child {
+  border-top: 1px solid var(--border);
+}
+.faq-question {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  cursor: pointer;
+  text-align: left;
+  min-height: 48px;
+}
+.faq-question:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+.faq-question-text {
+  font-family: var(--heading-font);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+}
+.faq-toggle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.3s, background 0.2s;
+}
+.faq-toggle svg {
+  width: 14px;
+  height: 14px;
+  color: var(--orange);
+}
+.faq-item.open .faq-toggle {
+  transform: rotate(180deg);
+  background: rgba(232, 122, 46, 0.15);
+}
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out, padding 0.3s;
+}
+.faq-item.open .faq-answer {
+  max-height: 300px;
+  padding-bottom: 20px;
+}
+.faq-answer-text {
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  line-height: 1.7;
+  padding-right: 48px;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer {
+  padding: 48px 0 32px;
+  border-top: 1px solid var(--border);
+}
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.footer-brand svg {
+  width: 24px;
+  height: 24px;
+}
+.footer-brand-text {
+  font-family: var(--heading-font);
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+}
+.footer-brand-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.footer-links {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  list-style: none;
+}
+.footer-links a {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: #fff; }
+.footer-links a:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.footer-bottom {
+  text-align: center;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.footer-powered {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.footer-powered svg {
+  width: 14px;
+  height: 14px;
+}
+.footer-powered strong {
+  color: var(--orange);
+  font-weight: 700;
+}
+.footer-copy {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+@media (max-width: 768px) {
+  .footer-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+  .footer-links { justify-content: center; }
+}
+
+/* ── Accessibility Toolbar ── */
+.a11y-toolbar {
+  position: fixed; bottom: 24px; right: 24px; z-index: 98;
+  display: flex; gap: 8px;
+}
+.a11y-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--bg-card); border: 1px solid var(--border);
+  color: var(--text-dim); font-weight: 700; font-size: 0.8rem;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.a11y-btn:hover { border-color: var(--orange); color: var(--orange); }
+.a11y-btn:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.a11y-btn svg { width: 20px; height: 20px; }
+
+body.high-contrast {
+  --bg: #0a0a1a; --bg-card: #111; --bg-elevated: #1a1a1a;
+  --border: #444; --text: #fff; --text-dim: #ddd; --text-muted: #bbb;
+  --orange: #ffcc00; --orange-light: #ffdd33; --amber: #ffcc00;
+  --teal: #66e0de; --yellow: #ffe066; --green: #5ddb92;
+}
+
+/* ── Toast ── */
+.toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { padding: 12px 24px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; color: #fff; animation: toastIn 0.3s ease; }
+.toast.success { background: #48bb78; }
+.toast.error { background: #e53e3e; }
+.toast.info { background: #4a9ece; }
+@keyframes toastIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+.fade-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================
+   LOADING STATE
+   ============================================================ */
+.quiz-loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+}
+.quiz-loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--orange);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 12px;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.quiz-error {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-dim);
+}
+.quiz-error .btn {
+  margin-top: 12px;
+}
+</style>
+</head>
+<body>
+
+<!-- Skip to content -->
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<!-- ════════════════════════════════════════════════════════════
+     NAVIGATION
+     ════════════════════════════════════════════════════════════ -->
+<nav class="nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href="/kids/" class="nav-logo" aria-label="ANVIL Kids Home">
+      <svg viewBox="0 0 28 28" fill="none" aria-hidden="true">
+        <path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="#e87a2e"/>
+      </svg>
+      <span>ANVIL</span>
+      <span class="kids-badge">Kids</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#paths">Paths</a></li>
+      <li><a href="#safety">Safety</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="/login.html">Login</a></li>
+      <li><a href="/" class="adult-link">Adult ANVIL</a></li>
+    </ul>
+    <a href="/kids/subscribe.html" class="nav-cta">Start Free Trial</a>
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Mobile navigation">
+  <a href="#how-it-works">How It Works</a>
+  <a href="#paths">Paths</a>
+  <a href="#safety">Safety</a>
+  <a href="#pricing">Pricing</a>
+  <a href="/login.html">Login</a>
+  <a href="/kids/subscribe.html" class="btn btn-primary btn-sm">Start Free Trial</a>
+  <a href="/" class="adult-link-mobile">Back to Adult ANVIL</a>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     MAIN CONTENT
+     ════════════════════════════════════════════════════════════ -->
+<main id="main">
+
+<!-- ── HERO ───────────────────────────────────────────────── -->
+<section class="hero section">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          Ages 8-18 &middot; Quest-Based Learning
+        </div>
+        <h1 class="hero-title">
+          Your kids will work <span class="highlight">WITH AI.</span><br>
+          <span class="anti-highlight">Not be replaced BY it.</span>
+        </h1>
+        <p class="hero-subtitle">
+          10 quest-based skill paths. Real portfolio artifacts. Guided prompts only &mdash; never raw AI. Give your child a 5-year head start on the skills that actually matter.
+        </p>
+        <div class="hero-actions">
+          <a href="/kids/subscribe.html" class="btn btn-primary">Start 14-Day Free Trial</a>
+          <a href="#quiz" class="btn btn-secondary">Find Their Path</a>
+          <button class="btn btn-tour" id="startKidsTour" aria-label="Take a guided tour of ANVIL Kids">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5"/></svg>
+            How It Works (Tour)
+          </button>
+        </div>
+        <p class="hero-note">No credit card required &middot; Cancel anytime &middot; COPPA compliant</p>
+      </div>
+      <div class="hero-illustration" aria-hidden="true">
+        <!-- Forge teaching a kid at a computer -->
+        <svg viewBox="0 0 480 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Background glow -->
+          <circle cx="240" cy="200" r="180" fill="url(#heroGlow)" opacity="0.12"/>
+          <!-- Desk -->
+          <rect x="80" y="280" width="320" height="12" rx="6" fill="#2a3a5e"/>
+          <rect x="100" y="292" width="12" height="60" rx="3" fill="#2a3a5e"/>
+          <rect x="368" y="292" width="12" height="60" rx="3" fill="#2a3a5e"/>
+          <!-- Monitor -->
+          <rect x="160" y="190" width="160" height="100" rx="8" fill="#16213e" stroke="#2a3a5e" stroke-width="2"/>
+          <rect x="168" y="198" width="144" height="76" rx="4" fill="#1a1a2e"/>
+          <!-- Screen content: code lines -->
+          <rect x="178" y="210" width="60" height="4" rx="2" fill="#5bc0be" opacity="0.6"/>
+          <rect x="178" y="220" width="90" height="4" rx="2" fill="#e87a2e" opacity="0.5"/>
+          <rect x="178" y="230" width="45" height="4" rx="2" fill="#ffd166" opacity="0.4"/>
+          <rect x="178" y="240" width="72" height="4" rx="2" fill="#5bc0be" opacity="0.5"/>
+          <rect x="178" y="250" width="55" height="4" rx="2" fill="#e87a2e" opacity="0.4"/>
+          <rect x="178" y="260" width="100" height="4" rx="2" fill="#48bb78" opacity="0.3"/>
+          <!-- Monitor stand -->
+          <rect x="228" y="290" width="24" height="0" fill="#2a3a5e"/>
+          <!-- Keyboard -->
+          <rect x="180" y="283" width="120" height="8" rx="3" fill="#1f2b47" stroke="#2a3a5e" stroke-width="1"/>
+          <!-- Kid (right side, sitting at desk) -->
+          <!-- Head -->
+          <circle cx="310" cy="225" r="28" fill="#d4a574"/>
+          <!-- Hair -->
+          <path d="M282 218c0-16 12-30 28-30s28 14 28 30c0 2-1 4-2 5 0-14-11-26-26-26s-26 12-26 26c-1-1-2-3-2-5z" fill="#3d2914"/>
+          <!-- Eyes -->
+          <circle cx="302" cy="228" r="3" fill="#1a1a2e"/>
+          <circle cx="318" cy="228" r="3" fill="#1a1a2e"/>
+          <!-- Smile -->
+          <path d="M304 236c3 3 9 3 12 0" stroke="#1a1a2e" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <!-- Body -->
+          <rect x="294" y="252" width="32" height="36" rx="8" fill="#5bc0be"/>
+          <!-- Arms -->
+          <path d="M294 260c-14 8-24 16-30 24" stroke="#d4a574" stroke-width="8" stroke-linecap="round" fill="none"/>
+          <path d="M326 260c10 6 18 14 22 22" stroke="#d4a574" stroke-width="8" stroke-linecap="round" fill="none"/>
+          <!-- Forge Robot (left side, pointing at screen) -->
+          <!-- Body -->
+          <rect x="94" y="215" width="50" height="60" rx="12" fill="url(#forgeBody)"/>
+          <!-- Head -->
+          <rect x="100" y="178" width="38" height="38" rx="10" fill="url(#forgeHead)"/>
+          <!-- Eyes -->
+          <circle cx="113" cy="195" r="5" fill="#1a1a2e"/>
+          <circle cx="132" cy="195" r="5" fill="#1a1a2e"/>
+          <circle cx="114" cy="194" r="2" fill="#5bc0be"/>
+          <circle cx="133" cy="194" r="2" fill="#5bc0be"/>
+          <!-- Antenna -->
+          <line x1="119" y1="178" x2="119" y2="166" stroke="#e87a2e" stroke-width="2"/>
+          <circle cx="119" cy="163" r="4" fill="#ffd166"/>
+          <!-- Mouth (friendly) -->
+          <path d="M110 204c4 4 12 4 16 0" stroke="#5bc0be" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <!-- Arm pointing at screen -->
+          <path d="M144 235c12-6 22-14 32-20" stroke="#e87a2e" stroke-width="6" stroke-linecap="round" fill="none"/>
+          <!-- Hand/pointer -->
+          <circle cx="178" cy="214" r="5" fill="#f5a623"/>
+          <!-- Other arm (waving) -->
+          <path d="M94 235c-10-8-16-18-18-28" stroke="#e87a2e" stroke-width="6" stroke-linecap="round" fill="none"/>
+          <!-- Legs -->
+          <rect x="104" y="275" width="10" height="16" rx="4" fill="#c45e1a"/>
+          <rect x="124" y="275" width="10" height="16" rx="4" fill="#c45e1a"/>
+          <!-- Sparkles around -->
+          <circle cx="60" cy="180" r="3" fill="#ffd166" opacity="0.7">
+            <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="400" cy="170" r="2.5" fill="#5bc0be" opacity="0.6">
+            <animate attributeName="opacity" values="0.6;0.15;0.6" dur="2.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="380" cy="310" r="2" fill="#ffd166" opacity="0.5">
+            <animate attributeName="opacity" values="0.5;0.1;0.5" dur="3s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="90" cy="320" r="2.5" fill="#e87a2e" opacity="0.6">
+            <animate attributeName="opacity" values="0.6;0.2;0.6" dur="2.2s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Stars -->
+          <path d="M420 200l3 6 6 1-4 4 1 6-6-3-6 3 1-6-4-4 6-1z" fill="#ffd166" opacity="0.4"/>
+          <path d="M50 260l2 4 5 1-3 3 1 5-5-2-5 2 1-5-3-3 5-1z" fill="#5bc0be" opacity="0.3"/>
+          <!-- Gradients -->
+          <defs>
+            <radialGradient id="heroGlow" cx="0.5" cy="0.5" r="0.5">
+              <stop offset="0%" stop-color="#5bc0be"/>
+              <stop offset="100%" stop-color="transparent"/>
+            </radialGradient>
+            <linearGradient id="forgeBody" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#e87a2e"/>
+              <stop offset="100%" stop-color="#c45e1a"/>
+            </linearGradient>
+            <linearGradient id="forgeHead" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f5a623"/>
+              <stop offset="100%" stop-color="#e87a2e"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── THE PROBLEM ────────────────────────────────────────── -->
+<section class="problem section" id="problem">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">The Problem</div>
+      <h2 class="section-title">Jobs are changing. Schools aren't keeping up.</h2>
+      <p class="section-subtitle">
+        AI is already reshaping every industry. The kids who learn to work alongside it now will lead. The rest will be scrambling to catch up.
+      </p>
+    </div>
+    <div class="problem-stats fade-up">
+      <div class="stat-card">
+        <div class="stat-number">40%</div>
+        <div class="stat-label">of entry-level jobs will require AI skills by 2028</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">Age 10</div>
+        <div class="stat-label">Average age kids first interact with AI tools</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">5 years</div>
+        <div class="stat-label">Head start your child gets by learning now</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ───────────────────────────────────────── -->
+<section class="section" id="how-it-works">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">How It Works</div>
+      <h2 class="section-title">Three steps to real AI skills</h2>
+      <p class="section-subtitle">
+        No fluff. No gamified nonsense. Your child builds real artifacts they can show to colleges, employers, and the world.
+      </p>
+    </div>
+    <div class="steps-grid fade-up">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <h3 class="step-title">Sign Up &amp; Add Profiles</h3>
+        <p class="step-desc">
+          Create your parent account and add up to 5 child profiles. Set age group (Explorer 8-12 or Builder 13-18) and preferences.
+        </p>
+        <div class="step-connector" aria-hidden="true"></div>
+      </div>
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <h3 class="step-title">Take the 2-Minute Quiz</h3>
+        <p class="step-desc">
+          Your child answers 5 quick questions about their interests and style. We match them to the paths where they will thrive most.
+        </p>
+        <div class="step-connector" aria-hidden="true"></div>
+      </div>
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <h3 class="step-title">Follow Quests, Build Portfolio</h3>
+        <p class="step-desc">
+          Each path has 20 quests across 4 chapters. Kids earn XP, level up, and create real portfolio artifacts they keep forever.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── WHAT THEY LEARN (PATHS) ────────────────────────────── -->
+<section class="paths section" id="paths">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">What They Learn</div>
+      <h2 class="section-title">10 quest-based skill paths</h2>
+      <p class="section-subtitle">
+        Every path produces real portfolio artifacts &mdash; not participation trophies. AI assists the process; your child does the thinking.
+      </p>
+    </div>
+
+    <!-- Explorer Paths (Ages 8-12) -->
+    <div class="paths-group fade-up">
+      <div class="paths-group-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 2a14.5 14.5 0 000 20 14.5 14.5 0 000-20M2 12h20"/>
+        </svg>
+        Explorer Paths
+        <span class="group-age">Ages 8-12</span>
+      </div>
+      <div class="paths-grid">
+        <!-- Community Detective -->
+        <div class="path-card">
+          <div class="path-card-header">
+            <div class="path-icon explorer-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5bc0be" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+              </svg>
+            </div>
+            <div>
+              <div class="path-name">Community Detective</div>
+              <span class="path-age-badge explorer">Ages 8-12</span>
+            </div>
+          </div>
+          <p class="path-tagline">Find real problems. Research real solutions. Make a proposal your town could actually use.</p>
+          <a href="/kids/learn.html?path=community-detective" class="path-link">
+            View Path
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <!-- Story Architect -->
+        <div class="path-card">
+          <div class="path-card-header">
+            <div class="path-icon explorer-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5bc0be" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="path-name">Story Architect</div>
+              <span class="path-age-badge explorer">Ages 8-12</span>
+            </div>
+          </div>
+          <p class="path-tagline">Write it. Draw it. Publish it. Build a real story from brainstorm to bound book.</p>
+          <a href="/kids/learn.html?path=story-architect" class="path-link">
+            View Path
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <!-- Science Scout -->
+        <div class="path-card">
+          <div class="path-card-header">
+            <div class="path-icon explorer-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5bc0be" stroke-width="2">
+                <path d="M9 3h6M10 3v6.5L6 18h12l-4-8.5V3"/>
+                <circle cx="12" cy="17" r="1"/>
+                <circle cx="9" cy="15" r="0.5"/>
+              </svg>
+            </div>
+            <div>
+              <div class="path-name">Science Scout</div>
+              <span class="path-age-badge explorer">Ages 8-12</span>
+            </div>
+          </div>
+          <p class="path-tagline">Hypothesize. Experiment. Discover. Run a real science project with AI as your lab partner.</p>
+          <a href="/kids/learn.html?path=science-scout" class="path-link">
+            View Path
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <!-- Money Maker -->
+        <div class="path-card">
+          <div class="path-card-header">
+            <div class="path-icon explorer-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5bc0be" stroke-width="2">
+                <path d="M19 5c-1.5 0-2.8 1.4-3 2-2 7-8 7-10 7H4"/>
+                <path d="M3 7h2c2 0 8 0 10 7 .2.6 1.5 2 3 2h2"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </div>
+            <div>
+              <div class="path-name">Money Maker</div>
+              <span class="path-age-badge explorer">Ages 8-12</span>
+            </div>
+          </div>
+          <p class="path-tagline">Think like a founder. Plan like a boss. Build a real business plan for your first venture.</p>
+          <a href="/kids/learn.html?path=money-maker" class="path-link">
+            View Path
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Builder Paths (Ages 13-18) -->
+    <div class="paths-group fade-up">
+      <div class="paths-group-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
+        </svg>
+        Builder Paths
+        <span class="group-age">Ages 13-18</span>
+      </div>
+      <div class="paths-grid">
+        <!-- Data Storyteller -->
+        <div class="path-card">
+          <div class="path-card-header">
+            <div class="path-icon builder-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffd166" stroke-width="2">
+                <path d="M18 20V10M12 20V4M6 20v-6"/>
+              </svg>
+            </div>
+            <div>
+              <div class="path-name">Data Storyteller</div>
+              <span class="path-age-badge builder">Ages 13-18</span>
+            </div>
+          </div>
+          <p class="path-tagline">Numbers have stories. Learn to tell them. Turn raw data into compelling visual narratives.</p>
+          <a href="/kids/learn.html?path=data-storyteller" class="path-link">
+            View Path
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <!-- Grant Hunter -->
+        <div class="path-card">
+          <div class="path-card-header">
+            <div class="path-icon builder-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffd166" stroke-width="2">
+                <path d="M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 110-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 100-5C13 2 12 7 12 7z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="path-name">Grant Hunter</div>
+              <span class="path-age-badge builder">Ages 13-18</span>
+            </div>
+          </div>
+          <p class="path-tagline">Free money exists. Learn to find it. Write real grant proposals for causes you care about.</p>
+          <a href="/kids/learn.html?path=grant-hunter" class="path-link">
+            View Path
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <!-- Policy Researcher -->
+        <div class="path-card">
+          <div class="path-card-header">
+            <div class="path-icon builder-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffd166" stroke-width="2">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+              </svg>
+            </div>
+            <div>
+              <div class="path-name">Policy Researcher</div>
+              <span class="path-age-badge builder">Ages 13-18</span>
+            </div>
+          </div>
+          <p class="path-tagline">Understand both sides. Then take one. Research real policy issues and write persuasive briefs.</p>
+          <a href="/kids/learn.html?path=policy-researcher" class="path-link">
+            View Path
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <!-- Content Strategist -->
+        <div class="path-card">
+          <div class="path-card-header">
+            <div class="path-icon builder-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffd166" stroke-width="2">
+                <path d="M12 18.5a6 6 0 006-6v-7l-6-3-6 3v7a6 6 0 006 6z"/>
+                <path d="M12 18.5V22M8 22h8"/>
+              </svg>
+            </div>
+            <div>
+              <div class="path-name">Content Strategist</div>
+              <span class="path-age-badge builder">Ages 13-18</span>
+            </div>
+          </div>
+          <p class="path-tagline">Build a brand. Own the algorithm. Create a real content strategy for a cause or business.</p>
+          <a href="/kids/learn.html?path=content-strategist" class="path-link">
+            View Path
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <!-- Innovation Lab -->
+        <div class="path-card">
+          <div class="path-card-header">
+            <div class="path-icon builder-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffd166" stroke-width="2">
+                <path d="M9 18h6M10 22h4"/>
+                <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5.76.76 1.23 1.52 1.41 2.5"/>
+              </svg>
+            </div>
+            <div>
+              <div class="path-name">Innovation Lab</div>
+              <span class="path-age-badge builder">Ages 13-18</span>
+            </div>
+          </div>
+          <p class="path-tagline">See a problem. Invent the fix. Design, prototype, and pitch a real product innovation.</p>
+          <a href="/kids/learn.html?path=innovation-lab" class="path-link">
+            View Path
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <!-- AI Auditor -->
+        <div class="path-card">
+          <div class="path-card-header">
+            <div class="path-icon builder-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffd166" stroke-width="2">
+                <rect x="3" y="4" width="18" height="12" rx="2"/>
+                <circle cx="12" cy="10" r="2"/>
+                <path d="M8 20h8M12 16v4"/>
+                <path d="M7 8h1M16 8h1"/>
+              </svg>
+            </div>
+            <div>
+              <div class="path-name">AI Auditor</div>
+              <span class="path-age-badge builder">Ages 13-18</span>
+            </div>
+          </div>
+          <p class="path-tagline">Trust nothing. Test everything. Audit real AI systems for bias, accuracy, and ethics.</p>
+          <a href="/kids/learn.html?path=ai-auditor" class="path-link">
+            View Path
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── AI SAFETY ──────────────────────────────────────────── -->
+<section class="section" id="safety">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">AI Safety</div>
+      <h2 class="section-title">Your child never gets raw AI.</h2>
+      <p class="section-subtitle">
+        Every AI interaction goes through guided, fill-in-the-blank templates. No open-ended prompts. No data harvesting. Full parental visibility.
+      </p>
+    </div>
+    <div class="safety-pillars fade-up">
+      <div class="pillar-card">
+        <div class="pillar-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#48bb78" stroke-width="2">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <path d="M14 2v6h6M8 13h2v4H8zM14 11h2v6h-2z"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="pillar-title">Guided Prompts Only</h3>
+          <p class="pillar-desc">
+            Kids never type raw prompts into AI. Every interaction uses structured, fill-in-the-blank templates designed by educators. The AI assists &mdash; it never leads.
+          </p>
+        </div>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#48bb78" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="pillar-title">No Data Collection</h3>
+          <p class="pillar-desc">
+            COPPA compliant. We collect minimal PII &mdash; display name and age group only. No email required for children. No tracking. No ad targeting. Ever.
+          </p>
+        </div>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#48bb78" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <path d="M8 21h8M12 17v4"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="pillar-title">Parent Dashboard</h3>
+          <p class="pillar-desc">
+            See everything your child does. Track progress, review artifacts, monitor activity logs, and control which paths they access. You stay in charge.
+          </p>
+        </div>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#48bb78" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M4.93 4.93l14.14 14.14"/>
+            <path d="M9 12a3 3 0 006 0"/>
+            <circle cx="9" cy="9" r="1"/>
+            <circle cx="15" cy="9" r="1"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="pillar-title">No Social Features</h3>
+          <p class="pillar-desc">
+            Children under 13 have no public profiles, no chat, no social feeds. Portfolio sharing is opt-in and parent-controlled. Safety is the default.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PRICING ────────────────────────────────────────────── -->
+<section class="pricing section" id="pricing">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">Pricing</div>
+      <h2 class="section-title">Simple, fair pricing</h2>
+      <p class="section-subtitle">
+        One subscription covers all your children. All 10 paths included. No upsells. No premium-only content. No hidden fees.
+      </p>
+    </div>
+    <div class="pricing-grid fade-up">
+      <!-- Free Trial -->
+      <div class="price-card">
+        <div class="price-name">Free Trial</div>
+        <div class="price-amount"><span class="currency">$</span>0</div>
+        <div class="price-period">14 days &middot; no card required</div>
+        <ul class="price-features">
+          <li>Full access to all 10 paths</li>
+          <li>Up to 5 child profiles</li>
+          <li>Parent dashboard included</li>
+          <li>All portfolio features</li>
+          <li>Path quiz &amp; recommendations</li>
+        </ul>
+        <a href="/kids/subscribe.html?plan=trial" class="btn btn-secondary">Start Free Trial</a>
+      </div>
+
+      <!-- Monthly -->
+      <div class="price-card">
+        <div class="price-name">Monthly</div>
+        <div class="price-amount"><span class="currency">$</span>9.99</div>
+        <div class="price-period">per month &middot; cancel anytime</div>
+        <ul class="price-features">
+          <li>Everything in Free Trial</li>
+          <li>Unlimited quest access</li>
+          <li>Artifact portfolio &amp; export</li>
+          <li>Progress tracking &amp; XP</li>
+          <li>Priority support</li>
+        </ul>
+        <a href="/kids/subscribe.html?plan=monthly" class="btn btn-teal">Subscribe Monthly</a>
+      </div>
+
+      <!-- Annual -->
+      <div class="price-card featured">
+        <div class="price-badge">Best Value</div>
+        <div class="price-name">Annual</div>
+        <div class="price-amount"><span class="currency">$</span>79.99</div>
+        <div class="price-period">per year &middot; billed annually</div>
+        <div class="price-savings">Save 33% vs monthly</div>
+        <ul class="price-features">
+          <li>Everything in Monthly</li>
+          <li>Unlimited quest access</li>
+          <li>Artifact portfolio &amp; export</li>
+          <li>Progress tracking &amp; XP</li>
+          <li>Priority support</li>
+        </ul>
+        <a href="/kids/subscribe.html?plan=annual" class="btn btn-primary">Subscribe Annually</a>
+      </div>
+    </div>
+    <div class="pricing-referral fade-up">
+      <div class="pricing-referral-title">Referral Program</div>
+      <div class="pricing-referral-desc">
+        <span>Give a month, get a month.</span> Share your referral code with another parent. When they subscribe, you both get a free month added to your plan.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PARENT QUIZ ────────────────────────────────────────── -->
+<section class="quiz section" id="quiz">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">Path Finder</div>
+      <h2 class="section-title">Find the right path for your child</h2>
+      <p class="section-subtitle">
+        Five quick questions. Two minutes. We will recommend the three best paths based on their interests, age, and work style.
+      </p>
+    </div>
+    <div class="quiz-container fade-up">
+      <div class="quiz-card">
+        <!-- Loading state -->
+        <div class="quiz-loading" id="quiz-loading">
+          <div class="quiz-loading-spinner"></div>
+          <p>Loading quiz questions...</p>
+        </div>
+
+        <!-- Error state -->
+        <div class="quiz-error" id="quiz-error" style="display:none;">
+          <p>Could not load quiz questions.</p>
+          <button class="btn btn-secondary btn-sm" onclick="loadQuiz()">Try Again</button>
+        </div>
+
+        <!-- Active quiz -->
+        <div class="quiz-active hidden" id="quiz-active">
+          <div class="quiz-progress" id="quiz-progress" role="progressbar" aria-label="Quiz progress"></div>
+          <div class="quiz-question-num" id="quiz-question-num"></div>
+          <h3 class="quiz-question-text" id="quiz-question-text"></h3>
+          <div class="quiz-options" id="quiz-options" role="radiogroup"></div>
+          <div class="quiz-nav">
+            <button class="btn btn-secondary btn-sm" id="quiz-prev" style="visibility:hidden;" onclick="quizPrev()">Back</button>
+            <button class="btn btn-primary btn-sm" id="quiz-next" disabled onclick="quizNext()">Next</button>
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div class="quiz-results" id="quiz-results">
+          <h3 class="results-title">Your child's top paths</h3>
+          <p class="results-subtitle" id="results-subtitle">Based on their answers, we recommend:</p>
+          <div class="results-grid" id="results-grid"></div>
+          <div class="quiz-results-actions">
+            <a href="/kids/subscribe.html" class="btn btn-primary">Start Free Trial</a>
+            <button class="btn btn-secondary btn-sm" onclick="resetQuiz()">Retake Quiz</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ─────────────────────────────────────────────────── -->
+<section class="faq section" id="faq">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">FAQ</div>
+      <h2 class="section-title">Questions parents ask</h2>
+    </div>
+    <div class="faq-list fade-up">
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          <span class="faq-question-text">Is this COPPA compliant?</span>
+          <span class="faq-toggle" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </span>
+        </button>
+        <div class="faq-answer" role="region">
+          <p class="faq-answer-text">
+            Yes. ANVIL Kids is fully COPPA compliant. We collect minimal personal information (display name and age group only), require verifiable parental consent before any child account is created, and never share data with third parties. Children under 13 have no public profiles and no social features. All AI interactions use guided templates, not open-ended prompts.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          <span class="faq-question-text">What age is this for?</span>
+          <span class="faq-toggle" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </span>
+        </button>
+        <div class="faq-answer" role="region">
+          <p class="faq-answer-text">
+            ANVIL Kids is designed for ages 8-18, split into two groups. Explorer paths (ages 8-12) feature simpler language, more visual guidance, and shorter quests. Builder paths (ages 13-18) tackle more complex topics like data analysis, grant writing, and AI ethics with greater independence. Both groups produce real portfolio artifacts.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          <span class="faq-question-text">Can I add multiple children?</span>
+          <span class="faq-toggle" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </span>
+        </button>
+        <div class="faq-answer" role="region">
+          <p class="faq-answer-text">
+            Yes. One subscription covers up to 5 child profiles. Each child gets their own progress tracking, XP, level, path recommendations, and portfolio. You manage all profiles from a single parent dashboard. No extra charge per child.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          <span class="faq-question-text">What if my child is between age groups?</span>
+          <span class="faq-toggle" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </span>
+        </button>
+        <div class="faq-answer" role="region">
+          <p class="faq-answer-text">
+            If your child is 12-13 and falls between groups, start with the quiz &mdash; it considers maturity and interest level, not just age. You can assign either Explorer or Builder when creating their profile, and switch anytime. Many 12-year-olds thrive on Builder paths, while some 13-year-olds prefer starting with Explorer content first.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          <span class="faq-question-text">How do guided prompts work?</span>
+          <span class="faq-toggle" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </span>
+        </button>
+        <div class="faq-answer" role="region">
+          <p class="faq-answer-text">
+            Instead of typing open-ended prompts, children fill in structured templates. For example: "I am researching [topic]. Help me find 3 facts about [specific question] from [source type]." The AI sees only the completed template, never raw free-form input. This prevents misuse, keeps outputs educational, and teaches kids how to give clear instructions &mdash; a professional AI skill in itself.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          <span class="faq-question-text">Can I cancel anytime?</span>
+          <span class="faq-toggle" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </span>
+        </button>
+        <div class="faq-answer" role="region">
+          <p class="faq-answer-text">
+            Yes. Cancel anytime from your account settings. On monthly plans, you keep access through the end of your current billing period. On annual plans, you keep access through the end of your year. All portfolio artifacts your child created are always accessible, even after cancellation.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          <span class="faq-question-text">Does my child need their own email?</span>
+          <span class="faq-toggle" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </span>
+        </button>
+        <div class="faq-answer" role="region">
+          <p class="faq-answer-text">
+            No. Children do not need an email address. The parent creates child profiles using only a display name and age group. All authentication goes through the parent account. This is by design &mdash; we collect as little personal information as possible.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          <span class="faq-question-text">What happens when they finish a path?</span>
+          <span class="faq-toggle" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </span>
+        </button>
+        <div class="faq-answer" role="region">
+          <p class="faq-answer-text">
+            When a child completes all 20 quests in a path, they earn a completion badge and their final portfolio artifact is marked as a capstone project. They can start any other path immediately &mdash; there is no lock between paths. The portfolio grows with each completed path, building a tangible record of skills they can reference for school applications, internships, or simply pride.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Accessibility Toolbar -->
+<div class="a11y-toolbar" role="toolbar" aria-label="Accessibility options">
+  <button class="a11y-btn" id="fontBtn" title="Change font size" aria-label="Change font size">A</button>
+  <button class="a11y-btn" id="contrastBtn" title="Toggle high contrast" aria-label="Toggle high contrast">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 010 20z" fill="currentColor"/></svg>
+  </button>
+</div>
+
+</main>
+
+<!-- ════════════════════════════════════════════════════════════
+     FOOTER
+     ════════════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <svg viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="#e87a2e"/>
+        </svg>
+        <div>
+          <div class="footer-brand-text">ANVIL Kids</div>
+          <div class="footer-brand-sub">AI skills for ages 8-18</div>
+        </div>
+      </div>
+      <ul class="footer-links">
+        <li><a href="/">Adult ANVIL</a></li>
+        <li><a href="/terms.html">Terms</a></li>
+        <li><a href="/privacy.html">Privacy</a></li>
+        <li><a href="/about.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-powered">
+        Powered by
+        <svg viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <path d="M14 2L3 26h6l5-12 5 12h6L14 2z" fill="#e87a2e"/>
+        </svg>
+        <strong>ANVIL</strong>
+      </div>
+      <p class="footer-copy">&copy; 2026 ANVIL. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ════════════════════════════════════════════════════════════
+     JAVASCRIPT
+     ════════════════════════════════════════════════════════════ -->
+<script>
+/* ── Navigation ──────────────────────────────────────────── */
+(function() {
+  var nav = document.querySelector('.nav');
+  var hamburger = document.querySelector('.hamburger');
+  var mobileMenu = document.querySelector('.mobile-menu');
+  var mobileLinks = mobileMenu.querySelectorAll('a');
+
+  // Scroll shadow
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 20) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+  }, { passive: true });
+
+  // Hamburger toggle
+  hamburger.addEventListener('click', function() {
+    var isOpen = hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+    hamburger.setAttribute('aria-expanded', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  });
+
+  // Close mobile menu on link click
+  mobileLinks.forEach(function(link) {
+    link.addEventListener('click', function() {
+      hamburger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    });
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && mobileMenu.classList.contains('open')) {
+      hamburger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+      hamburger.focus();
+    }
+  });
+})();
+
+/* ── Scroll Animations ───────────────────────────────────── */
+(function() {
+  var fadeEls = document.querySelectorAll('.fade-up');
+  if (!fadeEls.length) return;
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  fadeEls.forEach(function(el) { observer.observe(el); });
+})();
+
+/* ── FAQ Accordion ───────────────────────────────────────── */
+(function() {
+  var faqItems = document.querySelectorAll('.faq-item');
+  faqItems.forEach(function(item) {
+    var btn = item.querySelector('.faq-question');
+    btn.addEventListener('click', function() {
+      var isOpen = item.classList.contains('open');
+      // Close all
+      faqItems.forEach(function(other) {
+        other.classList.remove('open');
+        other.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+      });
+      // Toggle current
+      if (!isOpen) {
+        item.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+})();
+
+/* ── Quiz Logic ──────────────────────────────────────────── */
+var quizData = null;
+var quizCurrent = 0;
+var quizAnswers = [];
+
+function loadQuiz() {
+  var loadingEl = document.getElementById('quiz-loading');
+  var errorEl = document.getElementById('quiz-error');
+  var activeEl = document.getElementById('quiz-active');
+
+  loadingEl.style.display = 'block';
+  errorEl.style.display = 'none';
+  activeEl.classList.add('hidden');
+
+  fetch('/api/kids/paths')
+    .then(function(res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
+    .then(function(data) {
+      if (!data.success || !data.quiz_questions || !data.quiz_questions.length) {
+        throw new Error('No quiz data');
+      }
+      quizData = data;
+      quizCurrent = 0;
+      quizAnswers = new Array(data.quiz_questions.length).fill(null);
+      loadingEl.style.display = 'none';
+      activeEl.classList.remove('hidden');
+      renderQuizQuestion();
+    })
+    .catch(function() {
+      loadingEl.style.display = 'none';
+      errorEl.style.display = 'block';
+    });
+}
+
+function renderQuizQuestion() {
+  if (!quizData) return;
+  var questions = quizData.quiz_questions;
+  var q = questions[quizCurrent];
+  var total = questions.length;
+
+  // Progress dots
+  var progressHtml = '';
+  for (var i = 0; i < total; i++) {
+    var cls = 'quiz-progress-dot';
+    if (i < quizCurrent) cls += ' done';
+    else if (i === quizCurrent) cls += ' active';
+    progressHtml += '<div class="' + cls + '"></div>';
+  }
+  document.getElementById('quiz-progress').innerHTML = progressHtml;
+
+  // Question
+  document.getElementById('quiz-question-num').textContent = 'Question ' + (quizCurrent + 1) + ' of ' + total;
+  document.getElementById('quiz-question-text').textContent = q.text;
+
+  // Options
+  var optionsHtml = '';
+  q.options.forEach(function(opt, idx) {
+    var selected = quizAnswers[quizCurrent] === idx ? ' selected' : '';
+    optionsHtml += '<button class="quiz-option' + selected + '" data-index="' + idx + '" onclick="selectOption(' + idx + ')" role="radio" aria-checked="' + (quizAnswers[quizCurrent] === idx) + '">';
+    optionsHtml += '<span class="quiz-option-marker"></span>';
+    optionsHtml += '<span>' + escapeHtml(opt.text) + '</span>';
+    optionsHtml += '</button>';
+  });
+  document.getElementById('quiz-options').innerHTML = optionsHtml;
+
+  // Navigation
+  document.getElementById('quiz-prev').style.visibility = quizCurrent > 0 ? 'visible' : 'hidden';
+  var nextBtn = document.getElementById('quiz-next');
+  nextBtn.disabled = quizAnswers[quizCurrent] === null;
+  nextBtn.textContent = quizCurrent === total - 1 ? 'See Results' : 'Next';
+}
+
+function selectOption(idx) {
+  quizAnswers[quizCurrent] = idx;
+  var options = document.querySelectorAll('.quiz-option');
+  options.forEach(function(el) {
+    var isSelected = parseInt(el.dataset.index) === idx;
+    el.classList.toggle('selected', isSelected);
+    el.setAttribute('aria-checked', isSelected);
+  });
+  document.getElementById('quiz-next').disabled = false;
+}
+
+function quizNext() {
+  if (quizAnswers[quizCurrent] === null) return;
+  if (quizCurrent < quizData.quiz_questions.length - 1) {
+    quizCurrent++;
+    renderQuizQuestion();
+  } else {
+    submitQuiz();
+  }
+}
+
+function quizPrev() {
+  if (quizCurrent > 0) {
+    quizCurrent--;
+    renderQuizQuestion();
+  }
+}
+
+function submitQuiz() {
+  trackEvent('kids_quiz_start');
+  var questions = quizData.quiz_questions;
+  var tagArrays = quizAnswers.map(function(ansIdx, qIdx) {
+    if (ansIdx === null) return [];
+    return questions[qIdx].options[ansIdx].tags || [];
+  });
+
+  // Submit to server
+  fetch('/api/kids/quiz-submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ answers: tagArrays })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.success && data.recommended) {
+      showResults(data.recommended);
+    } else {
+      // Fallback: client-side scoring
+      showResultsClientSide(tagArrays);
+    }
+  })
+  .catch(function() {
+    // Fallback: client-side scoring
+    showResultsClientSide(tagArrays);
+  });
+}
+
+function showResultsClientSide(tagArrays) {
+  var allTags = tagArrays.reduce(function(a, b) { return a.concat(b); }, [])
+    .map(function(t) { return t.toLowerCase(); });
+  var paths = quizData.paths || [];
+  var scored = paths.map(function(p) {
+    var matchCount = (p.quiz_tags || []).filter(function(t) {
+      return allTags.indexOf(t) !== -1;
+    }).length;
+    return { id: p.id, name: p.name, age_group: p.age_group, tagline: p.tagline, icon: p.icon, score: matchCount };
+  }).sort(function(a, b) { return b.score - a.score; });
+  showResults(scored.slice(0, 3));
+}
+
+function showResults(recommended) {
+  document.getElementById('quiz-active').classList.add('hidden');
+  var resultsEl = document.getElementById('quiz-results');
+  resultsEl.classList.add('visible');
+
+  var gridHtml = '';
+  recommended.forEach(function(path, i) {
+    var matchLabel = i === 0 ? 'Top Match' : i === 1 ? 'Great Fit' : 'Also Recommended';
+    gridHtml += '<div class="result-card">';
+    gridHtml += '<div class="result-rank">' + (i + 1) + '</div>';
+    gridHtml += '<div class="result-info">';
+    gridHtml += '<div class="result-name">' + escapeHtml(path.name) + '</div>';
+    gridHtml += '<div class="result-tagline">' + escapeHtml(path.tagline) + '</div>';
+    gridHtml += '</div>';
+    gridHtml += '<span class="result-match">' + matchLabel + '</span>';
+    gridHtml += '</div>';
+  });
+  document.getElementById('results-grid').innerHTML = gridHtml;
+  trackEvent('kids_quiz_complete');
+}
+
+function resetQuiz() {
+  quizCurrent = 0;
+  quizAnswers = new Array(quizData.quiz_questions.length).fill(null);
+  document.getElementById('quiz-results').classList.remove('visible');
+  document.getElementById('quiz-active').classList.remove('hidden');
+  renderQuizQuestion();
+}
+
+function escapeHtml(str) {
+  var div = document.createElement('div');
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
+}
+
+// Load quiz on page load
+document.addEventListener('DOMContentLoaded', loadQuiz);
+
+/* ── Smooth scroll for anchor links ──────────────────────── */
+(function() {
+  document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      var targetId = this.getAttribute('href');
+      if (targetId === '#') return;
+      var target = document.querySelector(targetId);
+      if (target) {
+        e.preventDefault();
+        var offset = 80; // nav height + padding
+        var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+        // Update URL without triggering scroll
+        history.pushState(null, null, targetId);
+      }
+    });
+  });
+})();
+
+/* ── Kids Tour (for parents) ────────────────────────────── */
+(function() {
+  // Inline minimal tour engine (no external deps)
+  var overlay, spotlight, tooltip, steps = [], current = 0, active = false;
+
+  function esc(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+  function injectTourCSS() {
+    if (document.getElementById('kids-tour-css')) return;
+    var s = document.createElement('style');
+    s.id = 'kids-tour-css';
+    s.textContent = [
+      '.kt-overlay { position:fixed;top:0;left:0;width:100%;height:100%;z-index:99990;pointer-events:auto; }',
+      '.kt-spot { position:fixed;z-index:99991;box-shadow:0 0 0 9999px rgba(0,0,0,0.7);border-radius:8px;pointer-events:none;transition:all .4s ease; }',
+      '.kt-tip { position:fixed;z-index:99992;background:#16213e;border:2px solid #ffd166;border-radius:14px;padding:22px 26px;max-width:360px;color:#e0e0e0;font-family:Nunito,-apple-system,sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.5);transition:opacity .3s,transform .3s; }',
+      '.kt-tip.hidden { opacity:0;transform:translateY(8px); }',
+      '.kt-title { font-weight:800;font-size:1.1rem;color:#ffd166;margin-bottom:8px; }',
+      '.kt-msg { font-size:0.9rem;line-height:1.65;color:#a0a8c0;margin-bottom:16px; }',
+      '.kt-footer { display:flex;align-items:center;justify-content:space-between; }',
+      '.kt-dots { display:flex;gap:6px; }',
+      '.kt-dot { width:8px;height:8px;border-radius:50%;background:#2a3a5e; }',
+      '.kt-dot.active { background:#ffd166; }',
+      '.kt-dot.done { background:#48bb78; }',
+      '.kt-btns { display:flex;gap:8px; }',
+      '.kt-btn { padding:8px 18px;border-radius:100px;font-weight:700;font-size:0.85rem;border:none;cursor:pointer;font-family:inherit; }',
+      '.kt-skip { background:transparent;color:#6a7490;border:1px solid #2a3a5e; }',
+      '.kt-skip:hover { border-color:#ffd166;color:#a0a8c0; }',
+      '.kt-next { background:linear-gradient(135deg,#ffd166,#f5a623);color:#000; }',
+      '.kt-next:hover { box-shadow:0 4px 16px rgba(255,209,102,0.3); }',
+    ].join('\n');
+    document.head.appendChild(s);
+  }
+
+  function create() {
+    injectTourCSS();
+    overlay = document.createElement('div'); overlay.className = 'kt-overlay';
+    spotlight = document.createElement('div'); spotlight.className = 'kt-spot';
+    tooltip = document.createElement('div'); tooltip.className = 'kt-tip hidden';
+    overlay.addEventListener('click', end);
+    document.body.appendChild(overlay);
+    document.body.appendChild(spotlight);
+    document.body.appendChild(tooltip);
+  }
+
+  function show(idx) {
+    current = idx;
+    var step = steps[idx];
+    var el = step.selector ? document.querySelector(step.selector) : null;
+    if (el) {
+      var r = el.getBoundingClientRect();
+      var pad = 8;
+      spotlight.style.top = (r.top - pad) + 'px';
+      spotlight.style.left = (r.left - pad) + 'px';
+      spotlight.style.width = (r.width + pad * 2) + 'px';
+      spotlight.style.height = (r.height + pad * 2) + 'px';
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+      spotlight.style.top = '50%'; spotlight.style.left = '50%';
+      spotlight.style.width = '0'; spotlight.style.height = '0';
+    }
+
+    var dots = '';
+    for (var i = 0; i < steps.length; i++) {
+      dots += '<div class="kt-dot ' + (i < idx ? 'done' : i === idx ? 'active' : '') + '"></div>';
+    }
+    var isLast = idx === steps.length - 1;
+    tooltip.innerHTML =
+      '<div class="kt-title">' + esc(step.title || 'Step ' + (idx + 1)) + '</div>' +
+      '<div class="kt-msg">' + (step.html || esc(step.message)) + '</div>' +
+      '<div class="kt-footer">' +
+        '<div class="kt-dots">' + dots + '</div>' +
+        '<div class="kt-btns">' +
+          '<button class="kt-btn kt-skip" onclick="window._kidsTourEnd()">Skip</button>' +
+          '<button class="kt-btn kt-next" onclick="window._kidsTourNext()">' + (isLast ? 'Got it!' : 'Next') + '</button>' +
+        '</div>' +
+      '</div>';
+
+    setTimeout(function() {
+      tooltip.classList.remove('hidden');
+      var tr = el ? el.getBoundingClientRect() : { top: window.innerHeight / 2, left: window.innerWidth / 2, width: 0, height: 0 };
+      var tw = tooltip.offsetWidth;
+      var tipLeft = Math.max(16, Math.min(window.innerWidth - tw - 16, tr.left + tr.width / 2 - tw / 2));
+      var tipTop = tr.bottom + 20;
+      if (tipTop + tooltip.offsetHeight > window.innerHeight - 20) tipTop = tr.top - tooltip.offsetHeight - 20;
+      tooltip.style.left = tipLeft + 'px';
+      tooltip.style.top = Math.max(16, tipTop) + 'px';
+    }, 50);
+  }
+
+  function end() {
+    active = false;
+    if (overlay) overlay.remove();
+    if (spotlight) spotlight.remove();
+    if (tooltip) tooltip.remove();
+    document.body.style.overflow = '';
+  }
+
+  window._kidsTourEnd = end;
+  window._kidsTourNext = function() {
+    if (current < steps.length - 1) show(current + 1);
+    else end();
+  };
+
+  var btn = document.getElementById('startKidsTour');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      if (active) return;
+      active = true;
+      steps = [
+        {
+          title: 'Welcome, Parents!',
+          html: 'This quick tour shows you exactly how <strong>ANVIL Kids</strong> works. Your child learns real AI skills through guided quests &mdash; never raw AI access.',
+          selector: '.hero-title'
+        },
+        {
+          title: 'Step 1: Sign Up',
+          html: 'Create a free parent account and add up to <strong>5 child profiles</strong>. Set their age group: Explorer (8-12) or Builder (13-18).',
+          selector: '#how-it-works .step-card:first-child'
+        },
+        {
+          title: 'Step 2: Quiz Match',
+          html: 'Your child takes a <strong>2-minute quiz</strong> about their interests. We recommend the best skill paths for them &mdash; no guesswork.',
+          selector: '#how-it-works .step-card:nth-child(2)'
+        },
+        {
+          title: 'Step 3: Quest &amp; Build',
+          html: 'Each path has <strong>20 quests</strong> across 4 chapters. Kids earn XP, level up, and create real portfolio artifacts they keep forever.',
+          selector: '#how-it-works .step-card:nth-child(3)'
+        },
+        {
+          title: '10 Skill Paths',
+          html: 'Explorer paths (ages 8-12) and Builder paths (ages 13-18). From Community Detective to AI Auditor &mdash; real skills, real output.',
+          selector: '#paths'
+        },
+        {
+          title: 'Safety First',
+          html: '<strong>COPPA compliant.</strong> No raw AI chat. All prompts are guided and age-appropriate. Parent dashboard shows activity, progress, and artifacts.',
+          selector: '#safety'
+        },
+        {
+          title: '14-Day Free Trial',
+          html: 'Start free. No credit card required. After the trial: <strong>$9.99/mo</strong> or <strong>$79.99/year</strong> for up to 5 children.',
+          selector: '#pricing'
+        }
+      ];
+      create();
+      show(0);
+    });
+  }
+})();
+
+/* ── Analytics ── */
+function trackEvent(action, data) {
+  try {
+    fetch('/api/analytics/event', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: action, page: location.pathname, data: data || {} })
+    }).catch(function() {});
+  } catch(e) {}
+}
+
+/* ── Toast ── */
+function showToast(message, type) {
+  var container = document.getElementById('toastContainer');
+  if (!container) return;
+  var toast = document.createElement('div');
+  toast.className = 'toast ' + (type || 'info');
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(function() {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(12px)';
+    toast.style.transition = 'all 0.3s';
+    setTimeout(function() { toast.remove(); }, 300);
+  }, 3500);
+}
+
+/* ── Accessibility: Font Scale + High Contrast ───────── */
+(function() {
+  var scales = [1, 1.15, 1.3];
+  var labels = ['A', 'A+', 'A++'];
+  var idx = parseInt(localStorage.getItem('anvil_kids_font_idx') || '0', 10);
+  if (idx < 0 || idx >= scales.length) idx = 0;
+
+  var fontBtn = document.getElementById('fontBtn');
+  var contrastBtn = document.getElementById('contrastBtn');
+
+  function applyFont() {
+    document.documentElement.style.setProperty('--font-scale', scales[idx]);
+    if (fontBtn) fontBtn.textContent = labels[idx];
+    localStorage.setItem('anvil_kids_font_idx', idx);
+  }
+  applyFont();
+
+  if (fontBtn) {
+    fontBtn.addEventListener('click', function() {
+      idx = (idx + 1) % scales.length;
+      applyFont();
+    });
+  }
+
+  // High contrast
+  if (localStorage.getItem('anvil-kids-hc') === '1') {
+    document.body.classList.add('high-contrast');
+  }
+  if (contrastBtn) {
+    contrastBtn.addEventListener('click', function() {
+      document.body.classList.toggle('high-contrast');
+      localStorage.setItem('anvil-kids-hc', document.body.classList.contains('high-contrast') ? '1' : '0');
+    });
+  }
+})();
+
+/* ── Service Worker ── */
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(function() {});
+}
+</script>
+
+<div class="toast-container" id="toastContainer"></div>
+
+</body>
+</html>
