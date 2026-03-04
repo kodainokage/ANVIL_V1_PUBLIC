@@ -2,7 +2,7 @@ services:
   - type: web
     name: anvil
     runtime: node
-    # repo: https://github.com/YOUR_USERNAME/ANVIL_PUBLIC
+    # repo: https://github.com/kodainokage/ANVIL_V1_PUBLIC
     branch: main
     plan: free
     buildCommand: npm install

@@ -161,12 +161,13 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); line
 .ticker-bar {
   position: fixed; bottom: 0; left: 0; right: 0;
   background: var(--bg-card); border-top: 1px solid var(--border);
-  padding: 8px 0; overflow: hidden; z-index: 10;
+  padding: 8px 0; overflow: hidden; z-index: 10; cursor: default;
 }
 .ticker-track {
   display: flex; gap: 40px; white-space: nowrap;
-  animation: ticker 30s linear infinite;
+  animation: ticker 90s linear infinite;
 }
+.ticker-track:hover { animation-play-state: paused; }
 @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 .ticker-item {
   font-size: 0.7rem; font-family: var(--mono); color: var(--text-dim);
@@ -288,6 +289,21 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); line
   var currentNiche = '';
   var feedData = [];
 
+  var TYPE_LABELS = {
+    update: 'Industry Update', breaking: 'Breaking News',
+    tool: 'New Tool', opportunity: 'Opportunity', hint: 'Pro Tip'
+  };
+  var NICHE_LABELS = {
+    'medical-billing': 'Healthcare', benefits: 'Benefits',
+    compliance: 'Compliance', 'grant-writing': 'Grants',
+    insurance: 'Insurance', bookkeeping: 'Finance',
+    'real-estate': 'Real Estate', all: 'AI News'
+  };
+
+  function formatSlug(s) {
+    return s.replace(/-/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+  }
+
   // -- Filter chips --
   document.getElementById('filterBar').addEventListener('click', function(e) {
     var chip = e.target.closest('.filter-chip');
@@ -376,17 +392,40 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); line
   // -- Render feed items --
   function renderFeed(items) {
     var feed = document.getElementById('feed');
-    var html = '<div class="feed-section-label">Latest Intelligence</div>';
 
+    if (items.length === 0 && currentNiche) {
+      var nicheLabel = NICHE_LABELS[currentNiche] || formatSlug(currentNiche);
+      feed.innerHTML = '<div class="empty-feed"><p>Showing updates for ' + escapeHtml(nicheLabel) + '. More stories refresh every 2 hours.</p></div>';
+      return;
+    }
+
+    // Group items by primary niche for section headers
+    var grouped = [];
+    var lastNiche = null;
     items.forEach(function(item) {
+      var primary = (item.niches && item.niches[0]) || 'all';
+      if (primary !== lastNiche) {
+        grouped.push({ type: 'header', niche: primary });
+        lastNiche = primary;
+      }
+      grouped.push({ type: 'item', data: item });
+    });
+
+    var html = '';
+    grouped.forEach(function(entry) {
+      if (entry.type === 'header') {
+        var label = NICHE_LABELS[entry.niche] || formatSlug(entry.niche);
+        html += '<div class="feed-section-label">' + escapeHtml(label) + '</div>';
+        return;
+      }
+      var item = entry.data;
       var typeClass = item.type || 'update';
-      var typeLabel = typeClass.charAt(0).toUpperCase() + typeClass.slice(1);
-      if (typeClass === 'breaking') typeLabel = 'Breaking';
+      var typeLabel = TYPE_LABELS[typeClass] || 'Update';
 
       var niches = (item.niches || []).filter(function(n) { return n !== 'all'; });
       var nichesHtml = niches.length > 0
         ? '<div class="feed-niches">' + niches.map(function(n) {
-            return '<span class="niche-tag">' + escapeHtml(n) + '</span>';
+            return '<span class="niche-tag">' + escapeHtml(NICHE_LABELS[n] || formatSlug(n)) + '</span>';
           }).join('') + '</div>'
         : '';
 
@@ -427,13 +466,15 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); line
     var doubled = items.concat(items);
     doubled.forEach(function(item) {
       var typeClass = item.type === 'opportunity' ? 'up' : 'new';
-      var typeLabel = (item.type || 'update').toUpperCase();
+      var typeLabel = TYPE_LABELS[item.type] || 'Update';
       html += '<span class="ticker-item">' +
         '<span class="ticker-type ' + typeClass + '">' + typeLabel + '</span> ' +
         escapeHtml((item.headline || '').slice(0, 60)) +
       '</span>';
     });
     track.innerHTML = html;
+    var duration = Math.max(60, doubled.length * 8);
+    track.style.animationDuration = duration + 's';
     document.getElementById('tickerBar').style.display = '';
   }
 
