@@ -21,3 +21,38 @@ services:
         value: ""
       - key: COMMUNITY_SIGNAL
         value: ""
+      # ── Admin ────────────────────────────────────────────
+      # Set ADMIN_EMAIL to the email address that should receive admin role on signup.
+      - key: ADMIN_EMAIL
+        value: ""
+      # ── Google OAuth (optional) ──────────────────────────
+      # Create credentials at https://console.cloud.google.com
+      - key: GOOGLE_CLIENT_ID
+        value: ""
+      - key: GOOGLE_CLIENT_SECRET
+        value: ""
+      # ── Discord OAuth (optional) ─────────────────────────
+      # Create app at https://discord.com/developers
+      - key: DISCORD_CLIENT_ID
+        value: ""
+      - key: DISCORD_CLIENT_SECRET
+        value: ""
+      # ── Magic Link Email (optional) ──────────────────────
+      # Set EMAIL_PROVIDER to 'sendgrid' or 'postmark', then set EMAIL_API_KEY.
+      # Without this, magic links are logged to console only (not suitable for production).
+      - key: EMAIL_PROVIDER
+        value: ""
+      - key: EMAIL_API_KEY
+        value: ""
+      - key: EMAIL_FROM
+        value: ""
+      # ── Stripe for ANVIL Kids subscriptions (optional) ───
+      # Obtain from https://dashboard.stripe.com
+      - key: STRIPE_SECRET_KEY
+        value: ""
+      - key: STRIPE_WEBHOOK_SECRET
+        value: ""
+      - key: STRIPE_PRICE_MONTHLY
+        value: ""
+      - key: STRIPE_PRICE_ANNUAL
+        value: ""
