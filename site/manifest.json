@@ -1,9 +1,12 @@
 {
+  "id": "/",
   "name": "ANVIL - AI Navigation & Vocational Integration Layer",
   "short_name": "ANVIL",
   "description": "Free 7-day sprint turns laid-off workers into AI-powered specialists in boring niches nobody else wants.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
   "background_color": "#0a0a0a",
   "theme_color": "#e87a2e",
   "orientation": "portrait-primary",
