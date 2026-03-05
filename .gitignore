@@ -1,8 +1,24 @@
 node_modules/
 data/
 .env
+.env.local
+.env.production
+.env.*
 *.tmp
 *.log
 .DS_Store
+*.pem
+*.key
+*.p12
+*.pfx
+anvil.db
+anvil.db-shm
+anvil.db-wal
+# Private data files (contain business logic / secrets — keep out of public repo)
+# Note: auth.js, discovery.js, content-generator.js are stubs in this repo.
+# If you replace them with real implementations, add them back to this ignore list.
+niches.json
+kids-paths.json
+# Internal docs (not for public repo)
 BRAND-DIRECTION.md
 STORE-LISTINGS.md
