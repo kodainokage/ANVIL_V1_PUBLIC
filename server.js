@@ -276,7 +276,7 @@ console.log(`[DB] SQLite database ready at ${DB_PATH}`);
 // Prepared statements (cached for performance)
 const stmts = {
   insertSubmission: db.prepare(`INSERT INTO submissions (id, name, email, phone, answers, recommended_niches, referral_code, referred_by, utm_source, utm_medium, utm_campaign, ip, submitted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
-  getSubmissions: db.prepare(`SELECT * FROM submissions ORDER BY submitted_at DESC`),
+  getSubmissions: db.prepare(`SELECT * FROM submissions ORDER BY submitted_at DESC LIMIT 1000`),
   getSubmissionById: db.prepare(`SELECT * FROM submissions WHERE id = ?`),
   getSubmissionByReferral: db.prepare(`SELECT id FROM submissions WHERE referral_code = ? LIMIT 1`),
   insertAnalytics: db.prepare(`INSERT INTO analytics (event, page, data, fingerprint, timestamp) VALUES (?, ?, ?, ?, ?)`),
@@ -437,6 +437,13 @@ setInterval(() => {
   }
   for (const [ip, entry] of kidsRateLimits) {
     if (now - entry.windowStart > RATE_WINDOW) kidsRateLimits.delete(ip);
+  }
+  // Bug fix: searchSignalLimiter was never cleaned — unbounded growth under sustained traffic.
+  const searchWindow = 60 * 1000; // 1-minute window used by the search signal limiter
+  for (const [ip, timestamps] of Object.entries(searchSignalLimiter)) {
+    const fresh = timestamps.filter(t => now - t < searchWindow);
+    if (fresh.length === 0) delete searchSignalLimiter[ip];
+    else searchSignalLimiter[ip] = fresh;
   }
   auth.cleanExpiredSessions();
 }, 30 * 60 * 1000);
@@ -1113,12 +1120,14 @@ app.post('/api/admin/testimonials/:id/approve', (req, res) => {
   if (!requireAdmin(req, res)) return;
 
   try {
-    const result = stmts.approveTestimonial.run(req.params.id);
+    const id = String(req.params.id || '').replace(/[^a-zA-Z0-9\-]/g, '').slice(0, 64);
+    if (!id) return res.status(400).json({ success: false, error: 'Invalid ID' });
+    const result = stmts.approveTestimonial.run(id);
     if (result.changes === 0) {
       return res.status(404).json({ success: false, error: 'Testimonial not found' });
     }
-    console.log(`[TESTIMONIAL APPROVED] ${req.params.id}`);
-    const testimonial = db.prepare('SELECT * FROM testimonials WHERE id = ?').get(req.params.id);
+    console.log(`[TESTIMONIAL APPROVED] ${id}`);
+    const testimonial = db.prepare('SELECT * FROM testimonials WHERE id = ?').get(id);
     // Bug fix: spreading raw DB row exposed both `submitted_at` (SQLite column) AND `submittedAt`
     // (camelCase alias). Explicitly construct the response object to avoid the duplicate field.
     res.json({ success: true, testimonial: {
@@ -1287,7 +1296,9 @@ app.get('/api/admin/discovery/candidates/:id', (req, res) => {
   if (!requireAdmin(req, res)) return;
 
   try {
-    const row = stmts.getCandidateById.get(req.params.id);
+    const candidateId = parseInt(req.params.id, 10);
+    if (!Number.isInteger(candidateId) || candidateId <= 0) return res.status(400).json({ success: false, error: 'Invalid ID' });
+    const row = stmts.getCandidateById.get(candidateId);
     if (!row) return res.status(404).json({ success: false, error: 'Candidate not found' });
 
     res.json({
@@ -1310,7 +1321,9 @@ app.post('/api/admin/discovery/candidates/:id/review', (req, res) => {
   if (!requireAdmin(req, res)) return;
 
   try {
-    const row = stmts.getCandidateById.get(req.params.id);
+    const candidateId = parseInt(req.params.id, 10);
+    if (!Number.isInteger(candidateId) || candidateId <= 0) return res.status(400).json({ success: false, error: 'Invalid ID' });
+    const row = stmts.getCandidateById.get(candidateId);
     if (!row) return res.status(404).json({ success: false, error: 'Candidate not found' });
 
     const { status, notes } = req.body;
@@ -1347,7 +1360,9 @@ app.post('/api/admin/discovery/candidates/:id/deploy', (req, res) => {
   if (!requireAdmin(req, res)) return;
 
   try {
-    const row = stmts.getCandidateById.get(req.params.id);
+    const candidateId = parseInt(req.params.id, 10);
+    if (!Number.isInteger(candidateId) || candidateId <= 0) return res.status(400).json({ success: false, error: 'Invalid ID' });
+    const row = stmts.getCandidateById.get(candidateId);
     if (!row) return res.status(404).json({ success: false, error: 'Candidate not found' });
     if (row.status !== 'approved') {
       return res.status(400).json({ success: false, error: 'Candidate must be approved before deploying' });
@@ -1446,7 +1461,9 @@ app.post('/api/admin/discovery/candidates/:id/regenerate', (req, res) => {
   if (!requireAdmin(req, res)) return;
 
   try {
-    const row = stmts.getCandidateById.get(req.params.id);
+    const candidateId = parseInt(req.params.id, 10);
+    if (!Number.isInteger(candidateId) || candidateId <= 0) return res.status(400).json({ success: false, error: 'Invalid ID' });
+    const row = stmts.getCandidateById.get(candidateId);
     if (!row) return res.status(404).json({ success: false, error: 'Candidate not found' });
 
     const candidate = { ...row, source_data: JSON.parse(row.source_data || '{}') };
@@ -1750,7 +1767,17 @@ app.post('/api/auth/magic-link', (req, res) => {
   const origin = ALLOWED_ORIGINS[0] || `${req.protocol}://${req.headers.host}`;
   const magicUrl = auth.getMagicLinkUrl(token, origin);
   const delivery = auth.sendMagicLinkEmail(email, magicUrl);
+  // SECURITY: In production, never return the magic link in the API response.
+  // If email provider is not configured in production, fail with 503 rather than
+  // leaking a valid auth token to the API caller (which bypasses email ownership).
+  if (delivery === 'console' && NODE_ENV === 'production') {
+    return res.status(503).json({
+      success: false,
+      error: 'Email delivery is not configured. Set EMAIL_PROVIDER and EMAIL_API_KEY environment variables.'
+    });
+  }
   const response = { success: true, message: 'Check your email for a sign-in link.' };
+  // dev_link only returned in non-production environments when no email provider is configured
   if (delivery === 'console') response.dev_link = magicUrl;
   res.json(response);
 });
@@ -2476,10 +2503,13 @@ app.put('/api/kids/progress/:childId/:pathId', requireKidsSub, (req, res) => {
   try {
     const child = verifyParentChild(req, parseInt(req.params.childId));
     if (!child) return res.status(404).json({ error: 'Child not found' });
-    const prog = stmts.getProgressByChildPath.get(child.id, req.params.pathId);
+    // Sanitize pathId: alphanumeric + hyphens/underscores only, max 64 chars
+    const pathId = String(req.params.pathId || '').replace(/[^a-zA-Z0-9\-_]/g, '').slice(0, 64);
+    if (!pathId) return res.status(400).json({ error: 'Invalid path ID' });
+    const prog = stmts.getProgressByChildPath.get(child.id, pathId);
     if (!prog) return res.status(404).json({ error: 'Path not started' });
     // Derive max quest index from path definition (not hardcoded)
-    const pathDef = (kidsPathsData.paths || []).find(p => p.id === req.params.pathId);
+    const pathDef = (kidsPathsData.paths || []).find(p => p.id === pathId);
     const maxQuestIndex = pathDef ? pathDef.chapters.flatMap(c => c.quests).length - 1 : 19;
     // Fix: use Number.isNaN to handle explicit 0, prevent backwards progress
     const parsed = parseInt(req.body.quest_index);
@@ -2493,8 +2523,8 @@ app.put('/api/kids/progress/:childId/:pathId', requireKidsSub, (req, res) => {
     const newXp = prog.xp + xpAdd;
     const newLevel = xpToLevel(newXp);
     const now = new Date().toISOString();
-    stmts.updateProgress.run(questIndex, newXp, newLevel, now, child.id, req.params.pathId);
-    if (xpAdd > 0) stmts.logKidsActivity.run(child.id, 'quest_progress', `${req.params.pathId}:quest-${questIndex}`, xpAdd, now);
+    stmts.updateProgress.run(questIndex, newXp, newLevel, now, child.id, pathId);
+    if (xpAdd > 0) stmts.logKidsActivity.run(child.id, 'quest_progress', `${pathId}:quest-${questIndex}`, xpAdd, now);
     res.json({ success: true, quest_index: questIndex, xp: newXp, level: newLevel });
   } catch (err) {
     console.error('[KIDS] Update progress error:', err.message);
@@ -2506,17 +2536,20 @@ app.post('/api/kids/progress/:childId/:pathId/complete', requireKidsSub, (req, r
   try {
     const child = verifyParentChild(req, parseInt(req.params.childId));
     if (!child) return res.status(404).json({ error: 'Child not found' });
-    const prog = stmts.getProgressByChildPath.get(child.id, req.params.pathId);
+    // Sanitize pathId
+    const pathId = String(req.params.pathId || '').replace(/[^a-zA-Z0-9\-_]/g, '').slice(0, 64);
+    if (!pathId) return res.status(400).json({ error: 'Invalid path ID' });
+    const prog = stmts.getProgressByChildPath.get(child.id, pathId);
     if (!prog) return res.status(404).json({ error: 'Path not started' });
     // Require all quests completed before path completion
-    const pathDef = (kidsPathsData.paths || []).find(p => p.id === req.params.pathId);
+    const pathDef = (kidsPathsData.paths || []).find(p => p.id === pathId);
     const totalQuests = pathDef ? pathDef.chapters.flatMap(c => c.quests).length : 20;
     if (prog.quest_index < totalQuests - 1) {
       return res.status(400).json({ error: `Must complete all ${totalQuests} quests before finishing path (currently on quest ${prog.quest_index + 1})` });
     }
     const now = new Date().toISOString();
-    stmts.completeProgress.run(now, now, child.id, req.params.pathId);
-    stmts.logKidsActivity.run(child.id, 'path_completed', req.params.pathId, 100, now);
+    stmts.completeProgress.run(now, now, child.id, pathId);
+    stmts.logKidsActivity.run(child.id, 'path_completed', pathId, 100, now);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to complete path' });
